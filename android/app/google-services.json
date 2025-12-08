@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "235649149955",
+    "project_id": "owl-by-serene-minds",
+    "storage_bucket": "owl-by-serene-minds.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235649149955:android:5b1b6b94c2b0893a977236",
+        "android_client_info": {
+          "package_name": "com.mycompany.owlbysereneminds"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0i5Od3eZbn5X8YjupXU1nhuTV3b8xwb8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

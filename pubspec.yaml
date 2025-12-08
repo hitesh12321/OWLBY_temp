@@ -1,0 +1,100 @@
+
+name: owlby_serene_m_i_n_d_s
+description: A new Flutter project.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+
+  # AUDIO PACKAGES
+  assets_audio_player:
+    git:
+      url: https://github.com/FlutterFlow/Flutter-AssetsAudioPlayer.git
+      ref: 243f9533279b73fa9dae345cc96e5d7d84cac0ac
+
+  assets_audio_player_web:
+    git:
+      url: https://github.com/FlutterFlow/Flutter-AssetsAudioPlayerWeb.git
+      ref: cae7ceb6af99f4da1ec27136d312d0ef045c83d9
+
+  just_audio: ^0.9.36
+  # record: ^5.1.0
+  flutter_sound: ^9.2.13
+  permission_handler: ^12.0.1
+
+  # FIREBASE
+  firebase_core:
+  firebase_auth:
+  cloud_firestore:
+  
+  firebase_performance:
+
+  # STORAGE & DATABASE
+  shared_preferences:
+  flutter_secure_storage: ^9.2.4
+  sqflite: ^2.4.2
+  path_provider:
+
+  # ROUTER / STATE
+  go_router:
+  provider: ^6.1.5+1
+
+  # UI / UTILITIES
+  auto_size_text:
+  google_fonts:
+  cached_network_image:
+  http:
+  intl:
+  csv:
+  mime_type:
+  timeago:
+  rxdart:
+  page_transition:
+  pin_code_fields:
+  open_file:
+  url_launcher:
+  font_awesome_flutter:
+  simple_gradient_text:
+  from_css_color:
+
+  # PDF & FILES
+  pdf:
+  path: ^1.9.1
+
+  # JSON
+  json_path:
+  substring_highlight:
+  flutter_animate: ^4.5.2
+  cross_file: ^0.3.5+1
+  equatable: ^2.0.7
+  platform_detect: ^2.1.5
+  pitch_detector_dart: ^0.0.7
+  audioplayers: ^6.5.1
+  firebase_crashlytics: ^5.0.5
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+  lints: ^4.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/images/
+    - assets/videos/
+    - assets/audios/
+    - assets/rive_animations/
+    - assets/pdfs/
+    - assets/jsons/

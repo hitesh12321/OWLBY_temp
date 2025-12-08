@@ -1,0 +1,2 @@
+D:/ML/owlby_serene_m_i_n_d_s/android/app/.cxx/Debug/3wj47264/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/ML/owlby_serene_m_i_n_d_s/android/app/.cxx/Debug/3wj47264/armeabi-v7a/CMakeFiles/rebuild_cache.dir
