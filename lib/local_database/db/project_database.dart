@@ -1,4 +1,5 @@
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
+import 'package:owlby_serene_m_i_n_d_s/session_details_screen/session_model.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -26,8 +27,9 @@ class OwlbyDatabase {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 3,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
   }
 
@@ -61,6 +63,24 @@ class OwlbyDatabase {
         created_at TEXT NOT NULL
       )
     ''');
+
+    // session table
+await db.execute('''
+  CREATE TABLE sessions(
+    id TEXT PRIMARY KEY,
+    file_path TEXT NOT NULL,
+    title TEXT,
+    created_at TEXT NOT NULL,
+    backend_id TEXT,
+    status TEXT,
+    summary TEXT,
+    sentiment TEXT,
+    keywords TEXT,
+    duration TEXT,
+    notes TEXT
+  )
+''');
+
   }
 
   // -------------------------------------------------------
@@ -134,7 +154,7 @@ class OwlbyDatabase {
     );
   }
 
-  // RECORDING METHODS
+  // RECORDING CRUD
 
   // add recording
 
@@ -159,4 +179,95 @@ class OwlbyDatabase {
       whereArgs: [id],
     );
   }
+
+
+  // ----------------------------------------------
+// SESSION CRUD
+// ----------------------------------------------
+
+Future<void> insertSession(SessionModel session) async {
+  final db = await database;
+  await db.insert("sessions", session.toMap());
+}
+
+Future<SessionModel> getSessionById(String id) async {
+  final db = await database;
+  final result = await db.query(
+    "sessions",
+    where: "id = ?",
+    whereArgs: [id],
+  );
+  return SessionModel.fromMap(result.first);
+}
+
+Future<void> updateSessionBackend(String id,
+    {required String backendId, required String status}) async {
+  final db = await database;
+  await db.update(
+    "sessions",
+    {"backend_id": backendId, "status": status},
+    where: "id = ?",
+    whereArgs: [id],
+  );
+}
+
+Future<void> updateProcessedSession(
+  String id, {
+  String? summary,
+  String? sentiment,
+  String? keywords,
+  String? duration,
+  String? notes,
+  required String status,
+}) async {
+  final db = await database;
+  await db.update(
+    "sessions",
+    {
+      "summary": summary,
+      "sentiment": sentiment,
+      "keywords": keywords,
+      "duration": duration,
+      "notes": notes,
+      "status": status,
+    },
+    where: "id = ?",
+    whereArgs: [id],
+  );
+}
+
+Future<List<SessionModel>> getAllSessions() async {
+  final db = await database;
+  final res = await db.query(
+    "sessions",
+    orderBy: "created_at DESC",
+  );
+  return res.map((e) => SessionModel.fromMap(e)).toList();
+}
+
+///////////////////////////////////
+Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+  if (oldVersion < 3) {
+    // Do NOT duplicate create table if already exists
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS sessions(
+        id TEXT PRIMARY KEY,
+        file_path TEXT NOT NULL,
+        title TEXT,
+        created_at TEXT NOT NULL,
+        backend_id TEXT,
+        status TEXT,
+        summary TEXT,
+        sentiment TEXT,
+        keywords TEXT,
+        duration TEXT,
+        notes TEXT
+      )
+    ''');
+  }
+}
+
+////////////////////////
+
+
 }

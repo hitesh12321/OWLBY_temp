@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:owlby_serene_m_i_n_d_s/local_database/db/task_database.dart';
+import 'package:owlby_serene_m_i_n_d_s/local_database/db/project_database.dart';
 
 import '../models/note_model.dart';
 

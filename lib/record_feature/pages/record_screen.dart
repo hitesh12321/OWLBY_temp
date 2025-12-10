@@ -17,10 +17,7 @@ class RecordScreenWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => RecordingProvider(),
-      child: const _RecordScreenBody(),
-    );
+    return _RecordScreenBody();
   }
 }
 
@@ -41,11 +38,10 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
   }
 
   @override
-  @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<RecordingProvider>(context, listen: false).loadRecordings();
+    // Provider.of<RecordingProvider>(context, listen: false).loadRecordings();
   }
 
   Future<void> _showSaveDialog(
@@ -85,22 +81,26 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
     );
 
     if (result == true) {
+      print("Dialog OK pressed");
+
       final titleText = _titleController.text.trim();
       final title = titleText.isEmpty ? 'Recording' : titleText;
 
       try {
-        // Stop and save to DB
-        final saved = await prov.stopAndSave(title);
+        print("🤙🤙🤙🤙🤙🤙Calling stopAndSave💾💾💾💾💾...");
+        final SessionSaved = await prov.stopAndSave(title);
 
-        // If later you want to upload, use prov.uploadRecording(...) here
-        // with your meetingId / userId / professionalName / authToken.
+        // await prov.createLocalSession(title, prov.filePath!);
 
+        print("StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Saved: ${saved.title}')),
+          SnackBar(
+              content: Text(
+                  "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}")),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Save failed: $e')),
+          SnackBar(content: Text('Save failed😩😩😩😩😩😩😩: $e')),
         );
       }
     }

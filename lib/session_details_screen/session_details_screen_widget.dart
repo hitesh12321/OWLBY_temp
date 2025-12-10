@@ -11,6 +11,7 @@ import 'session_details_screen_model.dart';
 export 'session_details_screen_model.dart';
 
 class SessionDetailsScreenWidget extends StatefulWidget {
+ 
   const SessionDetailsScreenWidget({super.key});
 
   static String routeName = 'sessionDetailsScreen';

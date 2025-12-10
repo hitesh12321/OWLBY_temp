@@ -17,6 +17,7 @@ class RecordingModel {
         'title': title,
         'created_at': createdAt.toIso8601String(),
       };
+      // this map can be json so i used it here 
 
   factory RecordingModel.fromMap(Map<String, dynamic> map) => RecordingModel(
         id: map['id'],

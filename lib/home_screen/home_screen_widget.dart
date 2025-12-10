@@ -1,6 +1,7 @@
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/pages/record_screen.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
+import 'package:owlby_serene_m_i_n_d_s/session_details_screen/sample_page.dart';
 import 'package:provider/provider.dart';
 
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -406,8 +407,14 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                         padding: const EdgeInsets.only(bottom: 12),
                         child: GestureDetector(
                             onTap: () {
+                              // context.pushNamed(
+                              //     SessionDetailsScreenWidget.routeName);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SamplePage()));
                               print(
-                                  'Podcast tile tapped: ${HRProv.recordings[index].title}');
+                                  'Podcast tile tapped:::::::::::::::::::::::::::::::::::::::::: ${HRProv.recordings[index].title}');
                             },
                             child: _podcastTile(HRProv.recordings[index])),
                       );
