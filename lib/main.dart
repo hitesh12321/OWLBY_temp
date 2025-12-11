@@ -9,7 +9,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'auth/firebase_auth/firebase_user_provider.dart';
 import 'auth/firebase_auth/auth_util.dart';
@@ -28,7 +27,7 @@ import 'bottom_nav.dart/custom_bottom_navigation_bar.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GoRouter.optionURLReflectsImperativeAPIs = true;
-  usePathUrlStrategy();
+  // usePathUrlStrategy();
 
   await initFirebase();
 
@@ -47,17 +46,17 @@ void main() async {
       ChangeNotifierProvider(create: (_) => NotesProvider()..loadNotes()),
       ChangeNotifierProvider(create: (_) => TaskProvider()..loadTasks()),
       ChangeNotifierProvider(
-      create: (_) => RecordingProvider()..loadRecordings(),
-      // child: const _RecordScreenBody(),
-    )
+        create: (_) => RecordingProvider()..loadRecordings(),
+        // child: const _RecordScreenBody(),
+      )
     ],
     child: MyApp(),
   ));
 }
 
-class _RecordScreenBody {
-  const _RecordScreenBody();
-}
+// class _RecordScreenBody {
+//   const _RecordScreenBody();
+// }
 
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.
@@ -168,12 +167,12 @@ class _MyAppState extends State<MyApp> {
 }
 
 class NavBarPage extends StatefulWidget {
-  NavBarPage({
-    Key? key,
+  const NavBarPage({
+    super.key,
     this.initialPage,
     this.page,
     this.disableResizeToAvoidBottomInset = false,
-  }) : super(key: key);
+  });
 
   final String? initialPage;
   final Widget? page;

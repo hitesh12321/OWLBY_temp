@@ -1,5 +1,5 @@
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
-import 'package:owlby_serene_m_i_n_d_s/session_details_screen/session_model.dart';
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -7,29 +7,34 @@ import '../models/task_model.dart';
 import '../models/note_model.dart';
 
 class OwlbyDatabase {
-  // Singleton instance
+  // 1   // Singleton instance  // static means the thing belongs to the class not the object of the class
   static final OwlbyDatabase instance = OwlbyDatabase._init();
   static Database? _database;
 
   OwlbyDatabase._init();
-
+//3 //
   // Return existing DB or create a new one
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDB("owlby.db"); // SINGLE DATABASE
     return _database!;
   }
-
-  // Initialize DB (create/open)
+// 2//
+  // Initialize DB (create/open) // creating database its the second step // first is to make database singleton 
   Future<Database> _initDB(String fileName) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 2,
       onCreate: _createDB,
-      onUpgrade: _upgradeDB,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute(
+              'ALTER TABLE recordings ADD COLUMN backend_session_id TEXT');
+        }
+      },
     );
   }
 
@@ -54,25 +59,14 @@ class OwlbyDatabase {
       )
     ''');
 
-    // recording Table
     await db.execute('''
-      CREATE TABLE recordings(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        file_path TEXT NOT NULL,
-        title TEXT,
-        created_at TEXT NOT NULL
-      )
-    ''');
-
-    // session table
-await db.execute('''
-  CREATE TABLE sessions(
+  CREATE TABLE recordings(
     id TEXT PRIMARY KEY,
     file_path TEXT NOT NULL,
     title TEXT,
     created_at TEXT NOT NULL,
-    backend_id TEXT,
-    status TEXT,
+    backend_session_id TEXT,
+    status TEXT NOT NULL DEFAULT 'local',
     summary TEXT,
     sentiment TEXT,
     keywords TEXT,
@@ -80,7 +74,6 @@ await db.execute('''
     notes TEXT
   )
 ''');
-
   }
 
   // -------------------------------------------------------
@@ -154,24 +147,31 @@ await db.execute('''
     );
   }
 
-  // RECORDING CRUD
-
-  // add recording
-
-  Future<int> insert(RecordingModel model) async {
+  // CRUD for RecordingModel ////////////////////////////////////////////////////////////////////////////////
+  // ------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////
+// inserting recording to local database
+  Future<int> insertRecording(RecordingModel recording) async {
     final db = await database;
-    return await db.insert('recordings', model.toMap());
+    return await db.insert(
+      'recordings',
+      recording.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
-
-// fetchh recordings
-  Future<List<RecordingModel>> fetch() async {
+// fetching recordings from local database
+  Future<List<RecordingModel>> fetchRecordings() async {
     final db = await database;
-    final result = await db.query('recordings', orderBy: "id DESC");
-    return result.map((e) => RecordingModel.fromMap(e)).toList();
-  }
-  //delete recording
+    final maps = await db.query(
+      'recordings',
+      orderBy: 'datetime(created_at) DESC',
+    );
 
-  Future<int> deleteRecording(int id) async {
+    return maps.map((m) => RecordingModel.fromMap(m)).toList();
+  }
+  //delete recording from local database 
+
+  Future<int> deleteRecording(String id) async {
     final db = await database;
     return await db.delete(
       'recordings',
@@ -179,95 +179,76 @@ await db.execute('''
       whereArgs: [id],
     );
   }
-
-
-  // ----------------------------------------------
-// SESSION CRUD
-// ----------------------------------------------
-
-Future<void> insertSession(SessionModel session) async {
-  final db = await database;
-  await db.insert("sessions", session.toMap());
-}
-
-Future<SessionModel> getSessionById(String id) async {
-  final db = await database;
-  final result = await db.query(
-    "sessions",
-    where: "id = ?",
-    whereArgs: [id],
-  );
-  return SessionModel.fromMap(result.first);
-}
-
-Future<void> updateSessionBackend(String id,
-    {required String backendId, required String status}) async {
-  final db = await database;
-  await db.update(
-    "sessions",
-    {"backend_id": backendId, "status": status},
-    where: "id = ?",
-    whereArgs: [id],
-  );
-}
-
-Future<void> updateProcessedSession(
-  String id, {
-  String? summary,
-  String? sentiment,
-  String? keywords,
-  String? duration,
-  String? notes,
-  required String status,
-}) async {
-  final db = await database;
-  await db.update(
-    "sessions",
-    {
-      "summary": summary,
-      "sentiment": sentiment,
-      "keywords": keywords,
-      "duration": duration,
-      "notes": notes,
-      "status": status,
-    },
-    where: "id = ?",
-    whereArgs: [id],
-  );
-}
-
-Future<List<SessionModel>> getAllSessions() async {
-  final db = await database;
-  final res = await db.query(
-    "sessions",
-    orderBy: "created_at DESC",
-  );
-  return res.map((e) => SessionModel.fromMap(e)).toList();
-}
-
-///////////////////////////////////
-Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
-  if (oldVersion < 3) {
-    // Do NOT duplicate create table if already exists
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS sessions(
-        id TEXT PRIMARY KEY,
-        file_path TEXT NOT NULL,
-        title TEXT,
-        created_at TEXT NOT NULL,
-        backend_id TEXT,
-        status TEXT,
-        summary TEXT,
-        sentiment TEXT,
-        keywords TEXT,
-        duration TEXT,
-        notes TEXT
-      )
-    ''');
+// update recording status like local , progress , done etc
+  Future<int> updateRecordingStatus(String id, String status) async {
+    final db = await database;
+    return await db.update(
+      'recordings',
+      {'status': status},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    
   }
-}
+// update recording details like session id and status - progress
+  Future<int> updateRecordingBackend(
+    String id, {
+    required String backendsessionId,
+    required String status,
+  }) async {
+    final db = await database;
+    return await db.update(
+      'recordings',
+      {
+        'backend_session_id': backendsessionId,
+        'status': status,
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+// update recording details which fetched from backend after process successfull
+  Future<int> updateProcessedRecording(
+    String id, {
+    String? summary,
+    String? sentiment,
+    String? keywords,
+    int? duration,
+    String? notes,
+    required String status,
+  }) async {
+    final db = await database;
+    return await db.update(
+      'recordings',
+      {
+        'summary': summary,
+        'sentiment': sentiment,
+        'keywords': keywords,
+        'duration': duration,
+        'notes': notes,
+        'status': status,
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 
-////////////////////////
+///// getting single recoding details as per its id
+  Future<RecordingModel> getRecordingById(String id) async {
+    final db = await database;
+    final maps = await db.query(
+      'recordings',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+
+    if (maps.isEmpty) {
+      throw Exception('Recording not found for id $id');
+    }
+
+    return RecordingModel.fromMap(maps.first);
+  }
 
 
 }

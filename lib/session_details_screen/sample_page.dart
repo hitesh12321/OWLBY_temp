@@ -15,10 +15,10 @@ class _SamplePageState extends State<SamplePage> {
     final SProv = Provider.of<RecordingProvider>(context);
     return Scaffold(
       body: ListView.builder(
-          itemCount: SProv.sessions.length,
+          itemCount: SProv.recordings.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text(SProv.sessions[index].title),
+              title: Text(SProv.recordings[index].id.toString()),
             );
           }),
     );

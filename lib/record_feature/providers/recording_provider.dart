@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:owlby_serene_m_i_n_d_s/session_details_screen/session_model.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -39,14 +39,7 @@ class RecordingProvider extends ChangeNotifier {
   double _currentPitch = 0.0; // we’re not computing pitch here, keep 0
 ////////////////
   List<RecordingModel> recordings = [];
-  List<SessionModel> sessions = [];
-
-  Future<void> loadSessions() async {
-    sessions = await db.getAllSessions();
-    print(
-        "Total sessions:....................................... ${sessions.length}");
-    notifyListeners();
-  }
+  // List<SessionModel> sessions = [];
 
   // onProgress subscription
   StreamSubscription<RecordingDisposition>? _recSub;
@@ -65,7 +58,7 @@ class RecordingProvider extends ChangeNotifier {
 
   RecordingProvider() {
     _initRecorder();
-    loadSessions();
+
     loadRecordings();
   }
 
@@ -88,7 +81,7 @@ class RecordingProvider extends ChangeNotifier {
   // Load saved recordings from local DB
   // ------------------------------------------------------------
   Future<void> loadRecordings() async {
-    recordings = await db.fetch();
+    recordings = await db.fetchRecordings();
     notifyListeners();
   }
 
@@ -157,14 +150,14 @@ class RecordingProvider extends ChangeNotifier {
   // ------------------------------------------------------------
   // Stop recording (does not save to DB)
   // ------------------------------------------------------------
-  Future<void> stop() async {
-    if (!_isRecording) return;
+  Future<String?> stop() async {
+    if (!_isRecording) return null;
 
-    try {
-      await _recorder.stopRecorder();
-    } catch (_) {
-      // ignore
-    }
+    // try {
+    final path = await _recorder.stopRecorder();
+    // } catch (_) {
+    //   // ignore
+    // }
 
     _isRecording = false;
     _isPaused = false;
@@ -174,48 +167,44 @@ class RecordingProvider extends ChangeNotifier {
     _currentRms = 0.0;
 
     notifyListeners();
+    return path;
   }
 
   // ------------------------------------------------------------
   // Stop recording and save to local DB
   // ------------------------------------------------------------
   Future<RecordingModel> stopAndSave(String title) async {
-    await stop();
-
     if (_filePath == null) {
-      throw Exception('File path is null');
+      throw Exception('File path is null BEFORE stop');
     }
 
-    final file = File(_filePath!);
-    /////done 1
-    print(
-        "............................Checking if audio file exists at: $_filePath");
-    print("................................Exists: ${file.existsSync()}");
+    final savedPath = _filePath!; // ✅ capture early
+
+    await stop();
+
+    // ✅ small delay to let file flush
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    final file = File(savedPath);
+
+    print("Checking if audio file exists at: $savedPath");
+    print("Exists: ${await file.exists()}");
+
     if (!await file.exists()) {
       throw Exception('Recorded file missing on disk');
     }
 
-    final now = DateTime.now();
-    final modelWithoutId = RecordingModel(
-      filePath: _filePath!,
+    final recording = RecordingModel(
+      id: const Uuid().v4() ,
       title: title,
-      createdAt: now,
+      filePath: savedPath,
+      createdAt: DateTime.now(),
+      status: "local",
     );
 
-    // Insert into DB and get auto-generated id
-    final id = await db.insert(modelWithoutId);
-
-    final saved = RecordingModel(
-      id: id,
-      filePath: modelWithoutId.filePath,
-      title: modelWithoutId.title,
-      createdAt: modelWithoutId.createdAt,
-    );
-
-    recordings.insert(0, saved);
-    notifyListeners();
-
-    return saved;
+    await db.insertRecording(recording);
+    recordings.insert(0, recording);
+    return recording;
   }
 
   // ------------------------------------------------------------
@@ -245,61 +234,18 @@ class RecordingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ------------------------------------------------------------
-  // Upload recording with your existing API
-  // ------------------------------------------------------------
-  // Future<dynamic> uploadRecording({
-  //   required String meetingId,
-  //   required String userId,
-  //   required String professionalName,
-  //   required String authToken,
-  //   required String filePath,
-  // }) async {
-  //   final file = File(filePath);
-  //   final bytes = await file.readAsBytes();
 
-  //   final res = await UploadrecordingCall.call(
-  //     meetingId: meetingId,
-  //     userId: userId,
-  //     professionalName: professionalName,
-  //     authToken: authToken,
-  //     file: FFUploadedFile(
-  //       name: file.uri.pathSegments.last,
-  //       bytes: bytes,
-  //     ),
-  //   );
+  //📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕
 
-  //   return res;
-  // }
-  //📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕
-  Future<String> createLocalSession(String title, String filePath) async {
-    final session = SessionModel(
-      id: const Uuid().v4(),
-      title: title,
-      filePath: filePath,
-      createdAt: DateTime.now(),
-      status: "pending_processing",
-    );
-    await db.insertSession(session);
-    // DEBUG: check session in DB
-    final check = await db.getSessionById(session.id);
-    print("SESSION INSERTED INTO SESSIONS TABLE:.....................");
-    print("/................................ID: ${check.id}");
-    print("/........................Title: ${check.title}");
-    print("/...............................Status: ${check.status}");
-    print("/............................FilePath: ${check.filePath}");
-
-    return session.id;
-  }
-
-  Future<void> uploadSessionToBackend({
+// UPLOAD SESSION
+  Future<void> uploadRecordingToBackend({
     required String sessionId,
     required String meetingId,
     required String userId,
     required String professionalName,
     required String authToken,
   }) async {
-    final session = await db.getSessionById(sessionId);
+    final session = await db.getRecordingById(sessionId);
 
     final file = File(session.filePath);
     final bytes = await file.readAsBytes();
@@ -317,89 +263,32 @@ class RecordingProvider extends ChangeNotifier {
     print(
         "......😂...........................................Upload API response: ${response.jsonBody}");
 
-    final backendId = response.jsonBody["session_id"];
+    final backendsessionId = response.jsonBody["session_id"];
 
-    await db.updateSessionBackend(sessionId,
-        backendId: backendId, status: "processing");
+    await db.updateRecordingBackend(sessionId,
+        backendsessionId: backendsessionId, status: "processing");
 
     print("1..........Updated session:.....");
-    print("2..........backendId: ${session.backendId}");
+    print("2..........backendsessionId: ${backendsessionId}");
     print("3...............status: ${session.status}");
   }
 
 
-
-  Future<void> processMeeting(
-    String sessionId, {
-    required String meetingId,
-    required String meetingTitle,
-    required String name,
-    required String email,
-    required String participants,
-    required String startTime,
-    required String provider,
-    required String authToken,
-  }) async {
-    final response = await ProcessmeetingCall.call(
-      meetingId: meetingId,
-      meetingTitle: meetingTitle,
-      name: name,
-      email: email,
-      participants: participants,
-      startTime: startTime,
-      provider: provider,
-      authToken: authToken,
-    );
-
-    final data = response.jsonBody["data"];
-
-    await saveProcessedData(sessionId, data);
-  }
-
-  Future<void> saveProcessedData(
-      String sessionId, Map<String, dynamic> data) async {
-    await db.updateProcessedSession(
-      sessionId,
-      summary: data["summary"],
-      sentiment: data["sentiment"],
-      keywords: data["keywords"].join(","),
-      duration: data["duration"],
-      notes: "",
-      status: "completed",
-    );
-
-    notifyListeners();
-  }
-
   // ------------------------------------------------------------
   // Delete recording (DB + file)
   // ------------------------------------------------------------
-  Future<void> deleteRecording(int id, String filePath) async {
-    await db.deleteRecording(id);
+  Future<void> deleteRecording(RecordingModel recording) async {
+    await db.deleteRecording(recording.id);
 
-    final f = File(filePath);
+    final f = File(recording.filePath);
     if (await f.exists()) {
       await f.delete();
     }
 
-    recordings.removeWhere((e) => e.id == id);
+    recordings.removeWhere((e) => e.id == recording.id);
     notifyListeners();
   }
 
-// Future<void> pollBackend(String sessionId) async {
-//   final session = await db.getSessionById(sessionId);
-
-//   while (true) {
-//     // final res = await ApiRequests.getStatus(session.backendId!);
-// final res = await GetsessionstatusCall.call(sessionId: session.backendId);
-
-//     if (res["status"] == "completed") {
-//       await saveProcessedData(sessionId, res["data"]);
-//       break;
-//     }
-//     await Future.delayed(Duration(seconds: 5));
-//   }
-// }
   @override
   void dispose() {
     _recSub?.cancel();
