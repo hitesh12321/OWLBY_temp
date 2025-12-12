@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
+import 'package:owlby_serene_m_i_n_d_s/flutter_flow/flutter_flow_util.dart';
 import 'package:provider/provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -30,6 +32,7 @@ class _RecordScreenBody extends StatefulWidget {
 
 class _RecordScreenBodyState extends State<_RecordScreenBody> {
   final TextEditingController _titleController = TextEditingController();
+  final createMeetingcall = CreatemeetingCall();
 
   @override
   void dispose() {
@@ -89,14 +92,30 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
       try {
         print("🤙🤙🤙🤙🤙🤙Calling stopAndSave💾💾💾💾💾...");
         final SessionSaved = await prov.stopAndSave(title);
+        // here have to call uploadRecordingToBackend
+        //// 🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌//
+        String MeetingDate =
+            DateFormat('yyyy-MM-dd').format(SessionSaved.createdAt);
+        String MeetingTime = DateFormat('HH:mm').format(SessionSaved.createdAt);
+        final sessionMeetingId = await CreatemeetingCall.call(
+            userId: "7de5f506-37aa-4835-80be-fc260d9f2d5f",
+            meetingDate: MeetingDate,
+            meetingTime: MeetingTime,
+            duration: 30,
+            professionalName: "Dr. Sharma");
 
         // await prov.createLocalSession(title, prov.filePath!);
 
-        print("StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}");
+        print("StopAndSave completed👍👍👍👍👍: ${SessionSaved.recordingId}");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //       content: Text(
+        //           "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}")),
+        // );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}")),
+                  "StopAndSave completed👍👍👍👍👍: ${sessionMeetingId.jsonBody}")),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(

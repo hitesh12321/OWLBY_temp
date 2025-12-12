@@ -170,42 +170,6 @@ class RecordingProvider extends ChangeNotifier {
     return path;
   }
 
-  // ------------------------------------------------------------
-  // Stop recording and save to local DB
-  // ------------------------------------------------------------
-  Future<RecordingModel> stopAndSave(String title) async {
-    if (_filePath == null) {
-      throw Exception('File path is null BEFORE stop');
-    }
-
-    final savedPath = _filePath!; // ✅ capture early
-
-    await stop();
-
-    // ✅ small delay to let file flush
-    await Future.delayed(const Duration(milliseconds: 200));
-
-    final file = File(savedPath);
-
-    print("Checking if audio file exists at: $savedPath");
-    print("Exists: ${await file.exists()}");
-
-    if (!await file.exists()) {
-      throw Exception('Recorded file missing on disk');
-    }
-
-    final recording = RecordingModel(
-      id: const Uuid().v4() ,
-      title: title,
-      filePath: savedPath,
-      createdAt: DateTime.now(),
-      status: "local",
-    );
-
-    await db.insertRecording(recording);
-    recordings.insert(0, recording);
-    return recording;
-  }
 
   // ------------------------------------------------------------
   // Playback using just_audio
@@ -234,17 +198,54 @@ class RecordingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   //📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕
+  
+  // ------------------------------------------------------------
+  // Stop recording and save to local DB
+  // ------------------------------------------------------------
+  Future<RecordingModel> stopAndSave(String title) async {
+    if (_filePath == null) {
+      throw Exception('File path is null BEFORE stop');
+    }
+
+    final savedPath = _filePath!; // ✅ capture early
+
+    await stop();
+
+    // ✅ small delay to let file flush
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    final file = File(savedPath);
+
+    print("Checking if audio file exists at: $savedPath");
+    print("Exists: ${await file.exists()}");
+
+    if (!await file.exists()) {
+      throw Exception('Recorded file missing on disk');
+    }
+
+    final recording = RecordingModel(
+      recordingId: const Uuid().v4(),
+      title: title,
+      filePath: savedPath,
+      createdAt: DateTime.now(),
+      status: "local",
+    );
+
+    await db.insertRecording(recording);
+    recordings.insert(0, recording);
+    return recording;
+  }
 
 // UPLOAD SESSION
   Future<void> uploadRecordingToBackend({
     required String sessionId,
     required String meetingId,
-    required String userId,
+    required String userUUIDId,
     required String professionalName,
-    required String authToken,
+  
   }) async {
+    
     final session = await db.getRecordingById(sessionId);
 
     final file = File(session.filePath);
@@ -252,16 +253,15 @@ class RecordingProvider extends ChangeNotifier {
 
     final response = await UploadrecordingCall.call(
       meetingId: meetingId,
-      userId: userId,
+      userId: userUUIDId,
       professionalName: professionalName,
-      authToken: authToken,
+  
       file: FFUploadedFile(
         name: file.uri.pathSegments.last,
         bytes: bytes,
       ),
     );
-    print(
-        "......😂...........................................Upload API response: ${response.jsonBody}");
+    print("......😂...........................................Upload API response: ${response.jsonBody}");
 
     final backendsessionId = response.jsonBody["session_id"];
 
@@ -273,19 +273,18 @@ class RecordingProvider extends ChangeNotifier {
     print("3...............status: ${session.status}");
   }
 
-
   // ------------------------------------------------------------
   // Delete recording (DB + file)
   // ------------------------------------------------------------
   Future<void> deleteRecording(RecordingModel recording) async {
-    await db.deleteRecording(recording.id);
+    await db.deleteRecording(recording.recordingId);
 
     final f = File(recording.filePath);
     if (await f.exists()) {
       await f.delete();
     }
 
-    recordings.removeWhere((e) => e.id == recording.id);
+    recordings.removeWhere((e) => e.recordingId == recording.recordingId);
     notifyListeners();
   }
 

@@ -11,7 +11,7 @@ export 'firebase_auth_manager.dart';
 final _authManager = FirebaseAuthManager();
 FirebaseAuthManager get authManager => _authManager;
 
-String get currentUserEmail => currentUser?.email ?? '';
+// String get currentUserEmail => currentUser?.email ?? '';
 
 String get currentUserUid => currentUser?.uid ?? '';
 

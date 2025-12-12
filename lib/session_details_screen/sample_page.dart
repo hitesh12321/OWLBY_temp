@@ -18,7 +18,7 @@ class _SamplePageState extends State<SamplePage> {
           itemCount: SProv.recordings.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text(SProv.recordings[index].id.toString()),
+              title: Text(SProv.recordings[index].recordingId.toString()),
             );
           }),
     );

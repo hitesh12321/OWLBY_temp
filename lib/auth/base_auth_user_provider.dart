@@ -1,24 +1,49 @@
-class AuthUserInfo {
-  const AuthUserInfo({
+class AuthUserModel {
+  final String? uid;
+  final String? email;
+  final String? displayName;
+  final String? photoUrl;
+  final String? phoneNumber;
+  const AuthUserModel({
     this.uid,
     this.email,
     this.displayName,
     this.photoUrl,
     this.phoneNumber,
   });
+// to send data to api as response body  or to database sqflite
+  Map<String, dynamic> toMap() {
+    return {
+'uid': uid,
+'email': email,
+'displayName': displayName,
+'photoUrl': photoUrl,
+'phoneNumber': phoneNumber,
 
-  final String? uid;
-  final String? email;
-  final String? displayName;
-  final String? photoUrl;
-  final String? phoneNumber;
+
+    };
+  }
+
+// here we convert json to model 
+// parsing json response data form api or from database like sqflite
+  factory AuthUserModel.fromMap(Map<String, dynamic> map) {
+    return AuthUserModel(
+uid: map['uid'] as String?,
+email: map['email'] as String?,
+displayName: map['displayName'] as String?,
+photoUrl: map['photoUrl'] as String?,
+phoneNumber: map['phoneNumber'] as String?,
+
+
+    );
+  } 
 }
 
 abstract class BaseAuthUser {
   bool get loggedIn;
   bool get emailVerified;
 
-  AuthUserInfo get authUserInfo;
+  AuthUserModel get authUserInfo;
 
   Future? delete();
   Future? updateEmail(String email);

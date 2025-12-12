@@ -19,21 +19,26 @@ class OwlbyDatabase {
     _database = await _initDB("owlby.db"); // SINGLE DATABASE
     return _database!;
   }
+
 // 2//
-  // Initialize DB (create/open) // creating database its the second step // first is to make database singleton 
+  // Initialize DB (create/open) // creating database its the second step // first is to make database singleton
   Future<Database> _initDB(String fileName) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
           await db.execute(
               'ALTER TABLE recordings ADD COLUMN backend_session_id TEXT');
         }
+         if (oldVersion < 3) {
+    await db.execute(
+      'ALTER TABLE recordings ADD COLUMN user_id TEXT');
+  }
       },
     );
   }
@@ -60,19 +65,20 @@ class OwlbyDatabase {
     ''');
 
     await db.execute('''
-  CREATE TABLE recordings(
-    id TEXT PRIMARY KEY,
-    file_path TEXT NOT NULL,
-    title TEXT,
-    created_at TEXT NOT NULL,
-    backend_session_id TEXT,
-    status TEXT NOT NULL DEFAULT 'local',
-    summary TEXT,
-    sentiment TEXT,
-    keywords TEXT,
-    duration TEXT,
-    notes TEXT
-  )
+      CREATE TABLE recordings(
+  id TEXT PRIMARY KEY,
+  file_path TEXT NOT NULL,
+  title TEXT,
+  created_at TEXT NOT NULL,
+  backend_session_id TEXT,
+  user_id TEXT,                     
+  status TEXT NOT NULL DEFAULT 'local',
+  summary TEXT,
+  sentiment TEXT,
+  keywords TEXT,
+  duration TEXT,
+  notes TEXT
+)
 ''');
   }
 
@@ -159,6 +165,7 @@ class OwlbyDatabase {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
 // fetching recordings from local database
   Future<List<RecordingModel>> fetchRecordings() async {
     final db = await database;
@@ -169,7 +176,7 @@ class OwlbyDatabase {
 
     return maps.map((m) => RecordingModel.fromMap(m)).toList();
   }
-  //delete recording from local database 
+  //delete recording from local database
 
   Future<int> deleteRecording(String id) async {
     final db = await database;
@@ -179,6 +186,7 @@ class OwlbyDatabase {
       whereArgs: [id],
     );
   }
+
 // update recording status like local , progress , done etc
   Future<int> updateRecordingStatus(String id, String status) async {
     final db = await database;
@@ -188,8 +196,8 @@ class OwlbyDatabase {
       where: 'id = ?',
       whereArgs: [id],
     );
-    
   }
+
 // update recording details like session id and status - progress
   Future<int> updateRecordingBackend(
     String id, {
@@ -207,6 +215,7 @@ class OwlbyDatabase {
       whereArgs: [id],
     );
   }
+
 // update recording details which fetched from backend after process successfull
   Future<int> updateProcessedRecording(
     String id, {
@@ -249,6 +258,4 @@ class OwlbyDatabase {
 
     return RecordingModel.fromMap(maps.first);
   }
-
-
 }

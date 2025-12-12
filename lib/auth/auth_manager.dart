@@ -11,38 +11,9 @@ abstract class AuthManager {
   Future refreshUser() async => currentUser?.refreshUser();
 }
 
-// mixin EmailSignInManager on AuthManager {
-//   Future<BaseAuthUser?> signInWithEmail(
-//     BuildContext context,
-//     String email,
-//     String password,
-//   );
-
-//   Future<BaseAuthUser?> createAccountWithEmail(
-//     BuildContext context,
-//     String email,
-//     String password,
-//   );
-// }
-
 mixin AnonymousSignInManager on AuthManager {
   Future<BaseAuthUser?> signInAnonymously(BuildContext context);
 }
-
-// mixin AppleSignInManager on AuthManager {
-//   Future<BaseAuthUser?> signInWithApple(BuildContext context);
-// }
-
-// mixin GoogleSignInManager on AuthManager {
-//   Future<BaseAuthUser?> signInWithGoogle(BuildContext context);
-// }
-
-// mixin JwtSignInManager on AuthManager {
-//   Future<BaseAuthUser?> signInWithJwtToken(
-//     BuildContext context,
-//     String jwtToken,
-//   );
-// }
 
 mixin PhoneSignInManager on AuthManager {
   Future beginPhoneAuth({
@@ -56,19 +27,3 @@ mixin PhoneSignInManager on AuthManager {
     required String smsCode,
   });
 }
-
-// mixin FacebookSignInManager on AuthManager {
-//   Future<BaseAuthUser?> signInWithFacebook(BuildContext context);
-// }
-
-// mixin MicrosoftSignInManager on AuthManager {
-//   Future<BaseAuthUser?> signInWithMicrosoft(
-//     BuildContext context,
-//     List<String> scopes,
-//     String tenantId,
-//   );
-// }
-
-// mixin GithubSignInManager on AuthManager {
-//   Future<BaseAuthUser?> signInWithGithub(BuildContext context);
-// }

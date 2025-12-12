@@ -70,7 +70,6 @@ class UsersignupCall {
     String? email = '',
     String? organizationName = '',
     String? referralCode = '',
-    String? authToken = '',
   }) async {
     final ffApiRequestBody = '''
 {
@@ -85,7 +84,6 @@ class UsersignupCall {
       callType: ApiCallType.POST,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${authToken}',
       },
       params: {},
       body: ffApiRequestBody,
@@ -116,7 +114,6 @@ class CreatemeetingCall {
     String? meetingTime = '',
     int? duration,
     String? professionalName = '',
-    String? authToken = '',
   }) async {
     final ffApiRequestBody = '''
 {
@@ -132,7 +129,6 @@ class CreatemeetingCall {
       callType: ApiCallType.POST,
       headers: {
         'Content-type': 'application/json',
-        'Authorization': 'Bearer${authToken}',
       },
       params: {},
       body: ffApiRequestBody,
@@ -156,7 +152,6 @@ class ProcessmeetingCall {
     String? participants = '',
     String? startTime = '',
     String? provider = '',
-    String? authToken = '',
   }) async {
     final ffApiRequestBody = '''
 {
@@ -183,7 +178,6 @@ class ProcessmeetingCall {
       callType: ApiCallType.POST,
       headers: {
         'Content-type': 'application/json',
-        'Authorization': 'Bearer${authToken}',
       },
       params: {},
       body: ffApiRequestBody,
@@ -203,21 +197,19 @@ class ProcessmeetingCall {
       );
 }
 
+// for uploading file to backend .. IMPORTANT
 class UploadrecordingCall {
   static Future<ApiCallResponse> call({
     String? meetingId = '',
     String? userId = '',
     String? professionalName = '',
     FFUploadedFile? file,
-    String? authToken = '',
   }) async {
     return ApiManager.instance.makeApiCall(
       callName: 'uploadrecording',
       apiUrl: 'https://owl-app-backend.vercel.app/api/meeting/upload',
       callType: ApiCallType.POST,
-      headers: {
-        'Authorization': 'Bearer${authToken}',
-      },
+      headers: {},
       params: {
         'meeting_id': meetingId,
         'user_id': userId,

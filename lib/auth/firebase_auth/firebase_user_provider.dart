@@ -10,10 +10,11 @@ export '../base_auth_user_provider.dart';
 class OwlbySereneMINDSFirebaseUser extends BaseAuthUser {
   OwlbySereneMINDSFirebaseUser(this.user);
   User? user;
+  
   bool get loggedIn => user != null;
 
   @override
-  AuthUserInfo get authUserInfo => AuthUserInfo(
+  AuthUserModel get authUserInfo => AuthUserModel(
         uid: user?.uid,
         email: user?.email,
         displayName: user?.displayName,
@@ -27,7 +28,7 @@ class OwlbySereneMINDSFirebaseUser extends BaseAuthUser {
   @override
   Future? updateEmail(String email) async {
     try {
-     // await user?.updateEmail(email);
+      // await user?.updateEmail(email);
     } catch (_) {
       await user?.verifyBeforeUpdateEmail(email);
     }
