@@ -412,7 +412,10 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => SamplePage()));
+                                      builder: (context) =>
+                                          SessionDetailsScreenWidget(
+                                              recording:
+                                                  HRProv.recordings[index])));
                               print(
                                   'Podcast tile tapped:::::::::::::::::::::::::::::::::::::::::: ${HRProv.recordings[index].title}');
                             },

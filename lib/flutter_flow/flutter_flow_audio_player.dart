@@ -66,17 +66,14 @@ class _FlutterFlowAudioPlayerState extends State<FlutterFlowAudioPlayer>
   }
 
   Future openPlayer() async {
-    _assetsAudioPlayer ??=
-        AssetsAudioPlayer.withId(generateRandomAlphaNumericString());
-    if (_assetsAudioPlayer?.playlist != null) {
-      _assetsAudioPlayer!.playlist!.replaceAt(0, (oldAudio) => widget.audio);
-    } else {
-      await _assetsAudioPlayer!.open(
-        Playlist(audios: [widget.audio]),
-        autoStart: false,
-        playInBackground: widget.playInBackground,
-      );
-    }
+    _assetsAudioPlayer = AssetsAudioPlayer.withId(
+      generateRandomAlphaNumericString(),
+    );
+
+    await _assetsAudioPlayer!.open(
+      Playlist(audios: [widget.audio]),
+      autoStart: true,
+    );
   }
 
   @override

@@ -25,6 +25,27 @@ class RecordingProvider extends ChangeNotifier {
   bool _recorderInited = false;
 
   // ------------------------------------------------------------
+  // ✅ NEW TIMER LOGIC (Using Stopwatch)
+  // ------------------------------------------------------------
+  Timer? _timer;
+  final Stopwatch _stopwatch = Stopwatch();
+
+  // The UI simply reads the elapsed time from the stopwatch
+  Duration get recordingDuration => _stopwatch.elapsed;
+
+  // This timer just tells the UI to refresh every second so the text updates
+  void _startTicker() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      notifyListeners();
+    });
+  }
+
+  void _stopTicker() {
+    _timer?.cancel();
+  }
+
+  // ------------------------------------------------------------
   // State
   // ------------------------------------------------------------
   bool _isRecording = false;
@@ -37,9 +58,8 @@ class RecordingProvider extends ChangeNotifier {
   double _currentDb = 0.0; // real dB from flutter_sound
   double _currentRms = 0.0; // 0..1 mapped from dB for your progress bar
   double _currentPitch = 0.0; // we’re not computing pitch here, keep 0
-////////////////
+
   List<RecordingModel> recordings = [];
-  // List<SessionModel> sessions = [];
 
   // onProgress subscription
   StreamSubscription<RecordingDisposition>? _recSub;
@@ -58,7 +78,6 @@ class RecordingProvider extends ChangeNotifier {
 
   RecordingProvider() {
     _initRecorder();
-
     loadRecordings();
   }
 
@@ -110,6 +129,11 @@ class RecordingProvider extends ChangeNotifier {
     _isRecording = true;
     _isPaused = false;
 
+    // ✅ Reset stopwatch to 0 and start it
+    _stopwatch.reset();
+    _stopwatch.start();
+    _startTicker(); // Starts the UI update loop
+
     // Stream decibels and map to [0, 1] for your LinearProgressIndicator
     _recSub?.cancel();
     _recSub = _recorder.onProgress?.listen((event) {
@@ -133,6 +157,11 @@ class RecordingProvider extends ChangeNotifier {
 
     await _recorder.pauseRecorder();
     _isPaused = true;
+
+    // ✅ Freeze the stopwatch (don't reset)
+    _stopwatch.stop();
+    _stopTicker();
+
     notifyListeners();
   }
 
@@ -144,6 +173,11 @@ class RecordingProvider extends ChangeNotifier {
 
     await _recorder.resumeRecorder();
     _isPaused = false;
+
+    // ✅ Resume stopwatch from where it left off
+    _stopwatch.start();
+    _startTicker();
+
     notifyListeners();
   }
 
@@ -153,14 +187,16 @@ class RecordingProvider extends ChangeNotifier {
   Future<String?> stop() async {
     if (!_isRecording) return null;
 
-    // try {
     final path = await _recorder.stopRecorder();
-    // } catch (_) {
-    //   // ignore
-    // }
 
     _isRecording = false;
     _isPaused = false;
+
+    // ✅ Stop the watch so duration is fixed at final time
+    _stopwatch.stop();
+    _stopTicker();
+    // ⚠️ Note: We do NOT reset _stopwatch here. This allows the UI
+    // to display the final recording length inside the Save Dialog.
 
     _recSub?.cancel();
     _currentDb = 0.0;
@@ -169,7 +205,6 @@ class RecordingProvider extends ChangeNotifier {
     notifyListeners();
     return path;
   }
-
 
   // ------------------------------------------------------------
   // Playback using just_audio
@@ -199,7 +234,7 @@ class RecordingProvider extends ChangeNotifier {
   }
 
   //📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕📕
-  
+
   // ------------------------------------------------------------
   // Stop recording and save to local DB
   // ------------------------------------------------------------
@@ -237,15 +272,70 @@ class RecordingProvider extends ChangeNotifier {
     return recording;
   }
 
-// UPLOAD SESSION
+  // update the status of the recording
+  Future<void> changeRecordingStatus(
+    String recordingId,
+    String newStatus,
+  ) async {
+    // 1. Update database
+    await db.updateRecordingStatus(recordingId, newStatus);
+
+    // 2. Update in-memory object
+    final index = recordings.indexWhere((r) => r.recordingId == recordingId);
+
+    if (index != -1) {
+      recordings[index] = recordings[index].copyWith(status: newStatus);
+      notifyListeners();
+    }
+  }
+
+  // update changes after summary get from api
+  Future<void> updateProcessedRecordingInMemory(
+    String recordingId, {
+    String? summary,
+    String? sentiment,
+    String? keywords,
+    int? duration,
+    String? notes,
+    String? audioUrl,
+    required String status,
+  }) async {
+    // 1️⃣ Update DB
+    await db.updateProcessedRecording(
+      recordingId,
+      summary: summary,
+      sentiment: sentiment,
+      keywords: keywords,
+      duration: duration,
+      notes: notes,
+      status: status,
+      audioUrl: audioUrl,
+    );
+
+    // 2️⃣ Update in-memory list
+    final index = recordings.indexWhere((r) => r.recordingId == recordingId);
+
+    if (index != -1) {
+      recordings[index] = recordings[index].copyWith(
+        summary: summary,
+        sentiment: sentiment,
+        keywords: keywords,
+        duration: duration,
+        notes: notes,
+        status: status,
+        audioUrl: audioUrl,
+      );
+      notifyListeners();
+    }
+  }
+
+  // UPLOAD SESSION
   Future<void> uploadRecordingToBackend({
     required String sessionId,
     required String meetingId,
     required String userUUIDId,
     required String professionalName,
-  
   }) async {
-    
     final session = await db.getRecordingById(sessionId);
 
     final file = File(session.filePath);
@@ -255,13 +345,13 @@ class RecordingProvider extends ChangeNotifier {
       meetingId: meetingId,
       userId: userUUIDId,
       professionalName: professionalName,
-  
       file: FFUploadedFile(
         name: file.uri.pathSegments.last,
         bytes: bytes,
       ),
     );
-    print("......😂...........................................Upload API response: ${response.jsonBody}");
+    print(
+        "......😂...........................................Upload API response: ${response.jsonBody}");
 
     final backendsessionId = response.jsonBody["session_id"];
 
@@ -290,6 +380,8 @@ class RecordingProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    _timer?.cancel();
+    _stopwatch.stop(); // Stop the stopwatch to be safe
     _recSub?.cancel();
     _recorder.closeRecorder();
     _player.dispose();

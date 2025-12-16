@@ -3,15 +3,17 @@ class RecordingModel {
   final String filePath;
   final String title;
   final DateTime createdAt;
-  final String? userId;
+  final String? userId; // user id of the person who uploaded the recording
   String? backendSessionId;
   final String status; // pending_processing / processing / completed /local
+  final String? meetingId;
 
   String? summary;
   String? sentiment;
   String? keywords;
   int? duration;
   String? notes;
+  String? audioUrl;
 
   RecordingModel({
     required this.recordingId,
@@ -20,12 +22,14 @@ class RecordingModel {
     required this.createdAt,
     required this.status,
     this.backendSessionId,
+    this.meetingId,
     this.userId,
     this.summary,
     this.sentiment,
     this.keywords,
     this.duration,
     this.notes,
+    this.audioUrl,
   });
 
   RecordingModel copyWith({
@@ -36,11 +40,13 @@ class RecordingModel {
     String? status,
     String? backendSessionId,
     String? userId,
+    String? meetingId,
     String? summary,
     String? sentiment,
     String? keywords,
     int? duration,
     String? notes,
+    String? audioUrl,
   }) {
     return RecordingModel(
       recordingId: id ?? this.recordingId,
@@ -50,11 +56,13 @@ class RecordingModel {
       status: status ?? this.status,
       backendSessionId: backendSessionId ?? this.backendSessionId,
       userId: userId ?? this.userId,
+      meetingId: meetingId ?? this.meetingId,
       summary: summary ?? this.summary,
       sentiment: sentiment ?? this.sentiment,
       keywords: keywords ?? this.keywords,
       duration: duration ?? this.duration,
       notes: notes ?? this.notes,
+      audioUrl: audioUrl ?? this.audioUrl,
     );
   }
 
@@ -65,12 +73,14 @@ class RecordingModel {
         'created_at': createdAt.toIso8601String(),
         "backend_session_id": backendSessionId,
         "user_id": userId,
+        "meeting_id": meetingId,
         "status": status,
         "summary": summary,
         "sentiment": sentiment,
         "keywords": keywords,
         "duration": duration,
         "notes": notes,
+        "audio_url": audioUrl,
       };
   // this map can be json so i used it here
 
@@ -81,11 +91,13 @@ class RecordingModel {
         createdAt: DateTime.parse(map['created_at']),
         backendSessionId: map["backend_session_id"],
         userId: map["user_id"],
+        meetingId: map["meeting_id"],
         status: map['status'] ?? 'local',
         summary: map["summary"],
         sentiment: map["sentiment"],
         keywords: map["keywords"],
         duration: map["duration"],
         notes: map["notes"],
+        audioUrl: map["audio_url"],
       );
 }

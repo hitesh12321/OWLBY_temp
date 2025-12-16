@@ -3,6 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/flutter_flow_util.dart';
+import 'package:owlby_serene_m_i_n_d_s/flutter_flow/uploaded_file.dart';
+import 'package:owlby_serene_m_i_n_d_s/local_database/db/project_database.dart';
+import 'package:owlby_serene_m_i_n_d_s/main.dart';
+import 'package:owlby_serene_m_i_n_d_s/session_details_screen/sample_page.dart';
+import 'package:owlby_serene_m_i_n_d_s/session_details_screen/session_details_screen_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -33,6 +38,7 @@ class _RecordScreenBody extends StatefulWidget {
 class _RecordScreenBodyState extends State<_RecordScreenBody> {
   final TextEditingController _titleController = TextEditingController();
   final createMeetingcall = CreatemeetingCall();
+  final db = OwlbyDatabase.instance;
 
   @override
   void dispose() {
@@ -91,32 +97,118 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
 
       try {
         print("🤙🤙🤙🤙🤙🤙Calling stopAndSave💾💾💾💾💾...");
+        // local session saved here
         final SessionSaved = await prov.stopAndSave(title);
-        // here have to call uploadRecordingToBackend
+
         //// 🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌//
-        String MeetingDate =
-            DateFormat('yyyy-MM-dd').format(SessionSaved.createdAt);
-        String MeetingTime = DateFormat('HH:mm').format(SessionSaved.createdAt);
-        final sessionMeetingId = await CreatemeetingCall.call(
+        // String MeetingDate =
+        //    DateFormat('yyyy-MM-dd').format(SessionSaved.createdAt);
+        // String MeetingTime = DateFormat('HH:mm').format(SessionSaved.createdAt);
+        // creating meeting id
+        final CreateMeetingId = await CreatemeetingCall.call(
             userId: "7de5f506-37aa-4835-80be-fc260d9f2d5f",
-            meetingDate: MeetingDate,
-            meetingTime: MeetingTime,
+            meetingDate:
+                DateFormat('yyyy-MM-dd').format(SessionSaved.createdAt),
+            meetingTime: DateFormat('HH:mm').format(SessionSaved.createdAt),
             duration: 30,
             professionalName: "Dr. Sharma");
 
-        // await prov.createLocalSession(title, prov.filePath!);
+        final CreateMeetingCallApi_body = CreateMeetingId.jsonBody;
+        final bool s_tatus = CreateMeetingCallApi_body["status"];
+        final String meetingStatus;
 
-        print("StopAndSave completed👍👍👍👍👍: ${SessionSaved.recordingId}");
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //       content: Text(
-        //           "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}")),
+        if (s_tatus) {
+          meetingStatus = "meeting created ";
+        } else {
+          meetingStatus = "meeting creation failed ";
+        }
+        await prov.changeRecordingStatus(
+          SessionSaved.recordingId,
+          meetingStatus,
+        );
+
+        final updatedRecording = prov.recordings.firstWhere(
+          (r) => r.recordingId == SessionSaved.recordingId,
+        );
+
+        print("meeting id status : ${updatedRecording.status}");
+
+        // await Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => NavBarPage(),
+        //   ),
         // );
+        final meeting_id = CreateMeetingCallApi_body["data"]["id"];
+
+        final fileBytes = await File(SessionSaved.filePath).readAsBytes();
+        final ffFile = FFUploadedFile(
+          name: "recording.wav", // or mp3, whatever your format
+          bytes: fileBytes, // IMPORTANT
+          originalFilename: "recording.wav",
+        );
+        // uploading meeting to backend
+
+        final Session_id_by_upload_meeting = await UploadrecordingCall.call(
+            meetingId: meeting_id,
+            userId: "7de5f506-37aa-4835-80be-fc260d9f2d5f",
+            professionalName: "Dr. Sharma",
+            file: ffFile);
+        print(Session_id_by_upload_meeting.jsonBody);
+
+        await prov.changeRecordingStatus(
+          SessionSaved.recordingId,
+          "processing",
+        );
+
+        // we are getting data from backend
+        final session_text = await ProcessmeetingCall.call(
+            meetingId: meeting_id,
+            meetingTitle: title,
+            name: "Dr. ",
+            email: "dr.smith@example.com",
+            participants: "Client A",
+            startTime: "2025-10-26T12:00:00Z",
+            provider: "supabase");
+
+        final body = session_text.jsonBody as Map<String, dynamic>;
+        print("💕💕💕💕${body}");
+
+        final analysis = body['analysis'] as Map<String, dynamic>;
+
+        final String summary = analysis['summary'];
+        final String notes = analysis['soap']; // or tips
+        final String audio = body['audioUrl'];
+
+        await prov.updateProcessedRecordingInMemory(
+          SessionSaved.recordingId,
+          summary: summary,
+          notes: notes,
+          status: "completed",
+          audioUrl: audio,
+        );
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  "StopAndSave completed👍👍👍👍👍: ${sessionMeetingId.jsonBody}")),
+                  "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}")),
         );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SessionDetailsScreenWidget(
+              recording: prov.recordings.firstWhere(
+                (r) => r.recordingId == SessionSaved.recordingId,
+              ),
+            ),
+          ),
+        );
+
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //       content: Text(
+        //           "StopAndSave completed👍👍👍👍👍: ${CreateMeetingCallApi_body}")),
+        // );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Save failed😩😩😩😩😩😩😩: $e')),
@@ -136,6 +228,8 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
         statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
+        // ✅ FIX: This prevents the background from resizing/jumping when keyboard opens
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: const Text(
             'Recording',
@@ -212,11 +306,14 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
                     child: Column(
                       children: [
                         Text(
-                          "36:21:45",
+                          formatDuration(prov.recordingDuration),
                           style: TextStyle(
-                              fontSize: 60, fontWeight: FontWeight.bold),
+                            fontSize: 60,
+                            fontWeight: FontWeight.bold,
+                            color: prov.isRecording ? Colors.red : Colors.black,
+                          ),
                         ),
-                        Text("Recdoring Duration",
+                        Text("Recording Duration",
                             style: TextStyle(
                                 fontSize: 18, color: Colors.grey.shade600)),
                       ],
@@ -323,22 +420,6 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
                   ),
 
                   const SizedBox(height: 24),
-
-                  // Local file info & actions
-                  // if (prov.recordings.isNotEmpty)
-                  //   SizedBox(
-                  //     height: 400, // or constraints.maxHeight * 0.5
-                  //     child: ListView.builder(
-                  //       itemCount: prov.recordings.length,
-                  //       itemBuilder: (context, index) => Card(
-                  //         child: ListTile(
-                  //           title: Text(prov.recordings[index].title),
-                  //           subtitle: Text(
-                  //               prov.recordings[index].createdAt.toString()),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
                 ],
               ),
             );
@@ -346,6 +427,14 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
         ),
       ),
     );
+  }
+
+  String formatDuration(Duration d) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    final h = two(d.inHours);
+    final m = two(d.inMinutes.remainder(60));
+    final s = two(d.inSeconds.remainder(60));
+    return '$h:$m:$s';
   }
 }
 

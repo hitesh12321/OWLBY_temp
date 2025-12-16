@@ -1,3 +1,5 @@
+import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
+
 import '/flutter_flow/flutter_flow_audio_player.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -11,8 +13,9 @@ import 'session_details_screen_model.dart';
 export 'session_details_screen_model.dart';
 
 class SessionDetailsScreenWidget extends StatefulWidget {
- 
-  const SessionDetailsScreenWidget({super.key});
+  final RecordingModel recording;
+
+  const SessionDetailsScreenWidget({super.key, required this.recording});
 
   static String routeName = 'sessionDetailsScreen';
   static String routePath = '/sessionDetailsScreen';
@@ -111,7 +114,7 @@ class _SessionDetailsScreenWidgetState
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         10.0, 0.0, 0.0, 0.0),
                                     child: Text(
-                                      'Mike Wallace 3rd Session',
+                                      widget.recording.title,
                                       style: FlutterFlowTheme.of(context)
                                           .headlineMedium
                                           .override(
@@ -164,7 +167,10 @@ class _SessionDetailsScreenWidgetState
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Thursday, January 09, 2020',
+                                      DateFormat('yyyy-MM-dd')
+                                          .format(widget.recording.createdAt)
+                                          // widget.recording.createdAt
+                                          .toString(),
                                       style: FlutterFlowTheme.of(context)
                                           .bodyMedium
                                           .override(
@@ -187,7 +193,8 @@ class _SessionDetailsScreenWidgetState
                                           ),
                                     ),
                                     Text(
-                                      '07:00 AM GMT +7',
+                                      DateFormat('HH:mm')
+                                          .format(widget.recording.createdAt),
                                       style: FlutterFlowTheme.of(context)
                                           .bodySmall
                                           .override(
@@ -229,10 +236,10 @@ class _SessionDetailsScreenWidgetState
                   padding: EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 0.0),
                   child: FlutterFlowAudioPlayer(
                     audio: Audio.network(
-                      'https://filesamples.com/samples/audio/mp3/sample3.mp3',
+                      widget.recording.audioUrl.toString(),
                       metas: Metas(
                         id: 'sample3.mp3-3d4f8785',
-                        title: 'Session Recording',
+                        title: widget.recording.title,
                       ),
                     ),
                     titleTextStyle: FlutterFlowTheme.of(context)
@@ -347,7 +354,8 @@ class _SessionDetailsScreenWidgetState
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 14.0, 0.0, 14.0, 5.0),
                             child: Text(
-                              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+                              widget.recording.summary.toString(),
+                              textAlign: TextAlign.start,
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .override(
@@ -448,7 +456,7 @@ class _SessionDetailsScreenWidgetState
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 14.0, 0.0, 14.0, 5.0),
                             child: Text(
-                              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+                              widget.recording.notes.toString(),
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .override(
@@ -549,7 +557,7 @@ class _SessionDetailsScreenWidgetState
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 14.0, 0.0, 14.0, 5.0),
                             child: Text(
-                              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+                              "We will soon add this feature",
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .override(

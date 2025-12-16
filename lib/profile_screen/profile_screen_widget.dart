@@ -65,7 +65,7 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
                       Align(
                         alignment: AlignmentDirectional(-1.0, 0.0),
                         child: GradientText(
-                          'Dr. Sarah Johnson',
+                          'Dr. Sharma',
                           textAlign: TextAlign.center,
                           style: FlutterFlowTheme.of(context)
                               .displaySmall
@@ -83,7 +83,11 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
                                     .displaySmall
                                     .fontStyle,
                               ),
-                          colors: [FlutterFlowTheme.of(context).primaryText],
+                          colors: [
+                            FlutterFlowTheme.of(context).primaryText,
+                            // ✅ FIX: Added a second color here to satisfy the requirement
+                            FlutterFlowTheme.of(context).secondaryText,
+                          ],
                           gradientType: GradientType.radial,
                           radius: 1.0,
                         ),
@@ -157,7 +161,7 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
                                         size: 20.0,
                                       ),
                                       Text(
-                                        'yourname@example.com',
+                                        "dr.sharma@example.com",
                                         style: FlutterFlowTheme.of(context)
                                             .bodyMedium
                                             .override(

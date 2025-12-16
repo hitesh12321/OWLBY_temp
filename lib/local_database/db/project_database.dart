@@ -35,10 +35,9 @@ class OwlbyDatabase {
           await db.execute(
               'ALTER TABLE recordings ADD COLUMN backend_session_id TEXT');
         }
-         if (oldVersion < 3) {
-    await db.execute(
-      'ALTER TABLE recordings ADD COLUMN user_id TEXT');
-  }
+        if (oldVersion < 3) {
+          await db.execute('ALTER TABLE recordings ADD COLUMN user_id TEXT');
+        }
       },
     );
   }
@@ -73,11 +72,13 @@ class OwlbyDatabase {
   backend_session_id TEXT,
   user_id TEXT,                     
   status TEXT NOT NULL DEFAULT 'local',
+   meeting_id TEXT,
   summary TEXT,
   sentiment TEXT,
   keywords TEXT,
   duration TEXT,
-  notes TEXT
+  notes TEXT,
+  audio_url TEXT
 )
 ''');
   }
@@ -224,6 +225,7 @@ class OwlbyDatabase {
     String? keywords,
     int? duration,
     String? notes,
+    String? audioUrl,
     required String status,
   }) async {
     final db = await database;
@@ -236,6 +238,7 @@ class OwlbyDatabase {
         'duration': duration,
         'notes': notes,
         'status': status,
+        'audio_url': audioUrl,
       },
       where: 'id = ?',
       whereArgs: [id],

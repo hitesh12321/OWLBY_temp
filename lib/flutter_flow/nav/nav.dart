@@ -122,11 +122,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
             verificationId: '',
           ),
         ),
-        FFRoute(
-          name: SessionDetailsScreenWidget.routeName,
-          path: SessionDetailsScreenWidget.routePath,
-          builder: (context, params) => SessionDetailsScreenWidget(),
-        ),
+        // FFRoute(
+        //   name: SessionDetailsScreenWidget.routeName,
+        //   path: SessionDetailsScreenWidget.routePath,
+        //   builder: (context, params) => SessionDetailsScreenWidget(),
+        // ),
         FFRoute(
           name: SubscriptionScreenWidget.routeName,
           path: SubscriptionScreenWidget.routePath,
