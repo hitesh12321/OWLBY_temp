@@ -240,71 +240,20 @@ class _LoginScreenWidgetState extends State<LoginScreenWidget>
                                           "DEBUG: Attempting to verify: $phone");
 
                                       try {
-                                        await FirebaseAuth.instance
-                                            .verifyPhoneNumber(
+                                        await authManager.beginPhoneAuth(
+                                          context: context,
                                           phoneNumber: phone,
-                                          timeout: const Duration(seconds: 60),
-
-                                          // --- SUCCESS: Navigate to OTP ---
-                                          codeSent:
-                                              (verificationId, resendToken) {
-                                            print(
-                                                "DEBUG: Code Sent. ID: $verificationId");
+                                          onCodeSent: (context) {
                                             setState(() => isLoading = false);
+                                            print(
+                                                "❤️❤️❤️❤️ OTP SENT CALLBACK HIT"); //
 
-                                            Navigator.pushNamed(
-                                              context,
+                                            context.pushNamed(
                                               OtpScreenWidget.routeName,
-                                              arguments: verificationId,
+                                              queryParameters: {
+                                                'phoneNumber': phone,
+                                              },
                                             );
-                                          },
-
-                                          // --- FAILURE: Show Error ---
-                                          verificationFailed:
-                                              (FirebaseAuthException e) {
-                                            print(
-                                                "DEBUG: Failed - ${e.code}: ${e.message}");
-                                            setState(() => isLoading = false);
-
-                                            String errorMsg;
-                                            if (e.code ==
-                                                'billing-not-enabled') {
-                                              errorMsg =
-                                                  "Billing disabled. Please upgrade Firebase to Blaze plan.";
-                                            } else if (e.code ==
-                                                'invalid-phone-number') {
-                                              errorMsg =
-                                                  "Invalid Phone Number: $phone";
-                                            } else {
-                                              errorMsg = e.message ??
-                                                  "Verification Failed";
-                                            }
-
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content: Text(errorMsg),
-                                                backgroundColor: Colors.red,
-                                                duration:
-                                                    const Duration(seconds: 5),
-                                              ),
-                                            );
-                                          },
-
-                                          // --- AUTO-VERIFY (Android) ---
-                                          verificationCompleted:
-                                              (credential) async {
-                                            print("DEBUG: Auto-verified!");
-                                            await FirebaseAuth.instance
-                                                .signInWithCredential(
-                                                    credential);
-                                            setState(() => isLoading = false);
-                                            Navigator.pushReplacementNamed(
-                                                context, '/home');
-                                          },
-
-                                          codeAutoRetrievalTimeout: (_) {
-                                            setState(() => isLoading = false);
                                           },
                                         );
                                       } catch (e) {

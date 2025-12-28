@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:owlby_serene_m_i_n_d_s/auth/firebase_auth/auth_util.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -11,11 +12,10 @@ export 'otp_screen_model.dart';
 class OtpScreenWidget extends StatefulWidget {
   const OtpScreenWidget({
     super.key,
-    required this.verificationId,
     required this.phoneNumber,
   });
 
-  final String verificationId;
+  // final String verificationId;
   final String phoneNumber;
 
   static String routeName = 'otpScreen';
@@ -33,6 +33,8 @@ class _OtpScreenWidgetState extends State<OtpScreenWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => OtpScreenModel());
+
+    _model.pinCodeController ??= TextEditingController();
     _model.pinCodeFocusNode ??= FocusNode();
   }
 
@@ -44,14 +46,13 @@ class _OtpScreenWidgetState extends State<OtpScreenWidget> {
 
   Future<void> verifyOtp(String smsCode) async {
     try {
-      final credential = PhoneAuthProvider.credential(
-        verificationId: widget.verificationId,
+      final credential = await authManager.verifySmsCode(
+        context: context,
         smsCode: smsCode,
       );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
-
-      Navigator.pushReplacementNamed(context, '/home');
+      if (credential != null) {
+        context.goNamed('/home');
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Invalid OTP")),
