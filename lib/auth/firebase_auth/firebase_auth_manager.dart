@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:owlby_serene_m_i_n_d_s/flutter_flow/flutter_flow_util.dart';
+import 'package:owlby_serene_m_i_n_d_s/pages/otp_screen/otp_screen_widget.dart';
 
 import '../auth_manager.dart';
 import '../base_auth_user_provider.dart';
-
 import 'firebase_user_provider.dart';
 
 class FirebasePhoneAuthManager extends ChangeNotifier {
@@ -33,9 +32,10 @@ class FirebasePhoneAuthManager extends ChangeNotifier {
 class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
   FirebasePhoneAuthManager phoneAuthManager = FirebasePhoneAuthManager();
 
+// sign Out Method
   @override
   Future signOut() => FirebaseAuth.instance.signOut();
-
+//Delete User Method
   @override
   Future deleteUser(BuildContext context) async {
     try {
@@ -44,21 +44,14 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Sign in again before deleting your account.',
-            ),
-          ),
+          const SnackBar(content: Text('Sign in again before deleting your account.')),
         );
       }
     }
   }
-
+  // update Email Method
   @override
-  Future updateEmail({
-    required String email,
-    required BuildContext context,
-  }) async {
+  Future updateEmail({required String email, required BuildContext context}) async {
     try {
       if (!loggedIn) return;
       await currentUser?.updateEmail(email);
@@ -70,12 +63,10 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
       }
     }
   }
+  // update Password Method
 
   @override
-  Future updatePassword({
-    required String newPassword,
-    required BuildContext context,
-  }) async {
+  Future updatePassword({required String newPassword, required BuildContext context}) async {
     try {
       if (!loggedIn) return;
       await currentUser?.updatePassword(newPassword);
@@ -85,7 +76,7 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
       );
     }
   }
-
+// Phone Auth State Changes Handler ??????????????????????? IMportant 
   void handlePhoneAuthStateChanges(BuildContext context) {
     phoneAuthManager.addListener(() {
       if (!context.mounted) return;
@@ -105,100 +96,81 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
       }
     });
   }
+// phone Auth Methods
+  // @override
+  // Future beginPhoneAuth({
+  //   required BuildContext context,
+  //   required String phoneNumber,
+  //   required void Function(BuildContext) onCodeSent,
+  // }) async {
+  //   phoneAuthManager.onCodeSent = onCodeSent;
 
+  //   // if (kIsWeb) {
+  //   //   phoneAuthManager.webPhoneAuthConfirmationResult =
+  //   //       await FirebaseAuth.instance.signInWithPhoneNumber(phoneNumber);
+  //   //   phoneAuthManager.update(() => phoneAuthManager.triggerOnCodeSent = true);
+  //   //   return;
+  //   // }
+
+  //   await FirebaseAuth.instance.verifyPhoneNumber(
+  //     phoneNumber: phoneNumber,
+      
+  //     verificationCompleted: (phoneAuthCredential) async {
+  //       await _finishSignIn(
+  //         context,
+  //         () => FirebaseAuth.instance.signInWithCredential(phoneAuthCredential),
+  //       );
+  //     },
+  //     verificationFailed: (e) {
+  //       phoneAuthManager.update(() => phoneAuthManager.phoneAuthError = e);
+  //     },
+  //     codeSent: (verificationId, _) {
+  //       phoneAuthManager.phoneAuthVerificationCode = verificationId;
+  //       phoneAuthManager.update(() => phoneAuthManager.triggerOnCodeSent = true);
+  //     },
+  //     codeAutoRetrievalTimeout: (_) {},
+  //   );
+  // }
   @override
   Future beginPhoneAuth({
     required BuildContext context,
     required String phoneNumber,
     required void Function(BuildContext) onCodeSent,
   }) async {
-    print('beginPhoneAuth called for $phoneNumber'); // <--- add
-
-    phoneAuthManager.update(() {
-      phoneAuthManager.onCodeSent = onCodeSent;
-    });
-
-    if (kIsWeb) {
-      try {
-        phoneAuthManager.webPhoneAuthConfirmationResult =
-            await FirebaseAuth.instance.signInWithPhoneNumber(phoneNumber);
-        phoneAuthManager.update(() {
-          phoneAuthManager.triggerOnCodeSent = true;
-        });
-
-        print('web signInWithPhoneNumber returned confirmation'); // <--- add
-      } catch (e) {
-        print('web signInWithPhoneNumber error: $e'); // <--- add
-        phoneAuthManager.update(() {
-          phoneAuthManager.phoneAuthError =
-              FirebaseAuthException(code: 'web_error', message: e.toString());
-          phoneAuthManager.triggerOnCodeSent = false;
-        });
-      }
-      return;
-    }
-
-    final completer = Completer<bool>();
+    phoneAuthManager.onCodeSent = onCodeSent;
 
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: phoneNumber,
-      timeout: Duration(seconds: 60),
-      verificationCompleted: (credential) async {
-        print('verificationCompleted'); // <--- add
-        await FirebaseAuth.instance.signInWithCredential(credential);
-        phoneAuthManager.update(() {
-          phoneAuthManager.triggerOnCodeSent = false;
-          phoneAuthManager.phoneAuthError = null;
-        });
-        if (context.mounted) {
-          context.goNamed('/home');
-        }
+      verificationCompleted: (phoneAuthCredential) async {
+        await _finishSignIn(
+          context,
+          () => FirebaseAuth.instance.signInWithCredential(phoneAuthCredential),
+        );
       },
       verificationFailed: (e) {
-        print('verificationFailed: ${e.code} ${e.message}'); // <--- add
-        phoneAuthManager.update(() {
-          phoneAuthManager.phoneAuthError = e;
-          phoneAuthManager.triggerOnCodeSent = false;
-        });
-        completer.complete(false);
+        phoneAuthManager.update(() => phoneAuthManager.phoneAuthError = e);
       },
       codeSent: (verificationId, _) {
-        print('codeSent: $verificationId'); // <--- add
+        // FIXED: Update the ID FIRST, then trigger the notification
+        phoneAuthManager.phoneAuthVerificationCode = verificationId;
         phoneAuthManager.update(() {
-          phoneAuthManager.phoneAuthVerificationCode = verificationId;
           phoneAuthManager.triggerOnCodeSent = true;
-          phoneAuthManager.phoneAuthError = null;
         });
-        completer.complete(true);
       },
-      codeAutoRetrievalTimeout: (_) {
-        print('codeAutoRetrievalTimeout'); // <--- add
-      },
+      codeAutoRetrievalTimeout: (_) {},
     );
-
-    return completer.future;
   }
 
   @override
   Future<BaseAuthUser?> verifySmsCode({
     required BuildContext context,
     required String smsCode,
+    required String verificationId,
   }) async {
-    if (kIsWeb) {
-      return _finishSignIn(
-        context,
-        () => phoneAuthManager.webPhoneAuthConfirmationResult!.confirm(smsCode),
-      );
-    }
-    if (phoneAuthManager.phoneAuthVerificationCode == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("OTP not ready yet. Please try again.")),
-      );
-      return null;
-    }
+  
 
     final credential = PhoneAuthProvider.credential(
-      verificationId: phoneAuthManager.phoneAuthVerificationCode!,
+      verificationId: verificationId,
       smsCode: smsCode,
     );
 
@@ -226,13 +198,9 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
   }
 
   @override
-  Future resetPassword({
-    required String email,
-    required BuildContext context,
-  }) async {
-    // Phone-only auth → reset password not supported.
+  Future resetPassword({required String email, required BuildContext context}) async {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Password reset is not supported in phone login')),
+      const SnackBar(content: Text('Password reset is not supported in phone login')),
     );
   }
 }

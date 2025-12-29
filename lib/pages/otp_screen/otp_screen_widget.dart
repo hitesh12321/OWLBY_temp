@@ -13,10 +13,12 @@ class OtpScreenWidget extends StatefulWidget {
   const OtpScreenWidget({
     super.key,
     required this.phoneNumber,
+    required this.verificationId,
   });
 
   // final String verificationId;
-  final String phoneNumber;
+  final String? phoneNumber;
+  final String verificationId;
 
   static String routeName = 'otpScreen';
   static String routePath = '/otpScreen';
@@ -45,20 +47,47 @@ class _OtpScreenWidgetState extends State<OtpScreenWidget> {
   }
 
   Future<void> verifyOtp(String smsCode) async {
+    if (smsCode.length != 6) return;
+    // 2. Guard against missing Verification ID
+    if (widget.verificationId.isEmpty) {
+       print("Error: No Verification ID found");
+       return; 
+    }
     try {
       final credential = await authManager.verifySmsCode(
         context: context,
         smsCode: smsCode,
+        verificationId: widget.verificationId,
       );
 
       if (credential != null) {
         context.goNamed('/home');
         print("credential🤛🤛🤛🤛🤛🤛🤛🤛: $credential");
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Invalid OTP")),
-      );
+    }
+    //  catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text("Invalid OTP")),
+    //   );
+    // }
+    catch (e) {
+      // Log the actual error to your console for debugging
+      print("Firebase Auth Error: $e");
+
+      String errorMessage = "Invalid OTP. Please try again.";
+
+      // Check for specific Firebase expiration error
+      if (e.toString().contains("session-expired") ||
+          e.toString().contains("expired")) {
+        errorMessage =
+            "The code has expired. Please go back and request a new one.";
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
     }
   }
 
@@ -126,6 +155,7 @@ class _OtpScreenWidgetState extends State<OtpScreenWidget> {
                       ),
                       onChanged: (value) {
                         if (value.length == 6) {
+                          FocusScope.of(context).unfocus();
                           verifyOtp(value);
                         }
                       },

@@ -203,62 +203,56 @@ class _LoginScreenWidgetState extends State<LoginScreenWidget>
 
                               // 3. The Logic (with Debugging & Error Handling)
                               onPressed: isLoading
-                                  ? null // Disables button click when loading
+                                  ? null
                                   : () async {
-                                      // A. Close Keyboard so you can see SnackBars
-                                      FocusScope.of(context).unfocus();
+                                      setState(() =>
+                                          isLoading = true); // Start loading
+                                      String rawPhone =
+                                          phoneController.text.trim();
+                                      rawPhone = rawPhone.replaceAll(
+                                          RegExp(r'\D'), '');
 
-                                      final raw = phoneController.text.trim();
-                                      if (raw.isEmpty) {
+                                      if (rawPhone.length != 10) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           const SnackBar(
                                               content: Text(
-                                                  "Phone number cannot be empty")),
+                                                  "Enter a valid 10-digit number")),
                                         );
+                                        setState(() => isLoading = false);
                                         return;
                                       }
 
-                                      // B. Start Loading
-                                      setState(() => isLoading = true);
-
-                                      // C. Smart Formatting: Handle if user types "91..." or just "93..."
-                                      // If raw is "91933...", we make it "+91933..." (which is wrong) -> Correction:
-                                      String phone;
-                                      if (raw.startsWith('+91')) {
-                                        phone = raw;
-                                      } else if (raw.startsWith('91') &&
-                                          raw.length > 10) {
-                                        // User typed 91 manually (e.g. 9193386615), just add '+'
-                                        phone = '+$raw';
-                                      } else {
-                                        // User typed 93386615, add '+91'
-                                        phone = '+91$raw';
-                                      }
-
-
-                                      print(
-                                          "DEBUG: Attempting to verify: $phone");
+                                      String formattedPhone = '+91$rawPhone';
 
                                       try {
                                         await authManager.beginPhoneAuth(
                                           context: context,
-                                          phoneNumber: phone,
+                                          phoneNumber: formattedPhone,
                                           onCodeSent: (context) {
                                             setState(() => isLoading = false);
-                                            print(
-                                                "❤️❤️❤️❤️ OTP SENT CALLBACK HIT"); //
 
-                                            context.pushReplacementNamed(
-                                              OtpScreenWidget.routeName,
-                                              queryParameters: {
-                                                'phoneNumber': phone
-                                              },
-                                            );
+                                            // GET THE ID DIRECTLY FROM THE MANAGER
+                                            final vId = authManager
+                                                .phoneAuthManager
+                                                .phoneAuthVerificationCode;
+
+                                            if (vId != null && vId.isNotEmpty) {
+                                              print("Navigating with ID: $vId");
+                                              context.pushNamed(
+                                                'otpScreen',
+                                                queryParameters: {
+                                                  'phoneNumber': formattedPhone,
+                                                  'verificationId': vId,
+                                                }.withoutNulls,
+                                              );
+                                            } else {
+                                              print(
+                                                  "Error: Verification ID is null");
+                                            }
                                           },
                                         );
                                       } catch (e) {
-                                        print("DEBUG: Exception: $e");
                                         setState(() => isLoading = false);
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(

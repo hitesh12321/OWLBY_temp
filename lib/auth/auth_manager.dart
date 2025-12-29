@@ -25,5 +25,6 @@ mixin PhoneSignInManager on AuthManager {
   Future verifySmsCode({
     required BuildContext context,
     required String smsCode,
+    required String verificationId,
   });
 }

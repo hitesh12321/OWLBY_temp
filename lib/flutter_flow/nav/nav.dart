@@ -119,6 +119,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'phoneNumber',
               ParamType.String,
             ),
+            verificationId: params.getParam(
+              'verificationId',
+              ParamType.String,
+            ),
           ),
         ),
         // FFRoute(
