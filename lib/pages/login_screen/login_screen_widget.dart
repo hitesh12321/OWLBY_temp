@@ -236,6 +236,7 @@ class _LoginScreenWidgetState extends State<LoginScreenWidget>
                                         phone = '+91$raw';
                                       }
 
+
                                       print(
                                           "DEBUG: Attempting to verify: $phone");
 
@@ -248,10 +249,10 @@ class _LoginScreenWidgetState extends State<LoginScreenWidget>
                                             print(
                                                 "❤️❤️❤️❤️ OTP SENT CALLBACK HIT"); //
 
-                                            context.pushNamed(
+                                            context.pushReplacementNamed(
                                               OtpScreenWidget.routeName,
                                               queryParameters: {
-                                                'phoneNumber': phone,
+                                                'phoneNumber': phone
                                               },
                                             );
                                           },

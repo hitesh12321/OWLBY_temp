@@ -50,8 +50,10 @@ class _OtpScreenWidgetState extends State<OtpScreenWidget> {
         context: context,
         smsCode: smsCode,
       );
+
       if (credential != null) {
         context.goNamed('/home');
+        print("credential🤛🤛🤛🤛🤛🤛🤛🤛: $credential");
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,28 +97,38 @@ class _OtpScreenWidgetState extends State<OtpScreenWidget> {
                   const SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.all(12),
-                    child: PinCodeTextField(
-                      appContext: context,
+                    child: TextField(
                       controller: _model.pinCodeController,
-                      length: 6,
-                      autoFocus: true,
                       focusNode: _model.pinCodeFocusNode,
                       keyboardType: TextInputType.number,
-                      enablePinAutofill: true,
-                      onChanged: (_) {},
-                      onCompleted: (code) {
-                        verifyOtp(code);
-                      },
-                      pinTheme: PinTheme(
-                        shape: PinCodeFieldShape.box,
-                        borderRadius: BorderRadius.circular(12),
-                        fieldHeight: 60,
-                        fieldWidth: 60,
-                        activeColor: FlutterFlowTheme.of(context).primaryText,
-                        selectedColor: FlutterFlowTheme.of(context).secondary,
-                        inactiveColor:
-                            FlutterFlowTheme.of(context).secondaryBackground,
+                      maxLength: 6,
+                      decoration: InputDecoration(
+                        labelText: 'Enter OTP',
+                        hintText: '6-digit code',
+                        counterText: '',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: FlutterFlowTheme.of(context)
+                                .secondaryBackground,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: FlutterFlowTheme.of(context).primary,
+                            width: 2,
+                          ),
+                        ),
                       ),
+                      onChanged: (value) {
+                        if (value.length == 6) {
+                          verifyOtp(value);
+                        }
+                      },
                     ),
                   ),
                   const SizedBox(height: 20),

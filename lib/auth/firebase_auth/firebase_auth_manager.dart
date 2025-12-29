@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:owlby_serene_m_i_n_d_s/flutter_flow/flutter_flow_util.dart';
 
 import '../auth_manager.dart';
 import '../base_auth_user_provider.dart';
@@ -124,6 +125,7 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
         phoneAuthManager.update(() {
           phoneAuthManager.triggerOnCodeSent = true;
         });
+
         print('web signInWithPhoneNumber returned confirmation'); // <--- add
       } catch (e) {
         print('web signInWithPhoneNumber error: $e'); // <--- add
@@ -148,6 +150,9 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
           phoneAuthManager.triggerOnCodeSent = false;
           phoneAuthManager.phoneAuthError = null;
         });
+        if (context.mounted) {
+          context.goNamed('/home');
+        }
       },
       verificationFailed: (e) {
         print('verificationFailed: ${e.code} ${e.message}'); // <--- add
@@ -184,6 +189,12 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
         context,
         () => phoneAuthManager.webPhoneAuthConfirmationResult!.confirm(smsCode),
       );
+    }
+    if (phoneAuthManager.phoneAuthVerificationCode == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("OTP not ready yet. Please try again.")),
+      );
+      return null;
     }
 
     final credential = PhoneAuthProvider.credential(
