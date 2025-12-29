@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:owlby_serene_m_i_n_d_s/main_page.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/pages/record_screen.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import '/backend/backend.dart';
@@ -92,13 +93,23 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: '_initialize',
           path: '/',
           builder: (context, _) =>
-              appStateNotifier.loggedIn ? NavBarPage() : LoginScreenWidget(),
+              appStateNotifier.loggedIn ? NavBarPage() : LoginSample(),
         ),
         FFRoute(
           name: OnboardingScreenWidget.routeName,
           path: OnboardingScreenWidget.routePath,
           builder: (context, params) => OnboardingScreenWidget(),
         ),
+        // FFRoute(
+        //   name: OnboardingScreenWidget.routeName,
+        //   path: OnboardingScreenWidget.routePath,
+        //   builder: (context, params) => OnboardingScreenWidget(),
+        // ),
+        // FFRoute(
+        //   name: OnboardingScreenWidget.routeName,
+        //   path: OnboardingScreenWidget.routePath,
+        //   builder: (context, params) => OnboardingScreenWidget(),
+        // ),
 
         //9897241287
         FFRoute(
