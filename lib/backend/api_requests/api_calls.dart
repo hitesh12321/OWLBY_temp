@@ -63,8 +63,7 @@ class VerifyOtpCall {
         r'''$.data.error.message''',
       ));
 }
-// create new account on backend // DONE 👍
-// 👍👍 or can say register the user on the backend 
+// create new account on backend // DONE 👍👍👍
 class UsersignupCall {
   static Future<ApiCallResponse> call({
     String? fullName = '',

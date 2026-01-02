@@ -178,6 +178,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
+
     // Helper: start of week (Monday)
     DateTime startOfWeek(DateTime d) {
       final base = DateTime(d.year, d.month, d.day);
@@ -199,6 +200,14 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
     final monthLabel = dateTimeFormat('MMMM, yyyy', monthBase);
     /////////////////////////////////////////////////////////////// PROVIDER
     final HRProv = Provider.of<RecordingProvider>(context);
+    final selectedDate = _model.datePicked1 ?? getCurrentTimestamp;
+    List<RecordingModel> filteredRecordings = HRProv.recordings.where((rec) {
+      if (rec.createdAt == null) return false;
+      return rec.createdAt!.year == selectedDate.year &&
+          rec.createdAt!.month == selectedDate.month &&
+          rec.createdAt!.day == selectedDate.day;
+    }).toList();
+    filteredRecordings.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -394,36 +403,52 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
 ///////////////////////////////////////////////////////////////////////////////
               // PODCAST TILES — make this scrollable independently
               Expanded(
-                child: SingleChildScrollView(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListView.builder(
-                    itemCount: HRProv.recordings.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    //_podcastTile(HRProv.recordings[0])
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: GestureDetector(
-                            onTap: () {
-                              // context.pushNamed(
-                              //     SessionDetailsScreenWidget.routeName);
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          SessionDetailsScreenWidget(
-                                              recording:
-                                                  HRProv.recordings[index])));
-                              print(
-                                  'Podcast tile tapped:::::::::::::::::::::::::::::::::::::::::: ${HRProv.recordings[index].title}');
-                            },
-                            child: _podcastTile(HRProv.recordings[index])),
-                      );
-                    },
-                  ),
-                ),
+                child: filteredRecordings.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.event_busy,
+                                size: 50, color: theme.secondaryText),
+                            const SizedBox(height: 10),
+                            Text(
+                              'No sessions for this date',
+                              style: theme.labelLarge,
+                            ),
+                          ],
+                        ),
+                      )
+                    : SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: ListView.builder(
+                          itemCount: HRProv.recordings.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          //_podcastTile(HRProv.recordings[0])
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: GestureDetector(
+                                  onTap: () {
+                                    // context.pushNamed(
+                                    //     SessionDetailsScreenWidget.routeName);
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SessionDetailsScreenWidget(
+                                                    recording: HRProv
+                                                        .recordings[index])));
+                                    print(
+                                        'Podcast tile tapped:::::::::::::::::::::::::::::::::::::::::: ${HRProv.recordings[index].title}');
+                                  },
+                                  child:
+                                      _podcastTile(HRProv.recordings[index])),
+                            );
+                          },
+                        ),
+                      ),
               ),
 
               // CREATE SESSION BUTTON pinned above the app's bottom navigation
