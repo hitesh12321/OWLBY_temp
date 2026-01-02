@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
+import 'package:owlby_serene_m_i_n_d_s/flutter_flow/nav/nav.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/auth_sample.dart';
 
 class LoginSample extends StatefulWidget {
@@ -62,16 +64,24 @@ class _LoginSampleState extends State<LoginSample> {
                   backgroundColor: MaterialStatePropertyAll(Colors.red),
                   foregroundColor: MaterialStatePropertyAll(Colors.white),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   final phone = phoneController.text.trim();
 
                   if (RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
-                    AuthSample.verifyPhoneNumber(context, phone); // ✅ RAW
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Please enter valid Number")),
-                    );
+                    final checkuserResponse =
+                        await CheckUserApi.call(phoneNumber: phone);
+
+                    final userExists =
+                        CheckUserApi.userExists(checkuserResponse);
+
+                    print("❤️ check user exists: $userExists");
+                    if (userExists) {
+                      print("❤️ User exists. Proceeding to login.");
+                      AuthSample.verifyPhoneNumber(context, phone);
+                    } else {
+                      print("❤️ User does not exist. Proceeding to sign up.");
+                      context.pushReplacementNamed('createAccountScreen');
+                    }
                   }
                 },
                 child: const Text("Send OTP"),

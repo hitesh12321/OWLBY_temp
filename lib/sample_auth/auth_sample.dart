@@ -58,7 +58,7 @@ class AuthSample {
       print(userCredential.user!.phoneNumber);
       print("Login successful");
       // TODO: Navigate to home page
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
         return const NavBarPage();
       }));
     } catch (e) {

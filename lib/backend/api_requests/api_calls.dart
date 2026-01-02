@@ -63,7 +63,8 @@ class VerifyOtpCall {
         r'''$.data.error.message''',
       ));
 }
-
+// create new account on backend // DONE 👍
+// 👍👍 or can say register the user on the backend 
 class UsersignupCall {
   static Future<ApiCallResponse> call({
     String? fullName = '',
@@ -106,6 +107,7 @@ class UsersignupCall {
         r'''$.message''',
       ));
 }
+
 // to create meeting ///❤️❤️❤️❤️ // DONE 👍👍👍👍
 class CreatemeetingCall {
   static Future<ApiCallResponse> call({
@@ -142,7 +144,8 @@ class CreatemeetingCall {
     );
   }
 }
-// process meeting call // ❤️❤️❤️ 
+
+// process meeting call // ❤️❤️❤️
 class ProcessmeetingCall {
   static Future<ApiCallResponse> call({
     String? meetingId = '',
@@ -253,6 +256,29 @@ String _toEncodable(dynamic item) {
     return item.path;
   }
   return item;
+}
+
+class CheckUserApi {
+  static Future<ApiCallResponse> call({
+    required String phoneNumber,
+  }) {
+    return ApiManager.instance.makeApiCall(
+      callName: 'checkuser',
+      apiUrl: 'https://owl-app-backend.vercel.app/api/auth/check-user',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      body: '''
+      {
+        "phone_number": "$phoneNumber"
+      } 
+      ''',
+      bodyType: BodyType.JSON,
+    );
+  }
+
+  static bool userExists(ApiCallResponse response) {
+    return response.jsonBody?['data']?['user_exists'] == true;
+  }
 }
 
 String _serializeList(List? list) {
