@@ -63,6 +63,7 @@ class VerifyOtpCall {
         r'''$.data.error.message''',
       ));
 }
+
 // create new account on backend // DONE 👍👍👍
 class UsersignupCall {
   static Future<ApiCallResponse> call({
@@ -70,41 +71,82 @@ class UsersignupCall {
     String? email = '',
     String? organizationName = '',
     String? referralCode = '',
-  }) async {
-    final ffApiRequestBody = '''
-{
-"full_name":"${escapeStringForJson(fullName)}",
-"email":"${escapeStringForJson(email)}",
-"organization_name":"${escapeStringForJson(organizationName)}",
-"referral_code":"${escapeStringForJson(referralCode)}"
-}''';
+    String? phoneNumber = '',
+  }) {
+    final body = jsonEncode({
+      "full_name": fullName,
+      "email": email,
+      "organization_name": organizationName,
+      "referral_code": referralCode,
+      "phone_number": phoneNumber,
+    });
+
     return ApiManager.instance.makeApiCall(
       callName: 'usersignup',
       apiUrl: 'https://owl-app-backend.vercel.app/api/auth/signup',
       callType: ApiCallType.POST,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      params: {},
-      body: ffApiRequestBody,
+      headers: {'Content-Type': 'application/json'},
+      body: body,
       bodyType: BodyType.JSON,
       returnBody: true,
-      encodeBodyUtf8: false,
-      decodeUtf8: false,
-      cache: false,
-      isStreamingApi: false,
-      alwaysAllowBody: false,
     );
   }
 
-  static bool? success(dynamic response) => castToType<bool>(getJsonField(
-        response,
-        r'''$.success''',
-      ));
-  static String? message(dynamic response) => castToType<String>(getJsonField(
-        response,
-        r'''$.message''',
-      ));
+  static bool? success(ApiCallResponse response) => castToType<bool>(
+        getJsonField(response.jsonBody, r'$.status'),
+      );
+
+  static String? message(ApiCallResponse response) => castToType<String>(
+        getJsonField(response.jsonBody, r'$.message'),
+      );
+}
+
+class GetUserDetails {
+
+ static Future<ApiCallResponse> call({
+    required String phoneNumber,
+  }) {
+    return ApiManager.instance.makeApiCall(
+      callName: 'checkuser',
+      apiUrl: 'https://owl-app-backend.vercel.app/api/auth/user-by-phone',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      body: '''
+      {
+        "phone_number": "$phoneNumber"
+      } 
+      ''',
+      bodyType: BodyType.JSON,
+    );
+  }
+
+  static bool userExists(ApiCallResponse response) {
+    return response.jsonBody?['status'] == true;
+  }
+}
+
+// check user api // DONE 👍👍👍
+class CheckUserApi {
+  static Future<ApiCallResponse> call({
+    required String phoneNumber,
+  }) {
+    return ApiManager.instance.makeApiCall(
+      callName: 'checkuser',
+      apiUrl: 'https://owl-app-backend.vercel.app/api/auth/check-user',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      body: '''
+      {
+        "phone_number": "$phoneNumber"
+      } 
+      ''',
+      bodyType: BodyType.JSON,
+    );
+  }
+
+  static bool userExists(ApiCallResponse response) {
+    return response.jsonBody?['data']?['user_exists'] == true;
+  }
 }
 
 // to create meeting ///❤️❤️❤️❤️ // DONE 👍👍👍👍
@@ -255,29 +297,6 @@ String _toEncodable(dynamic item) {
     return item.path;
   }
   return item;
-}
-
-class CheckUserApi {
-  static Future<ApiCallResponse> call({
-    required String phoneNumber,
-  }) {
-    return ApiManager.instance.makeApiCall(
-      callName: 'checkuser',
-      apiUrl: 'https://owl-app-backend.vercel.app/api/auth/check-user',
-      callType: ApiCallType.POST,
-      headers: {'Content-Type': 'application/json'},
-      body: '''
-      {
-        "phone_number": "$phoneNumber"
-      } 
-      ''',
-      bodyType: BodyType.JSON,
-    );
-  }
-
-  static bool userExists(ApiCallResponse response) {
-    return response.jsonBody?['data']?['user_exists'] == true;
-  }
 }
 
 String _serializeList(List? list) {

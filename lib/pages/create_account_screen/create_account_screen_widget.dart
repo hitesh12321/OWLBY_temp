@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
+
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -118,39 +120,75 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
       builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
-    bool referralValid = false;
-    int extraSessions = 0;
-    final referralCode = _model.referralController?.text.trim() ?? '';
+    try {
+      final response = await UsersignupCall.call(
+        fullName: _model.nameController?.text.trim(),
+        email: _model.emailController?.text.trim(),
+        organizationName: _model.orgController?.text.trim(),
+        phoneNumber: _model.phoneController?.text.trim(),
+      );
+      print('🤛🤛🤛🤛FULL RESPONSE: $response');
 
-    if (referralCode.isNotEmpty) {
-      final result = await _checkReferral(referralCode);
-      referralValid = result['valid'] == true;
-      if (referralValid) {
-        extraSessions = result['extraSessions'] ?? 0;
+      final status = UsersignupCall.success(response);
+
+      Navigator.pop(context); // ALWAYS close loader
+
+      if (status == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Account created successfully!')),
+        );
+        context.pushNamed(LoginScreenWidget.routeName);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              UsersignupCall.message(response) ?? 'Signup failed',
+            ),
+          ),
+        );
       }
+    } catch (e) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong')),
+      );
     }
 
-    final profile = {
-      'name': _model.nameController?.text.trim(),
-      'email': _model.emailController?.text.trim(),
-      'phone': _model.phoneController?.text.trim(),
-      'organization': _model.orgController?.text.trim(),
-      'referralCode': referralCode,
-      'referralValid': referralValid,
-      'extraSessions': extraSessions,
-      'createdAt': DateTime.now().toIso8601String(),
-    };
+    
 
-    await _saveProfileLocally(profile);
-    if (Navigator.canPop(context)) Navigator.pop(context);
+    // bool referralValid = false;
+    // int extraSessions = 0;
+    // final referralCode = _model.referralController?.text.trim() ?? '';
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content: Text(
-              referralValid ? 'Referral applied!' : 'Account saved locally.')),
-    );
+    // if (referralCode.isNotEmpty) {
+    //   final result = await _checkReferral(referralCode);
+    //   referralValid = result['valid'] == true;
+    //   if (referralValid) {
+    //     extraSessions = result['extraSessions'] ?? 0;
+    //   }
+    // }
 
-    context.pushNamed(LoginScreenWidget.routeName);
+    // final profile = {
+    //   'name': _model.nameController?.text.trim(),
+    //   'email': _model.emailController?.text.trim(),
+    //   'phone': _model.phoneController?.text.trim(),
+    //   'organization': _model.orgController?.text.trim(),
+    //   // 'referralCode': referralCode,
+    //   // 'referralValid': referralValid,
+    //   // 'extraSessions': extraSessions,
+    //   'createdAt': DateTime.now().toIso8601String(),
+    // };
+
+    // await _saveProfileLocally(profile);
+    // if (Navigator.canPop(context)) Navigator.pop(context);
+
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //       content: Text(
+    //           referralValid ? 'Referral applied!' : 'Account saved locally.')),
+    // );
+
+    // context.pushNamed(LoginScreenWidget.routeName);
   }
 
   // --- UI BUILDER ---

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:owlby_serene_m_i_n_d_s/auth/firebase_auth/auth_util.dart';
+import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -17,7 +18,7 @@ class OtpScreenWidget extends StatefulWidget {
   });
 
   // final String verificationId;
-  final String? phoneNumber;
+  final String phoneNumber;
   final String verificationId;
 
   static String routeName = 'otpScreen';
@@ -50,8 +51,8 @@ class _OtpScreenWidgetState extends State<OtpScreenWidget> {
     if (smsCode.length != 6) return;
     // 2. Guard against missing Verification ID
     if (widget.verificationId.isEmpty) {
-       print("Error: No Verification ID found");
-       return; 
+      print("Error: No Verification ID found");
+      return;
     }
     try {
       final credential = await authManager.verifySmsCode(
@@ -61,6 +62,11 @@ class _OtpScreenWidgetState extends State<OtpScreenWidget> {
       );
 
       if (credential != null) {
+        final userStatus =
+            await GetUserDetails.call(phoneNumber: widget.phoneNumber);
+        final stat = GetUserDetails.userExists(userStatus);
+        print("this is the proff of user get or not ✌️✌️✌️${stat}");
+
         context.goNamed('/home');
         print("credential🤛🤛🤛🤛🤛🤛🤛🤛: $credential");
       }

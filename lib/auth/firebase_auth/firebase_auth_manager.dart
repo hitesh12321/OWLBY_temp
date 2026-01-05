@@ -96,41 +96,7 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
       }
     });
   }
-// phone Auth Methods
-  // @override
-  // Future beginPhoneAuth({
-  //   required BuildContext context,
-  //   required String phoneNumber,
-  //   required void Function(BuildContext) onCodeSent,
-  // }) async {
-  //   phoneAuthManager.onCodeSent = onCodeSent;
 
-  //   // if (kIsWeb) {
-  //   //   phoneAuthManager.webPhoneAuthConfirmationResult =
-  //   //       await FirebaseAuth.instance.signInWithPhoneNumber(phoneNumber);
-  //   //   phoneAuthManager.update(() => phoneAuthManager.triggerOnCodeSent = true);
-  //   //   return;
-  //   // }
-
-  //   await FirebaseAuth.instance.verifyPhoneNumber(
-  //     phoneNumber: phoneNumber,
-      
-  //     verificationCompleted: (phoneAuthCredential) async {
-  //       await _finishSignIn(
-  //         context,
-  //         () => FirebaseAuth.instance.signInWithCredential(phoneAuthCredential),
-  //       );
-  //     },
-  //     verificationFailed: (e) {
-  //       phoneAuthManager.update(() => phoneAuthManager.phoneAuthError = e);
-  //     },
-  //     codeSent: (verificationId, _) {
-  //       phoneAuthManager.phoneAuthVerificationCode = verificationId;
-  //       phoneAuthManager.update(() => phoneAuthManager.triggerOnCodeSent = true);
-  //     },
-  //     codeAutoRetrievalTimeout: (_) {},
-  //   );
-  // }
   @override
   Future beginPhoneAuth({
     required BuildContext context,

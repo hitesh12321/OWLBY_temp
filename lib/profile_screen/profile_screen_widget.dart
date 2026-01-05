@@ -1,7 +1,6 @@
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,6 +21,7 @@ class ProfileScreenWidget extends StatefulWidget {
 
 class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
   late ProfileScreenModel _model;
+  int sessionLeft = 3;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -38,6 +38,17 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
     _model.dispose();
 
     super.dispose();
+  }
+
+  void _incrementCounter() {
+    setState(() {
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      sessionLeft = sessionLeft + 1;
+    });
   }
 
   @override
@@ -92,6 +103,48 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
                           radius: 1.0,
                         ),
                       ),
+                      SizedBox(width: 48.0),
+                      Row(
+                        mainAxisSize: MainAxisSize.min, // Keeps it compact
+                        children: [
+                          // Text showing the count
+                          RichText(
+                            text: TextSpan(
+                              style: const TextStyle(
+                                  fontSize: 16, color: Colors.black87),
+                              children: [
+                                const TextSpan(text: "Sessions Left: "),
+                                TextSpan(
+                                  text: sessionLeft
+                                      .toString(), // This should be a dynamic variable
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF4CAF50), // Theme green
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // The Plus (+) Button
+                          GestureDetector(
+                            onTap: _incrementCounter,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 189, 226,
+                                    233), // Light green background
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color(0xFF4CAF50),
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                   Divider(
