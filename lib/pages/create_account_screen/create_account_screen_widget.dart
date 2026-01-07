@@ -132,7 +132,7 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
       final status = UsersignupCall.success(response);
 
       Navigator.pop(context); // ALWAYS close loader
-
+      if (!mounted) return;
       if (status == true) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Account created successfully!')),
@@ -153,8 +153,6 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
         SnackBar(content: Text('Something went wrong')),
       );
     }
-
-    
 
     // bool referralValid = false;
     // int extraSessions = 0;
@@ -278,11 +276,8 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
                                 AutofillHints.telephoneNumber,
                                 type: TextInputType.phone),
                             const SizedBox(height: 16),
-                            _buildField(
-                                _model.orgController,
-                                _model.orgFocusNode,
-                                'Organization (Optional)',
-                                null),
+                            _buildField(_model.orgController,
+                                _model.orgFocusNode, 'Organization', null),
                             const SizedBox(height: 16),
                             _buildField(
                                 _model.referralController,
@@ -299,7 +294,7 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
                                 style: FlutterFlowTheme.of(context).labelMedium,
                                 children: [
                                   const TextSpan(
-                                      text: 'By signing up, you agree to our '),
+                                      text: 'By signing up, you agree to our'),
                                   TextSpan(
                                     text: 'Terms',
                                     style: TextStyle(

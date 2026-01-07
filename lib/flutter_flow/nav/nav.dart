@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:owlby_serene_m_i_n_d_s/main_page.dart';
+
 import 'package:owlby_serene_m_i_n_d_s/record_feature/pages/record_screen.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
 import 'package:page_transition/page_transition.dart';
@@ -94,7 +94,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: '/',
           builder: (context, _) => appStateNotifier.loggedIn
               ? NavBarPage()
-              : CreateAccountScreenWidget(),
+              : LoginSample(),
         ),
         FFRoute(
           name: OnboardingScreenWidget.routeName,

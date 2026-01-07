@@ -1,3 +1,4 @@
+import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_model.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
 
 import 'package:path/path.dart';
@@ -28,7 +29,7 @@ class OwlbyDatabase {
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _createDB,
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -37,6 +38,23 @@ class OwlbyDatabase {
         }
         if (oldVersion < 3) {
           await db.execute('ALTER TABLE recordings ADD COLUMN user_id TEXT');
+        }
+        if (oldVersion < 4) {
+          await db.execute('''
+      CREATE TABLE IF NOT EXISTS appuser (
+        id TEXT PRIMARY KEY,
+        email TEXT NOT NULL,
+        organization_name TEXT,
+        subscription INTEGER NOT NULL DEFAULT 0,
+        sessions INTEGER DEFAULT 0,
+        created_at TEXT,
+        updated_at TEXT,
+        phone TEXT,
+        full_name TEXT,
+        referred_by TEXT,
+        referral_code TEXT
+      )
+    ''');
         }
       },
     );
@@ -62,7 +80,7 @@ class OwlbyDatabase {
         createdAt TEXT NOT NULL
       )
     ''');
-
+// recording database table
     await db.execute('''
       CREATE TABLE recordings(
   id TEXT PRIMARY KEY,
@@ -79,6 +97,21 @@ class OwlbyDatabase {
   duration TEXT,
   notes TEXT,
   audio_url TEXT
+)
+''');
+    await db.execute('''
+CREATE TABLE appuser (
+  id TEXT PRIMARY KEY,
+  email TEXT NOT NULL,
+  organization_name TEXT,
+  subscription INTEGER NOT NULL DEFAULT 0,
+  sessions INTEGER DEFAULT 0,
+  created_at TEXT,
+  updated_at TEXT,
+  phone TEXT,
+  full_name TEXT,
+  referred_by TEXT,
+  referral_code TEXT
 )
 ''');
   }
@@ -260,5 +293,38 @@ class OwlbyDatabase {
     }
 
     return RecordingModel.fromMap(maps.first);
+  }
+//////////////////////////////
+// crud for user//////////////
+//////////////////////////////
+
+  Future<void> saveUser(AppUserModel user) async {
+    final db = await database;
+    await db.insert(
+      'appuser',
+      user.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<AppUserModel?> getUser() async {
+    final db = await database;
+    final result = await db.query('appuser', limit: 1);
+
+    if (result.isNotEmpty) {
+      return AppUserModel.fromMap(result.first);
+    }
+    return null;
+  }
+
+  Future<int> deleteUser() async {
+    final db = await database;
+    return await db.delete('appuser');
+  }
+
+  Future<bool> isUserLoggedIn() async {
+    final db = await database;
+    final result = await db.query('appuser', limit: 1);
+    return result.isNotEmpty;
   }
 }

@@ -73,13 +73,18 @@ class UsersignupCall {
     String? referralCode = '',
     String? phoneNumber = '',
   }) {
-    final body = jsonEncode({
+    final Map<String, dynamic> bodyMap = {
       "full_name": fullName,
       "email": email,
       "organization_name": organizationName,
-      "referral_code": referralCode,
       "phone_number": phoneNumber,
-    });
+    };
+
+    if (referralCode != null && referralCode.isNotEmpty) {
+      bodyMap["referral_code"] = referralCode;
+    }
+
+    final body = jsonEncode(bodyMap);
 
     return ApiManager.instance.makeApiCall(
       callName: 'usersignup',
@@ -102,8 +107,7 @@ class UsersignupCall {
 }
 
 class GetUserDetails {
-
- static Future<ApiCallResponse> call({
+  static Future<ApiCallResponse> call({
     required String phoneNumber,
   }) {
     return ApiManager.instance.makeApiCall(

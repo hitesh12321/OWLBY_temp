@@ -1,6 +1,7 @@
-// ignore_for_file: avoid_print======== 
+// ignore_for_file: avoid_print========
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/local_database/providers/task_provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
 import 'package:provider/provider.dart';
@@ -46,17 +47,12 @@ void main() async {
       ChangeNotifierProvider(create: (_) => NotesProvider()..loadNotes()),
       ChangeNotifierProvider(create: (_) => TaskProvider()..loadTasks()),
       ChangeNotifierProvider(
-        create: (_) => RecordingProvider()..loadRecordings(),
-        // child: const _RecordScreenBody(),
-      )
+          create: (_) => RecordingProvider()..loadRecordings()),
+      ChangeNotifierProvider(create: (_) => AppUserProvider()..loadUser()),
     ],
     child: MyApp(),
   ));
 }
-
-// class _RecordScreenBody {
-//   const _RecordScreenBody();
-// }
 
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.
@@ -186,6 +182,7 @@ class NavBarPage extends StatefulWidget {
 class _NavBarPageState extends State<NavBarPage> {
   String _currentPageName = 'homeScreen';
   late Widget? _currentPage;
+
 
   @override
   void initState() {

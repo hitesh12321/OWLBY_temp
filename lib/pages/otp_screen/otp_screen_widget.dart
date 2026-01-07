@@ -1,10 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:owlby_serene_m_i_n_d_s/auth/firebase_auth/auth_util.dart';
+
+import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_model.dart';
+import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
+
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
+import 'package:owlby_serene_m_i_n_d_s/local_database/db/project_database.dart';
+import 'package:owlby_serene_m_i_n_d_s/main.dart';
+
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'otp_screen_model.dart';
@@ -31,6 +37,7 @@ class OtpScreenWidget extends StatefulWidget {
 class _OtpScreenWidgetState extends State<OtpScreenWidget> {
   late OtpScreenModel _model;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isVerifying = false;
 
   @override
   void initState() {
@@ -48,41 +55,60 @@ class _OtpScreenWidgetState extends State<OtpScreenWidget> {
   }
 
   Future<void> verifyOtp(String smsCode) async {
+    if (_isVerifying) return;
+
     if (smsCode.length != 6) return;
-    // 2. Guard against missing Verification ID
     if (widget.verificationId.isEmpty) {
       print("Error: No Verification ID found");
       return;
     }
+
+    _isVerifying = true;
+    setState(() {});
+
     try {
-      final credential = await authManager.verifySmsCode(
-        context: context,
-        smsCode: smsCode,
+      print('🔐 Verifying OTP manually');
+
+      final credential = PhoneAuthProvider.credential(
         verificationId: widget.verificationId,
+        smsCode: smsCode,
       );
 
-      if (credential != null) {
-        final userStatus =
-            await GetUserDetails.call(phoneNumber: widget.phoneNumber);
-        final stat = GetUserDetails.userExists(userStatus);
-        print("this is the proff of user get or not ✌️✌️✌️${stat}");
+      final userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
-        context.goNamed('/home');
-        print("credential🤛🤛🤛🤛🤛🤛🤛🤛: $credential");
+      print('✅ Firebase sign-in success: ${userCredential.user?.uid}');
+
+      // 🔽 Fetch user details ONCE
+      final response =
+          await GetUserDetails.call(phoneNumber: widget.phoneNumber);
+
+      final exists = GetUserDetails.userExists(response);
+
+      if (exists) {
+        final user = AppUserModel.fromApi(response.jsonBody['data']);
+
+        // ✅ Save locally
+        await context.read<AppUserProvider>().login(user);
+        final dbUser = await OwlbyDatabase.instance.getUser();
+        print('🟢 USER FROM DB AFTER SAVE: $dbUser');
+
+        // ✅ Navigate
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const NavBarPage()),
+          );
+        }
+      } else {
+        // TODO: navigate to onboarding / signup
+        print('❌ User does not exist');
       }
-    }
-    //  catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(content: Text("Invalid OTP")),
-    //   );
-    // }
-    catch (e) {
-      // Log the actual error to your console for debugging
+    } catch (e) {
       print("Firebase Auth Error: $e");
 
       String errorMessage = "Invalid OTP. Please try again.";
 
-      // Check for specific Firebase expiration error
       if (e.toString().contains("session-expired") ||
           e.toString().contains("expired")) {
         errorMessage =
@@ -94,8 +120,13 @@ class _OtpScreenWidgetState extends State<OtpScreenWidget> {
           SnackBar(content: Text(errorMessage)),
         );
       }
+    } finally {
+      _isVerifying = false;
+      if (mounted) setState(() {});
     }
   }
+
+  //
 
   @override
   Widget build(BuildContext context) {

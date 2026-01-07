@@ -5,8 +5,7 @@ import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/flutter_flow_util.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/uploaded_file.dart';
 import 'package:owlby_serene_m_i_n_d_s/local_database/db/project_database.dart';
-import 'package:owlby_serene_m_i_n_d_s/main.dart';
-import 'package:owlby_serene_m_i_n_d_s/session_details_screen/sample_page.dart';
+
 import 'package:owlby_serene_m_i_n_d_s/session_details_screen/session_details_screen_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';

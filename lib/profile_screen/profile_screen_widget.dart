@@ -1,3 +1,9 @@
+import 'package:http/http.dart' as http;
+import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
+import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
+import 'package:owlby_serene_m_i_n_d_s/subscription_screen/subscription_screen_widget.dart';
+import 'package:provider/provider.dart';
+
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -26,11 +32,11 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   //  Profile data
-  String name = '';
-  String email = '';
-  String organization = '';
-  String referralCode = '';
-  int sessionLeft = 0;
+  // String name = '';
+  // String email = '';
+  // String organization = '';
+  // String referralCode = '';
+  // int sessionLeft = 0;
 
   bool isLoading = true;
 
@@ -39,9 +45,9 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
     super.initState();
     _model = createModel(context, () => ProfileScreenModel());
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      fetchProfileData();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   fetchProfileData();
+    // });
   }
 
   @override
@@ -50,49 +56,54 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
     super.dispose();
   }
+
 //  API CALL
-  Future<void> fetchProfileData() async {
-    try {
-      final response = await http.get(
-        Uri.parse('https://yourapi.com/profile'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer YOUR_TOKEN_HERE',
-        },
-      );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+  // Future<void> fetchProfileData() async {
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse('https://yourapi.com/profile'),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer YOUR_TOKEN_HERE',
+  //       },
+  //     );
 
-        setState(() {
-          name = data['name'];
-          email = data['email'];
-          organization = data['organization'];
-          referralCode = data['referralCode'];
-          sessionLeft = data['sessionsLeft'];
-          isLoading = false;
-        });
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
 
-        //  Auto redirect if sessions = 0
-        if (sessionLeft == 0) {
-          _goToSubscription();
-        }
-      } else {
-        throw Exception('Failed to load profile');
-      }
-    } catch (e) {
-      setState(() => isLoading = false);
-      debugPrint('API Error: $e');
-    }
-  }
+  //       setState(() {
+  //         name = data['name'];
+  //         email = data['email'];
+  //         organization = data['organization'];
+  //         referralCode = data['referralCode'];
+  //         sessionLeft = data['sessionsLeft'];
+  //         isLoading = false;
+  //       });
+
+  //       //  Auto redirect if sessions = 0
+  //       if (sessionLeft == 0) {
+  //         _goToSubscription();
+  //       }
+  //     } else {
+  //       throw Exception('Failed to load profile');
+  //     }
+  //   } catch (e) {
+  //     setState(() => isLoading = false);
+  //     debugPrint('API Error: $e');
+  //   }
+  // }
 
   //  Subscription redirect
   void _goToSubscription() {
-    Navigator.pushNamed(context, '/subscriptionScreen');
+    // Navigator.pushNamed(context, '/subscriptionScreen');
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => SubscriptionScreenWidget()));
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AppUserProvider>().user;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -102,12 +113,10 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondary,
         body: SafeArea(
-          top: true,
-          child: isLoading
+          child: user == null
               ? const Center(child: CircularProgressIndicator())
               : Padding(
-                  padding:
-                      const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +126,7 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
                         Row(
                           children: [
                             GradientText(
-                              name,
+                              user.fullName ?? '',
                               style: FlutterFlowTheme.of(context)
                                   .displaySmall
                                   .override(
@@ -139,11 +148,10 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
                                 RichText(
                                   text: TextSpan(
                                     style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black87),
+                                        fontSize: 16, color: Colors.black87),
                                     children: [
                                       const TextSpan(
-                                          text: "Sessions Left: "),
+                                          text: "Sessions Left: {} "),
                                       TextSpan(
                                         text: sessionLeft.toString(),
                                         style: const TextStyle(
@@ -184,8 +192,8 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
                         // 🔹 Email
                         _infoTile(
-                          label: 'Email Address',
-                          value: email,
+                          label: 'Email Address : ${user!.email}',
+                          value: user.email,
                           icon: Icons.email_outlined,
                         ),
 
@@ -193,8 +201,9 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
                         // 🔹 Organization
                         _infoTile(
-                          label: 'Organisation\'s Name',
-                          value: organization,
+                          label:
+                              'Organisation\'s Name : ${user.organizationName}',
+                          value: user.organizationName ?? 'N/A',
                           icon: Icons.business_outlined,
                         ),
 
@@ -239,8 +248,7 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
               Icon(icon, color: const Color(0xFF64748B)),
               const SizedBox(width: 12),
               Expanded(child: Text(value)),
-              const Icon(Icons.edit_outlined,
-                  color: Color(0xFF64748B)),
+              const Icon(Icons.edit_outlined, color: Color(0xFF64748B)),
             ],
           ),
         ),
@@ -249,11 +257,12 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
   }
 
   Widget _referralTile() {
+    final user = context.watch<AppUserProvider>().user;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Referral Code',
+          'Referral Code : ${user!.referralCode}',
           style: FlutterFlowTheme.of(context)
               .labelMedium
               .override(fontWeight: FontWeight.w600),
@@ -272,19 +281,17 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
                   color: Color(0xFF4F46E5)),
               const SizedBox(width: 12),
               Text(
-                referralCode,
+                user.referralCode ?? '',
                 style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF4F46E5)),
+                    fontWeight: FontWeight.w600, color: Color(0xFF4F46E5)),
               ),
               const Spacer(),
               InkWell(
                 onTap: () {
                   Clipboard.setData(
-                      ClipboardData(text: referralCode));
+                      ClipboardData(text: user.referralCode ?? ''));
                 },
-                child: const Icon(Icons.copy,
-                    color: Color(0xFF4F46E5)),
+                child: const Icon(Icons.copy, color: Color(0xFF4F46E5)),
               ),
             ],
           ),
@@ -292,5 +299,4 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
       ],
     );
   }
-}
 }

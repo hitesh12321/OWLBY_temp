@@ -7,6 +7,12 @@ import 'flutter_flow/flutter_flow_util.dart';
 
 class FFAppState extends ChangeNotifier {
   static FFAppState _instance = FFAppState._internal();
+  bool _isExistingUser = false;
+  bool get isExistingUser => _isExistingUser;
+  set isExistingUser(bool value) {
+    _isExistingUser = value;
+    secureStorage.setBool('ff_isExistingUser', value);
+  }
 
   factory FFAppState() {
     return _instance;
@@ -22,6 +28,8 @@ class FFAppState extends ChangeNotifier {
     secureStorage = FlutterSecureStorage();
     await _safeInitAsync(() async {
       _token = await secureStorage.getString('ff_token') ?? _token;
+      _isExistingUser =
+          await secureStorage.getBool('ff_isExistingUser') ?? _isExistingUser;
     });
   }
 
