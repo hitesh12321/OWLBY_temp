@@ -25,12 +25,23 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  //  Profile data
+  String name = '';
+  String email = '';
+  String organization = '';
+  String referralCode = '';
+  int sessionLeft = 0;
+
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => ProfileScreenModel());
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchProfileData();
+    });
   }
 
   @override
@@ -39,16 +50,45 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
     super.dispose();
   }
+//  API CALL
+  Future<void> fetchProfileData() async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://yourapi.com/profile'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer YOUR_TOKEN_HERE',
+        },
+      );
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      sessionLeft = sessionLeft + 1;
-    });
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        setState(() {
+          name = data['name'];
+          email = data['email'];
+          organization = data['organization'];
+          referralCode = data['referralCode'];
+          sessionLeft = data['sessionsLeft'];
+          isLoading = false;
+        });
+
+        //  Auto redirect if sessions = 0
+        if (sessionLeft == 0) {
+          _goToSubscription();
+        }
+      } else {
+        throw Exception('Failed to load profile');
+      }
+    } catch (e) {
+      setState(() => isLoading = false);
+      debugPrint('API Error: $e');
+    }
+  }
+
+  //  Subscription redirect
+  void _goToSubscription() {
+    Navigator.pushNamed(context, '/subscriptionScreen');
   }
 
   @override
@@ -63,393 +103,194 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
         backgroundColor: FlutterFlowTheme.of(context).secondary,
         body: SafeArea(
           top: true,
-          child: Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Align(
-                        alignment: AlignmentDirectional(-1.0, 0.0),
-                        child: GradientText(
-                          'Dr. Sharma',
-                          textAlign: TextAlign.center,
-                          style: FlutterFlowTheme.of(context)
-                              .displaySmall
-                              .override(
-                                font: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w600,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .displaySmall
-                                      .fontStyle,
-                                ),
-                                fontSize: 30.0,
-                                letterSpacing: 0.0,
-                                fontWeight: FontWeight.w600,
-                                fontStyle: FlutterFlowTheme.of(context)
-                                    .displaySmall
-                                    .fontStyle,
-                              ),
-                          colors: [
-                            FlutterFlowTheme.of(context).primaryText,
-                            // ✅ FIX: Added a second color here to satisfy the requirement
-                            FlutterFlowTheme.of(context).secondaryText,
-                          ],
-                          gradientType: GradientType.radial,
-                          radius: 1.0,
-                        ),
-                      ),
-                      SizedBox(width: 48.0),
-                      Row(
-                        mainAxisSize: MainAxisSize.min, // Keeps it compact
-                        children: [
-                          // Text showing the count
-                          RichText(
-                            text: TextSpan(
-                              style: const TextStyle(
-                                  fontSize: 16, color: Colors.black87),
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Padding(
+                  padding:
+                      const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 32),
+// 🔹 Header Row
+                        Row(
+                          children: [
+                            GradientText(
+                              name,
+                              style: FlutterFlowTheme.of(context)
+                                  .displaySmall
+                                  .override(
+                                    font: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    fontSize: 30,
+                                  ),
+                              colors: [
+                                FlutterFlowTheme.of(context).primaryText,
+                                FlutterFlowTheme.of(context).secondaryText,
+                              ],
+                            ),
+                            const Spacer(),
+
+                            // 🔹 Sessions Left
+                            Row(
                               children: [
-                                const TextSpan(text: "Sessions Left: "),
-                                TextSpan(
-                                  text: sessionLeft
-                                      .toString(), // This should be a dynamic variable
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF4CAF50), // Theme green
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          // The Plus (+) Button
-                          GestureDetector(
-                            onTap: _incrementCounter,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 189, 226,
-                                    233), // Light green background
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.add,
-                                color: Color(0xFF4CAF50),
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  Divider(
-                    thickness: 2.0,
-                    color: FlutterFlowTheme.of(context).alternate,
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Email Address',
-                            style: FlutterFlowTheme.of(context)
-                                .labelMedium
-                                .override(
-                                  font: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .fontStyle,
-                                  ),
-                                  color: Color(0xFF64748B),
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.w600,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .labelMedium
-                                      .fontStyle,
-                                ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 4.0,
-                                  color: Color(0x0F000000),
-                                  offset: Offset(
-                                    0.0,
-                                    2.0,
-                                  ),
-                                )
-                              ],
-                              borderRadius: BorderRadius.circular(12.0),
-                              border: Border.all(
-                                color: Color(0xFFE2E8F0),
-                                width: 1.0,
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.max,
+                                RichText(
+                                  text: TextSpan(
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87),
                                     children: [
-                                      Icon(
-                                        Icons.email_outlined,
-                                        color: Color(0xFF64748B),
-                                        size: 20.0,
+                                      const TextSpan(
+                                          text: "Sessions Left: "),
+                                      TextSpan(
+                                        text: sessionLeft.toString(),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF4CAF50),
+                                        ),
                                       ),
-                                      Text(
-                                        "dr.sharma@example.com",
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              font: GoogleFonts.inter(
-                                                fontWeight: FontWeight.normal,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .fontStyle,
-                                              ),
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.normal,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                    ].divide(SizedBox(width: 12.0)),
+                                    ],
                                   ),
-                                  Icon(
-                                    Icons.edit_outlined,
-                                    color: Color(0xFF64748B),
-                                    size: 20.0,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ].divide(SizedBox(height: 8.0)),
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Organisation\'s Name',
-                            style: FlutterFlowTheme.of(context)
-                                .labelMedium
-                                .override(
-                                  font: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .fontStyle,
-                                  ),
-                                  color: Color(0xFF64748B),
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.w600,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .labelMedium
-                                      .fontStyle,
                                 ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 4.0,
-                                  color: Color(0x0F000000),
-                                  offset: Offset(
-                                    0.0,
-                                    2.0,
-                                  ),
-                                )
-                              ],
-                              borderRadius: BorderRadius.circular(12.0),
-                              border: Border.all(
-                                color: Color(0xFFE2E8F0),
-                                width: 1.0,
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      Icon(
-                                        Icons.business_outlined,
-                                        color: Color(0xFF64748B),
-                                        size: 20.0,
-                                      ),
-                                      Text(
-                                        'Kristen\'s Mental Clinic',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              font: GoogleFonts.inter(
-                                                fontWeight: FontWeight.normal,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .fontStyle,
-                                              ),
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.normal,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                    ].divide(SizedBox(width: 12.0)),
-                                  ),
-                                  Icon(
-                                    Icons.edit_outlined,
-                                    color: Color(0xFF64748B),
-                                    size: 20.0,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ].divide(SizedBox(height: 8.0)),
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Referral Code',
-                            style: FlutterFlowTheme.of(context)
-                                .labelMedium
-                                .override(
-                                  font: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .fontStyle,
-                                  ),
-                                  color: Color(0xFF64748B),
-                                  fontSize: 18.0,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.w600,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .labelMedium
-                                      .fontStyle,
-                                ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xFFF1F5F9),
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 4.0,
-                                  color: Color(0x0F000000),
-                                  offset: Offset(
-                                    0.0,
-                                    2.0,
-                                  ),
-                                )
-                              ],
-                              borderRadius: BorderRadius.circular(12.0),
-                              border: Border.all(
-                                color: Color(0xFFDBEAFE),
-                                width: 1.0,
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      Icon(
-                                        Icons.card_giftcard_outlined,
-                                        color: Color(0xFF4F46E5),
-                                        size: 20.0,
-                                      ),
-                                      Text(
-                                        'FQ85DXC',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              font: GoogleFonts.inter(
-                                                fontWeight: FontWeight.w600,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .fontStyle,
-                                              ),
-                                              color: Color(0xFF4F46E5),
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w600,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                    ].divide(SizedBox(width: 12.0)),
-                                  ),
-                                  InkWell(
-                                    splashColor: Colors.transparent,
-                                    focusColor: Colors.transparent,
-                                    hoverColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    onTap: () async {
-                                      await Clipboard.setData(
-                                          ClipboardData(text: 'Referral Code'));
-                                    },
-                                    child: Icon(
-                                      Icons.content_copy_outlined,
-                                      color: Color(0xFF4F46E5),
-                                      size: 20.0,
+                                const SizedBox(width: 12),
+                                GestureDetector(
+                                  onTap: _goToSubscription,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFBDE2E9),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.add,
+                                      color: Color(0xFF4CAF50),
+                                      size: 20,
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ].divide(SizedBox(height: 8.0)),
-                      ),
-                    ].divide(SizedBox(height: 20.0)),
+                          ],
+                        ),
+
+                        const SizedBox(height: 24),
+                        Divider(
+                          thickness: 2,
+                          color: FlutterFlowTheme.of(context).alternate,
+                        ),
+                        const SizedBox(height: 24),
+
+                        // 🔹 Email
+                        _infoTile(
+                          label: 'Email Address',
+                          value: email,
+                          icon: Icons.email_outlined,
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // 🔹 Organization
+                        _infoTile(
+                          label: 'Organisation\'s Name',
+                          value: organization,
+                          icon: Icons.business_outlined,
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // 🔹 Referral Code
+                        _referralTile(),
+                      ],
+                    ),
                   ),
-                ]
-                    .divide(SizedBox(height: 24.0))
-                    .addToStart(SizedBox(height: 32.0)),
-              ),
-            ),
-          ),
+                ),
         ),
       ),
     );
   }
+
+  // 🔹 Reusable widgets
+  Widget _infoTile({
+    required String label,
+    required String value,
+    required IconData icon,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: FlutterFlowTheme.of(context)
+              .labelMedium
+              .override(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: const Color(0xFF64748B)),
+              const SizedBox(width: 12),
+              Expanded(child: Text(value)),
+              const Icon(Icons.edit_outlined,
+                  color: Color(0xFF64748B)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _referralTile() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Referral Code',
+          style: FlutterFlowTheme.of(context)
+              .labelMedium
+              .override(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFDBEAFE)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.card_giftcard_outlined,
+                  color: Color(0xFF4F46E5)),
+              const SizedBox(width: 12),
+              Text(
+                referralCode,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF4F46E5)),
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () {
+                  Clipboard.setData(
+                      ClipboardData(text: referralCode));
+                },
+                child: const Icon(Icons.copy,
+                    color: Color(0xFF4F46E5)),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
 }
