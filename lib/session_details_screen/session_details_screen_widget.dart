@@ -85,7 +85,7 @@ class _SessionDetailsScreenWidgetState
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
-                      boxShadow: [
+                      boxShadow:const [
                         BoxShadow(
                           blurRadius: 8.0,
                           color: Color(0x1A000000),
@@ -300,7 +300,7 @@ class _SessionDetailsScreenWidgetState
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
-                      boxShadow: [
+                      boxShadow: const[
                         BoxShadow(
                           blurRadius: 8.0,
                           color: Color(0x1A000000),
@@ -397,12 +397,12 @@ class _SessionDetailsScreenWidgetState
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                  padding:const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
-                      boxShadow: [
+                      boxShadow:const [
                         BoxShadow(
                           blurRadius: 8.0,
                           color: Color(0x1A000000),
@@ -416,7 +416,7 @@ class _SessionDetailsScreenWidgetState
                     ),
                     child: Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(8.0, 20.0, 8.0, 20.0),
+                         const  EdgeInsetsDirectional.fromSTEB(8.0, 20.0, 8.0, 20.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,7 +425,7 @@ class _SessionDetailsScreenWidgetState
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding:const EdgeInsetsDirectional.fromSTEB(
                                     10.0, 0.0, 0.0, 0.0),
                                 child: Text(
                                   'SOAP Notes',
@@ -498,12 +498,12 @@ class _SessionDetailsScreenWidgetState
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
-                      boxShadow: [
+                      boxShadow: const[
                         BoxShadow(
                           blurRadius: 8.0,
                           color: Color(0x1A000000),
@@ -517,7 +517,7 @@ class _SessionDetailsScreenWidgetState
                     ),
                     child: Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(8.0, 20.0, 8.0, 20.0),
+                        const  EdgeInsetsDirectional.fromSTEB(8.0, 20.0, 8.0, 20.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -599,26 +599,26 @@ class _SessionDetailsScreenWidgetState
                   ),
                 ),
                 Align(
-                  alignment: AlignmentDirectional(0.0, -1.0),
+                  alignment:const AlignmentDirectional(0.0, -1.0),
                   child: Padding(
                     padding:
-                        EdgeInsetsDirectional.fromSTEB(30.0, 0.0, 30.0, 20.0),
+                       const EdgeInsetsDirectional.fromSTEB(30.0, 0.0, 30.0, 20.0),
                     child: FFButtonWidget(
                       onPressed: () {
                         print('Button pressed ...');
                       },
                       text: 'Download PDF',
-                      icon: Icon(
+                      icon:const Icon(
                         Icons.picture_as_pdf_rounded,
                         size: 15.0,
                       ),
                       options: FFButtonOptions(
                         width: double.infinity,
                         height: 56.0,
-                        padding: EdgeInsets.all(8.0),
+                        padding:const EdgeInsets.all(8.0),
                         iconPadding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                        color: Color(0xFF2596BE),
+                          const  EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                        color:const Color(0xFF2596BE),
                         textStyle:
                             FlutterFlowTheme.of(context).titleMedium.override(
                                   font: GoogleFonts.poppins(

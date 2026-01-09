@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:owlby_serene_m_i_n_d_s/pages/onboarding_screen/appLaunchService.dart';
 
 import 'package:owlby_serene_m_i_n_d_s/record_feature/pages/record_screen.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/otp_sample.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import '/backend/backend.dart';
@@ -83,11 +85,30 @@ class AppStateNotifier extends ChangeNotifier {
 
 GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       initialLocation: '/',
-      debugLogDiagnostics: true,
       refreshListenable: appStateNotifier,
-      navigatorKey: appNavigatorKey,
-      errorBuilder: (context, state) =>
-          appStateNotifier.loggedIn ? NavBarPage() : LoginSample(),
+      redirect: (context, state) async {
+        final seenOnboarding = await AppLaunchService.hasSeenOnboarding();
+
+        final loggedIn = appStateNotifier.loggedIn;
+        final location = state.uri.toString();
+
+        // 1️⃣ First launch → onboarding
+        if (!seenOnboarding && location != OnboardingScreenWidget.routePath) {
+          return OnboardingScreenWidget.routePath;
+        }
+
+        // 2️⃣ Onboarding done but not logged in → login
+        if (seenOnboarding && !loggedIn && location != LoginSample.routePath) {
+          return LoginSample.routePath;
+        }
+
+        // 3️⃣ Logged in → home
+        if (loggedIn && location == '/') {
+          return HomeScreenWidget.routePath;
+        }
+
+        return null;
+      },
       routes: [
         FFRoute(
           name: '_initialize',
@@ -101,16 +122,6 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: OnboardingScreenWidget.routePath,
           builder: (context, params) => OnboardingScreenWidget(),
         ),
-        // FFRoute(
-        //   name: OnboardingScreenWidget.routeName,
-        //   path: OnboardingScreenWidget.routePath,
-        //   builder: (context, params) => OnboardingScreenWidget(),
-        // ),
-        // FFRoute(
-        //   name: OnboardingScreenWidget.routeName,
-        //   path: OnboardingScreenWidget.routePath,
-        //   builder: (context, params) => OnboardingScreenWidget(),
-        // ),
 
         //9897241287
         FFRoute(
@@ -124,24 +135,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => LoginSample(),
         ),
         FFRoute(
-          name: OtpScreenWidget.routeName,
-          path: OtpScreenWidget.routePath,
-          builder: (context, params) => OtpScreenWidget(
-            phoneNumber: params.getParam(
-              'phoneNumber',
-              ParamType.String,
-            ),
-            verificationId: params.getParam(
-              'verificationId',
-              ParamType.String,
-            ),
-          ),
+          name: OtpSample.routeName,
+          path: OtpSample.routePath,
+          builder: (context, params) => OtpSample(),
         ),
-        // FFRoute(
-        //   name: SessionDetailsScreenWidget.routeName,
-        //   path: SessionDetailsScreenWidget.routePath,
-        //   builder: (context, params) => SessionDetailsScreenWidget(),
-        // ),
+
         FFRoute(
           name: SubscriptionScreenWidget.routeName,
           path: SubscriptionScreenWidget.routePath,

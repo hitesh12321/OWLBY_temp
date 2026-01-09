@@ -163,6 +163,8 @@ class NavBarPage extends StatefulWidget {
     this.page,
     this.disableResizeToAvoidBottomInset = false,
   });
+  static String routeName = 'NavBarPage';
+  static String routePath = '/NavBarPage';
 
   final String? initialPage;
   final Widget? page;

@@ -1,4 +1,5 @@
 import 'package:owlby_serene_m_i_n_d_s/main.dart';
+import 'package:owlby_serene_m_i_n_d_s/pages/onboarding_screen/appLaunchService.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
 
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -215,20 +216,8 @@ class _OnboardingScreenWidgetState extends State<OnboardingScreenWidget> {
                       EdgeInsetsDirectional.fromSTEB(30.0, 10.0, 30.0, 20.0),
                   child: FFButtonWidget(
                     onPressed: () async {
-                      // context.pushNamed(
-                      //   LoginScreenWidget.routeName,
-                      //   extra: <String, dynamic>{
-                      //     kTransitionInfoKey: TransitionInfo(
-                      //       hasTransition: true,
-                      //       transitionType: PageTransitionType.fade,
-                      //       duration: Duration(milliseconds: 0),
-                      //     ),
-                      //   },
-                      // );
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginSample()));
+                      await AppLaunchService.markOnboardingSeen();
+                      context.goNamed(LoginSample.routeName);
                     },
                     text: 'Continue >',
                     options: FFButtonOptions(

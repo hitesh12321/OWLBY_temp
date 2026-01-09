@@ -132,12 +132,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
 
         print("meeting id status : ${updatedRecording.status}");
 
-        // await Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => NavBarPage(),
-        //   ),
-        // );
+     
         final meeting_id = CreateMeetingCallApi_body["data"]["id"];
 
         final fileBytes = await File(SessionSaved.filePath).readAsBytes();
@@ -194,11 +189,6 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
         );
         context.goNamed(HomeScreenWidget.routeName);
 
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //       content: Text(
-        //           "StopAndSave completed👍👍👍👍👍: ${CreateMeetingCallApi_body}")),
-        // );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Save failed😩😩😩😩😩😩😩: $e')),
