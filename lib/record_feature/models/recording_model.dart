@@ -14,6 +14,7 @@ class RecordingModel {
   int? duration;
   String? notes;
   String? audioUrl;
+  String? tips;
 
   RecordingModel({
     required this.recordingId,
@@ -30,6 +31,7 @@ class RecordingModel {
     this.duration,
     this.notes,
     this.audioUrl,
+    this.tips,
   });
 
   RecordingModel copyWith({
@@ -47,6 +49,7 @@ class RecordingModel {
     int? duration,
     String? notes,
     String? audioUrl,
+    String? tips,
   }) {
     return RecordingModel(
       recordingId: id ?? this.recordingId,
@@ -63,6 +66,7 @@ class RecordingModel {
       duration: duration ?? this.duration,
       notes: notes ?? this.notes,
       audioUrl: audioUrl ?? this.audioUrl,
+      tips: tips ?? this.tips,
     );
   }
 
@@ -81,6 +85,7 @@ class RecordingModel {
         "duration": duration,
         "notes": notes,
         "audio_url": audioUrl,
+        "tips": tips,
       };
   // this map can be json so i used it here
 
@@ -99,5 +104,6 @@ class RecordingModel {
         duration: map["duration"],
         notes: map["notes"],
         audioUrl: map["audio_url"],
+        tips: map["tips"],
       );
 }

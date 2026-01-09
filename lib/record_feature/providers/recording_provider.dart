@@ -298,6 +298,7 @@ class RecordingProvider extends ChangeNotifier {
     int? duration,
     String? notes,
     String? audioUrl,
+    String? tips,
     required String status,
   }) async {
     // 1️⃣ Update DB
@@ -310,6 +311,7 @@ class RecordingProvider extends ChangeNotifier {
       notes: notes,
       status: status,
       audioUrl: audioUrl,
+      tips: tips,
     );
 
     // 2️⃣ Update in-memory list
@@ -324,10 +326,20 @@ class RecordingProvider extends ChangeNotifier {
         notes: notes,
         status: status,
         audioUrl: audioUrl,
+        tips: tips,
       );
       notifyListeners();
     }
   }
+
+  void resetTimer() {
+  _stopwatch.stop();
+  _stopwatch.reset();
+  _currentDb = 0.0;
+  _currentRms = 0.0;
+  _stopTicker();
+  notifyListeners();
+}
 
   // UPLOAD SESSION
   Future<void> uploadRecordingToBackend({

@@ -29,7 +29,7 @@ class OwlbyDatabase {
 
     return await openDatabase(
       path,
-      version: 4,
+      version: 5,
       onCreate: _createDB,
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -55,6 +55,9 @@ class OwlbyDatabase {
         referral_code TEXT
       )
     ''');
+        }
+        if (oldVersion < 5) {
+          await db.execute('ALTER TABLE recordings ADD COLUMN tips TEXT');
         }
       },
     );
@@ -96,7 +99,8 @@ class OwlbyDatabase {
   keywords TEXT,
   duration TEXT,
   notes TEXT,
-  audio_url TEXT
+  audio_url TEXT,
+  tips TEXT
 )
 ''');
     await db.execute('''
@@ -260,6 +264,7 @@ CREATE TABLE appuser (
     String? notes,
     String? audioUrl,
     required String status,
+    String? tips, // Ensure this parameter is used
   }) async {
     final db = await database;
     return await db.update(
@@ -272,6 +277,7 @@ CREATE TABLE appuser (
         'notes': notes,
         'status': status,
         'audio_url': audioUrl,
+        'tips': tips, // Add this line!
       },
       where: 'id = ?',
       whereArgs: [id],
