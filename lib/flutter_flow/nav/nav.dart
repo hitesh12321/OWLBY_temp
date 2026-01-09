@@ -87,14 +87,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       refreshListenable: appStateNotifier,
       navigatorKey: appNavigatorKey,
       errorBuilder: (context, state) =>
-          appStateNotifier.loggedIn ? NavBarPage() : LoginScreenWidget(),
+          appStateNotifier.loggedIn ? NavBarPage() : LoginSample(),
       routes: [
         FFRoute(
           name: '_initialize',
           path: '/',
-          builder: (context, _) => appStateNotifier.loggedIn
-              ? NavBarPage()
-              : LoginSample(),
+          builder: (context, _) =>
+              appStateNotifier.loggedIn ? NavBarPage() : LoginSample(),
         ),
         FFRoute(
           name: OnboardingScreenWidget.routeName,
@@ -119,9 +118,9 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => CreateAccountScreenWidget(),
         ),
         FFRoute(
-          name: LoginScreenWidget.routeName,
-          path: LoginScreenWidget.routePath,
-          builder: (context, params) => LoginScreenWidget(),
+          name: LoginSample.routeName,
+          path: LoginSample.routePath,
+          builder: (context, params) => LoginSample(),
         ),
         FFRoute(
           name: OtpScreenWidget.routeName,

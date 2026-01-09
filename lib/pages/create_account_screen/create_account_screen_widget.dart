@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
 
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -137,7 +138,7 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Account created successfully!')),
         );
-        context.pushNamed(LoginScreenWidget.routeName);
+        context.pushNamed(LoginSample.routeName);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

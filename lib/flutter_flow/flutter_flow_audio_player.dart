@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,6 +37,7 @@ class FlutterFlowAudioPlayer extends StatefulWidget {
     required this.elevation,
     this.pauseOnNavigate = true,
     required this.playInBackground,
+    this.autoPlay = false, // [FIX 1] Changed to 'this.autoPlay' with a default
   }) : super(key: key);
 
   final Audio audio;
@@ -49,6 +50,7 @@ class FlutterFlowAudioPlayer extends StatefulWidget {
   final double elevation;
   final bool pauseOnNavigate;
   final PlayInBackground playInBackground;
+  final bool autoPlay; // [FIX 2] Added the variable declaration here
 
   @override
   _FlutterFlowAudioPlayerState createState() => _FlutterFlowAudioPlayerState();
@@ -72,7 +74,7 @@ class _FlutterFlowAudioPlayerState extends State<FlutterFlowAudioPlayer>
 
     await _assetsAudioPlayer!.open(
       Playlist(audios: [widget.audio]),
-      autoStart: true,
+      autoStart: widget.autoPlay, // [FIX 3] Use the variable instead of 'true'
     );
   }
 

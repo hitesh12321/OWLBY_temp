@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/flutter_flow_util.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/uploaded_file.dart';
@@ -55,6 +56,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
   Future<void> _showSaveDialog(
       BuildContext context, RecordingProvider prov) async {
     _titleController.text = '';
+    final user = context.read<AppUserProvider>().user;
 
     final result = await showDialog<bool>(
       context: context,
@@ -100,17 +102,14 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
         final SessionSaved = await prov.stopAndSave(title);
 
         //// 🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌//
-        // String MeetingDate =
-        //    DateFormat('yyyy-MM-dd').format(SessionSaved.createdAt);
-        // String MeetingTime = DateFormat('HH:mm').format(SessionSaved.createdAt);
-        // creating meeting id
+
         final CreateMeetingId = await CreatemeetingCall.call(
-            userId: "7de5f506-37aa-4835-80be-fc260d9f2d5f",
+            userId: user!.id,
             meetingDate:
                 DateFormat('yyyy-MM-dd').format(SessionSaved.createdAt),
             meetingTime: DateFormat('HH:mm').format(SessionSaved.createdAt),
             duration: 30,
-            professionalName: "Dr. Sharma");
+            professionalName: user.fullName);
 
         final CreateMeetingCallApi_body = CreateMeetingId.jsonBody;
         final bool s_tatus = CreateMeetingCallApi_body["status"];
@@ -150,8 +149,8 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
 
         final Session_id_by_upload_meeting = await UploadrecordingCall.call(
             meetingId: meeting_id,
-            userId: "7de5f506-37aa-4835-80be-fc260d9f2d5f",
-            professionalName: "Dr. Sharma",
+            userId: user.id,
+            professionalName: user.fullName,
             file: ffFile);
         print(Session_id_by_upload_meeting.jsonBody);
 
@@ -164,8 +163,8 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
         final session_text = await ProcessmeetingCall.call(
             meetingId: meeting_id,
             meetingTitle: title,
-            name: "Dr. ",
-            email: "dr.smith@example.com",
+            name: user.fullName,
+            email: user.email,
             participants: "Client A",
             startTime: "2025-10-26T12:00:00Z",
             provider: "supabase");

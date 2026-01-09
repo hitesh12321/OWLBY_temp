@@ -1,281 +1,281 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:owlby_serene_m_i_n_d_s/auth/firebase_auth/auth_util.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:owlby_serene_m_i_n_d_s/auth/firebase_auth/auth_util.dart';
 
-import '/flutter_flow/flutter_flow_theme.dart';
-import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
-import '/index.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'login_screen_model.dart';
-export 'login_screen_model.dart';
+// import '/flutter_flow/flutter_flow_theme.dart';
+// import '/flutter_flow/flutter_flow_util.dart';
+// import '/flutter_flow/flutter_flow_widgets.dart';
+// import 'dart:ui';
+// import '/index.dart';
+// import 'package:flutter/material.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'login_screen_model.dart';
+// export 'login_screen_model.dart';
 
-class LoginScreenWidget extends StatefulWidget {
-  const LoginScreenWidget({super.key});
+// class LoginScreenWidget extends StatefulWidget {
+//   const LoginScreenWidget({super.key});
 
-  static String routeName = 'loginScreen';
-  static String routePath = '/loginScreen';
+//   static String routeName = 'loginScreen';
+//   static String routePath = '/loginScreen';
 
-  @override
-  State<LoginScreenWidget> createState() => _LoginScreenWidgetState();
-}
+//   @override
+//   State<LoginScreenWidget> createState() => _LoginScreenWidgetState();
+// }
 
-class _LoginScreenWidgetState extends State<LoginScreenWidget>
-    with TickerProviderStateMixin {
-  late LoginScreenModel _model;
-  bool isLoading = false;
+// class _LoginScreenWidgetState extends State<LoginScreenWidget>
+//     with TickerProviderStateMixin {
+//   late LoginScreenModel _model;
+//   bool isLoading = false;
 
-  final scaffoldKey = GlobalKey<ScaffoldState>();
+//   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  /// FIX: Use your own controller (NOT model’s)
-  late TextEditingController phoneController;
+//   /// FIX: Use your own controller (NOT model’s)
+//   late TextEditingController phoneController;
 
-  @override
-  void initState() {
-    super.initState();
-    _model = createModel(context, () => LoginScreenModel());
+//   @override
+//   void initState() {
+//     super.initState();
+//     _model = createModel(context, () => LoginScreenModel());
 
-    phoneController = TextEditingController(); // FIXED
+//     phoneController = TextEditingController(); // FIXED
 
-    authManager.handlePhoneAuthStateChanges(context);
-  }
+//     authManager.handlePhoneAuthStateChanges(context);
+//   }
 
-  @override
-  void dispose() {
-    phoneController.dispose(); // FIXED
-    _model.dispose();
-    super.dispose();
-  }
+//   @override
+//   void dispose() {
+//     phoneController.dispose(); // FIXED
+//     _model.dispose();
+//     super.dispose();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        resizeToAvoidBottomInset: true,
-        body: SafeArea(
-          child: Row(
-            children: [
-              /// LEFT PANEL (Desktop only)
-              if (responsiveVisibility(
-                context: context,
-                phone: false,
-                tablet: false,
-              ))
-                Expanded(
-                  flex: 5,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          FlutterFlowTheme.of(context).primaryBackground,
-                          FlutterFlowTheme.of(context).accent1,
-                        ],
-                        begin: Alignment.centerRight,
-                        end: Alignment.centerLeft,
-                      ),
-                    ),
-                  ),
-                ),
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () => FocusScope.of(context).unfocus(),
+//       child: Scaffold(
+//         key: scaffoldKey,
+//         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+//         resizeToAvoidBottomInset: true,
+//         body: SafeArea(
+//           child: Row(
+//             children: [
+//               /// LEFT PANEL (Desktop only)
+//               if (responsiveVisibility(
+//                 context: context,
+//                 phone: false,
+//                 tablet: false,
+//               ))
+//                 Expanded(
+//                   flex: 5,
+//                   child: Container(
+//                     decoration: BoxDecoration(
+//                       gradient: LinearGradient(
+//                         colors: [
+//                           FlutterFlowTheme.of(context).primaryBackground,
+//                           FlutterFlowTheme.of(context).accent1,
+//                         ],
+//                         begin: Alignment.centerRight,
+//                         end: Alignment.centerLeft,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
 
-              /// RIGHT PANEL (Form)
-              Expanded(
-                flex: 5,
-                child: Center(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: 570,
-                      ),
-                      child: Container(
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: FlutterFlowTheme.of(context).secondary,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(height: 40),
+//               /// RIGHT PANEL (Form)
+//               Expanded(
+//                 flex: 5,
+//                 child: Center(
+//                   child: SingleChildScrollView(
+//                     padding: const EdgeInsets.all(16),
+//                     child: ConstrainedBox(
+//                       constraints: BoxConstraints(
+//                         maxWidth: 570,
+//                       ),
+//                       child: Container(
+//                         padding: EdgeInsets.all(20),
+//                         decoration: BoxDecoration(
+//                           color: FlutterFlowTheme.of(context).secondary,
+//                           borderRadius: BorderRadius.circular(16),
+//                         ),
+//                         child: Column(
+//                           crossAxisAlignment: CrossAxisAlignment.center,
+//                           children: [
+//                             SizedBox(height: 40),
 
-                            Text(
-                              'Continue with Phone',
-                              style: FlutterFlowTheme.of(context)
-                                  .displaySmall
-                                  .override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    fontSize: 30,
-                                  ),
-                            ),
+//                             Text(
+//                               'Continue with Phone',
+//                               style: FlutterFlowTheme.of(context)
+//                                   .displaySmall
+//                                   .override(
+//                                     font: GoogleFonts.poppins(
+//                                       fontWeight: FontWeight.bold,
+//                                     ),
+//                                     fontSize: 30,
+//                                   ),
+//                             ),
 
-                            SizedBox(height: 8),
+//                             SizedBox(height: 8),
 
-                            Text(
-                              'Enter your phone number to continue',
-                              style: FlutterFlowTheme.of(context).labelLarge,
-                            ),
+//                             Text(
+//                               'Enter your phone number to continue',
+//                               style: FlutterFlowTheme.of(context).labelLarge,
+//                             ),
 
-                            SizedBox(height: 30),
+//                             SizedBox(height: 30),
 
-                            /// PHONE INPUT ROW
-                            Row(
-                              children: [
-                                Container(
-                                  width: 60,
-                                  height: 56,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border:
-                                        Border.all(color: Color(0xFFE0E0E0)),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    '+91',
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          font: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          fontSize: 16,
-                                        ),
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Container(
-                                    height: 56,
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16),
-                                      border:
-                                          Border.all(color: Color(0xFFE0E0E0)),
-                                    ),
-                                    alignment: Alignment.centerLeft,
-                                    child: TextFormField(
-                                      controller: phoneController,
-                                      keyboardType: TextInputType.phone,
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter phone number',
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+//                             /// PHONE INPUT ROW
+//                             Row(
+//                               children: [
+//                                 Container(
+//                                   width: 60,
+//                                   height: 56,
+//                                   decoration: BoxDecoration(
+//                                     color: Colors.white,
+//                                     borderRadius: BorderRadius.circular(12),
+//                                     border:
+//                                         Border.all(color: Color(0xFFE0E0E0)),
+//                                   ),
+//                                   alignment: Alignment.center,
+//                                   child: Text(
+//                                     '+91',
+//                                     style: FlutterFlowTheme.of(context)
+//                                         .bodyMedium
+//                                         .override(
+//                                           font: GoogleFonts.poppins(
+//                                             fontWeight: FontWeight.w500,
+//                                           ),
+//                                           fontSize: 16,
+//                                         ),
+//                                   ),
+//                                 ),
+//                                 SizedBox(width: 8),
+//                                 Expanded(
+//                                   child: Container(
+//                                     height: 56,
+//                                     padding:
+//                                         EdgeInsets.symmetric(horizontal: 12),
+//                                     decoration: BoxDecoration(
+//                                       color: Colors.white,
+//                                       borderRadius: BorderRadius.circular(16),
+//                                       border:
+//                                           Border.all(color: Color(0xFFE0E0E0)),
+//                                     ),
+//                                     alignment: Alignment.centerLeft,
+//                                     child: TextFormField(
+//                                       controller: phoneController,
+//                                       keyboardType: TextInputType.phone,
+//                                       decoration: InputDecoration(
+//                                         hintText: 'Enter phone number',
+//                                         border: InputBorder.none,
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
 
-                            SizedBox(height: 40),
+//                             SizedBox(height: 40),
 
-                            /// CONTINUE BUTTON
-                            FFButtonWidget(
-                              // 1. Change text to "Processing..." when loading
-                              text: isLoading ? 'Processing...' : 'Continue >',
+//                             /// CONTINUE BUTTON
+//                             FFButtonWidget(
+//                               // 1. Change text to "Processing..." when loading
+//                               text: isLoading ? 'Processing...' : 'Continue >',
 
-                              // 2. Your Original Styling (Restored from your file)
-                              options: FFButtonOptions(
-                                width: double.infinity,
-                                height: 56,
-                                color: isLoading
-                                    ? Colors.grey
-                                    : const Color(
-                                        0xFF2596BE), // Grey out when loading
-                                textStyle: FlutterFlowTheme.of(context)
-                                    .titleMedium
-                                    .override(
-                                      fontFamily: 'Poppins',
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                elevation: 2,
-                                borderRadius: BorderRadius.circular(25),
-                              ),
+//                               // 2. Your Original Styling (Restored from your file)
+//                               options: FFButtonOptions(
+//                                 width: double.infinity,
+//                                 height: 56,
+//                                 color: isLoading
+//                                     ? Colors.grey
+//                                     : const Color(
+//                                         0xFF2596BE), // Grey out when loading
+//                                 textStyle: FlutterFlowTheme.of(context)
+//                                     .titleMedium
+//                                     .override(
+//                                       fontFamily: 'Poppins',
+//                                       color: Colors.white,
+//                                       fontSize: 16,
+//                                       fontWeight: FontWeight.w600,
+//                                     ),
+//                                 elevation: 2,
+//                                 borderRadius: BorderRadius.circular(25),
+//                               ),
 
-                              // 3. The Logic (with Debugging & Error Handling)
-                              onPressed: isLoading
-                                  ? null
-                                  : () async {
-                                      setState(() =>
-                                          isLoading = true); // Start loading
-                                      String rawPhone =
-                                          phoneController.text.trim();
-                                      rawPhone = rawPhone.replaceAll(
-                                          RegExp(r'\D'), '');
+//                               // 3. The Logic (with Debugging & Error Handling)
+//                               onPressed: isLoading
+//                                   ? null
+//                                   : () async {
+//                                       setState(() =>
+//                                           isLoading = true); // Start loading
+//                                       String rawPhone =
+//                                           phoneController.text.trim();
+//                                       rawPhone = rawPhone.replaceAll(
+//                                           RegExp(r'\D'), '');
 
-                                      if (rawPhone.length != 10) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                              content: Text(
-                                                  "Enter a valid 10-digit number")),
-                                        );
-                                        setState(() => isLoading = false);
-                                        return;
-                                      }
+//                                       if (rawPhone.length != 10) {
+//                                         ScaffoldMessenger.of(context)
+//                                             .showSnackBar(
+//                                           const SnackBar(
+//                                               content: Text(
+//                                                   "Enter a valid 10-digit number")),
+//                                         );
+//                                         setState(() => isLoading = false);
+//                                         return;
+//                                       }
 
-                                      String formattedPhone = '+91$rawPhone';
+//                                       String formattedPhone = '+91$rawPhone';
 
-                                      try {
-                                        await authManager.beginPhoneAuth(
-                                          context: context,
-                                          phoneNumber: formattedPhone,
-                                          onCodeSent: (context) {
-                                            setState(() => isLoading = false);
+//                                       try {
+//                                         await authManager.beginPhoneAuth(
+//                                           context: context,
+//                                           phoneNumber: formattedPhone,
+//                                           onCodeSent: (context) {
+//                                             setState(() => isLoading = false);
 
-                                            // GET THE ID DIRECTLY FROM THE MANAGER
-                                            final vId = authManager
-                                                .phoneAuthManager
-                                                .phoneAuthVerificationCode;
+//                                             // GET THE ID DIRECTLY FROM THE MANAGER
+//                                             final vId = authManager
+//                                                 .phoneAuthManager
+//                                                 .phoneAuthVerificationCode;
 
-                                            if (vId != null && vId.isNotEmpty) {
-                                              print("Navigating with ID: $vId");
-                                              context.pushNamed(
-                                                'otpScreen',
-                                                queryParameters: {
-                                                  'phoneNumber': formattedPhone,
-                                                  'verificationId': vId,
-                                                }.withoutNulls,
-                                              );
-                                            } else {
-                                              print(
-                                                  "Error: Verification ID is null");
-                                            }
-                                          },
-                                        );
-                                      } catch (e) {
-                                        setState(() => isLoading = false);
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(content: Text("Error: $e")),
-                                        );
-                                      }
-                                    },
-                            ),
+//                                             if (vId != null && vId.isNotEmpty) {
+//                                               print("Navigating with ID: $vId");
+//                                               context.pushNamed(
+//                                                 'otpScreen',
+//                                                 queryParameters: {
+//                                                   'phoneNumber': formattedPhone,
+//                                                   'verificationId': vId,
+//                                                 }.withoutNulls,
+//                                               );
+//                                             } else {
+//                                               print(
+//                                                   "Error: Verification ID is null");
+//                                             }
+//                                           },
+//                                         );
+//                                       } catch (e) {
+//                                         setState(() => isLoading = false);
+//                                         ScaffoldMessenger.of(context)
+//                                             .showSnackBar(
+//                                           SnackBar(content: Text("Error: $e")),
+//                                         );
+//                                       }
+//                                     },
+//                             ),
 
-                            ///
+//                             ///
 
-                            SizedBox(height: 20),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+//                             SizedBox(height: 20),
+//                           ],
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

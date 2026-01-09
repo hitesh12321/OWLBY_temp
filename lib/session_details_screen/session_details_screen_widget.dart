@@ -5,10 +5,10 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+
 import 'session_details_screen_model.dart';
 export 'session_details_screen_model.dart';
 
@@ -235,6 +235,8 @@ class _SessionDetailsScreenWidgetState
                 Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 0.0),
                   child: FlutterFlowAudioPlayer(
+                    ///////////////////////
+                    autoPlay: false,
                     audio: Audio.network(
                       widget.recording.audioUrl.toString(),
                       metas: Metas(

@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/otp_sample.dart';
 import 'package:provider/provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_model.dart';
 import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/local_database/db/project_database.dart';
 import 'package:owlby_serene_m_i_n_d_s/main.dart';
-import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
-import 'package:owlby_serene_m_i_n_d_s/sample_auth/otp_sample.dart';
 
 class AuthSample {
   static String verId = "";

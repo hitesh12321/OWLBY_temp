@@ -1,90 +1,266 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/nav/nav.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/auth_sample.dart';
 
+// Imports required for the UI Styling
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+
 class LoginSample extends StatefulWidget {
   const LoginSample({super.key});
+
+  // Copied Route identifiers
+  static String routeName = 'loginScreen';
+  static String routePath = '/loginScreen';
 
   @override
   State<LoginSample> createState() => _LoginSampleState();
 }
 
 class _LoginSampleState extends State<LoginSample> {
-  TextEditingController phoneController = TextEditingController();
+  late TextEditingController phoneController;
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    phoneController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    String phoneNumber = phoneController.text;
-    return Scaffold(
-      backgroundColor: Colors.purple.shade100,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        key: scaffoldKey,
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+        resizeToAvoidBottomInset: true,
+        body: SafeArea(
+          child: Row(
             children: [
-              const Text(
-                'Login / SignUp',
-                style: TextStyle(
-                  shadows: [
-                    Shadow(
-                      color: Colors.black,
-                      offset: Offset(1, 2),
-                    ),
-                  ],
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              TextField(
-                controller: phoneController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(15),
+              /// LEFT PANEL (Desktop/Tablet visibility check)
+              /// Using generic responsive logic since the helper function might vary
+              if (MediaQuery.of(context).size.width > 991)
+                Expanded(
+                  flex: 5,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          FlutterFlowTheme.of(context).primaryBackground,
+                          FlutterFlowTheme.of(context).accent1,
+                        ],
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                      ),
                     ),
                   ),
-                  labelText: "Enter Phone Number",
-                  counterText: "",
                 ),
-                maxLength: 10,
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              ElevatedButton(
-                style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.red),
-                  foregroundColor: MaterialStatePropertyAll(Colors.white),
+
+              /// RIGHT PANEL (Form)
+              Expanded(
+                flex: 5,
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 570,
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context).secondary,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 40),
+
+                            Text(
+                              'Continue with Phone',
+                              style: FlutterFlowTheme.of(context)
+                                  .displaySmall
+                                  .override(
+                                    font: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    fontSize: 30,
+                                  ),
+                            ),
+
+                            const SizedBox(height: 8),
+
+                            Text(
+                              'Enter your phone number to continue',
+                              style: FlutterFlowTheme.of(context).labelLarge,
+                            ),
+
+                            const SizedBox(height: 30),
+
+                            /// PHONE INPUT ROW
+                            Row(
+                              children: [
+                                Container(
+                                  width: 60,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                        color: const Color(0xFFE0E0E0)),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    '+91',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          font: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          fontSize: 16,
+                                        ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Container(
+                                    height: 56,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                          color: const Color(0xFFE0E0E0)),
+                                    ),
+                                    alignment: Alignment.centerLeft,
+                                    child: TextFormField(
+                                      controller: phoneController,
+                                      keyboardType: TextInputType.phone,
+                                      decoration: const InputDecoration(
+                                        hintText: 'Enter phone number',
+                                        border: InputBorder.none,
+                                        counterText: "", // Hides counter
+                                      ),
+                                      maxLength: 10,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 40),
+
+                            /// CONTINUE BUTTON (With Logic from login_sample)
+                            FFButtonWidget(
+                              text: isLoading ? 'Processing...' : 'Continue >',
+                              options: FFButtonOptions(
+                                width: double.infinity,
+                                height: 56,
+                                color: isLoading
+                                    ? Colors.grey
+                                    : const Color(0xFF2596BE),
+                                textStyle: FlutterFlowTheme.of(context)
+                                    .titleMedium
+                                    .override(
+                                      fontFamily: 'Poppins',
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                elevation: 2,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              onPressed: isLoading
+                                  ? null
+                                  : () async {
+                                      final phone = phoneController.text.trim();
+
+                                      // 1. Validate Format
+                                      if (!RegExp(r'^[0-9]{10}$')
+                                          .hasMatch(phone)) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                "Please enter a valid 10-digit number"),
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      // 2. Start Loading State
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+
+                                      try {
+                                        // 3. API Check Logic (from login_sample)
+                                        final checkuserResponse =
+                                            await CheckUserApi.call(
+                                                phoneNumber: phone);
+
+                                        final userExists =
+                                            CheckUserApi.userExists(
+                                                checkuserResponse);
+
+                                        print(
+                                            "❤️ check user exists: $userExists");
+
+                                        if (userExists) {
+                                          print(
+                                              "❤️ User exists. Proceeding to login.");
+                                          // Login Flow
+                                          AuthSample.verifyPhoneNumber(
+                                              context, phone);
+                                        } else {
+                                          print(
+                                              "❤️ User does not exist. Proceeding to sign up.");
+                                          // Sign Up Flow
+                                          if (mounted) {
+                                            context.pushReplacementNamed(
+                                                'createAccountScreen');
+                                          }
+                                        }
+                                      } catch (e) {
+                                        print("Error during check: $e");
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  "Something went wrong: $e")),
+                                        );
+                                      } finally {
+                                        // 4. Stop Loading
+                                        if (mounted) {
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+                                        }
+                                      }
+                                    },
+                            ),
+
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-                onPressed: () async {
-                  final phone = phoneController.text.trim();
-
-                  if (RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
-                    final checkuserResponse =
-                        await CheckUserApi.call(phoneNumber: phone);
-
-                    final userExists =
-                        CheckUserApi.userExists(checkuserResponse);
-
-                    print("❤️ check user exists: $userExists");
-                    if (userExists) {
-                      print("❤️ User exists. Proceeding to login.");
-                      AuthSample.verifyPhoneNumber(context, phone);
-                    } else {
-                      print("❤️ User does not exist. Proceeding to sign up.");
-                      context.pushReplacementNamed('createAccountScreen');
-                    }
-                  }
-                },
-                child: const Text("Send OTP"),
               ),
             ],
           ),

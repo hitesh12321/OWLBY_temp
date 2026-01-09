@@ -1,6 +1,5 @@
-import 'package:http/http.dart' as http;
 import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
-import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
+
 import 'package:owlby_serene_m_i_n_d_s/subscription_screen/subscription_screen_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -27,16 +26,9 @@ class ProfileScreenWidget extends StatefulWidget {
 
 class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
   late ProfileScreenModel _model;
-  int sessionLeft = 3;
+  int sessionLeft = 0;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-
-  //  Profile data
-  // String name = '';
-  // String email = '';
-  // String organization = '';
-  // String referralCode = '';
-  // int sessionLeft = 0;
 
   bool isLoading = true;
 
@@ -44,10 +36,6 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => ProfileScreenModel());
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   fetchProfileData();
-    // });
   }
 
   @override
@@ -58,41 +46,6 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
   }
 
 //  API CALL
-
-  // Future<void> fetchProfileData() async {
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse('https://yourapi.com/profile'),
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': 'Bearer YOUR_TOKEN_HERE',
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-
-  //       setState(() {
-  //         name = data['name'];
-  //         email = data['email'];
-  //         organization = data['organization'];
-  //         referralCode = data['referralCode'];
-  //         sessionLeft = data['sessionsLeft'];
-  //         isLoading = false;
-  //       });
-
-  //       //  Auto redirect if sessions = 0
-  //       if (sessionLeft == 0) {
-  //         _goToSubscription();
-  //       }
-  //     } else {
-  //       throw Exception('Failed to load profile');
-  //     }
-  //   } catch (e) {
-  //     setState(() => isLoading = false);
-  //     debugPrint('API Error: $e');
-  //   }
-  // }
 
   //  Subscription redirect
   void _goToSubscription() {
@@ -150,8 +103,7 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
                                     style: const TextStyle(
                                         fontSize: 16, color: Colors.black87),
                                     children: [
-                                      const TextSpan(
-                                          text: "Sessions Left: {} "),
+                                      const TextSpan(text: "Sessions Left: "),
                                       TextSpan(
                                         text: sessionLeft.toString(),
                                         style: const TextStyle(
@@ -192,7 +144,7 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
                         // 🔹 Email
                         _infoTile(
-                          label: 'Email Address : ${user!.email}',
+                          label: 'Email Address : ',
                           value: user.email,
                           icon: Icons.email_outlined,
                         ),
@@ -201,8 +153,7 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
                         // 🔹 Organization
                         _infoTile(
-                          label:
-                              'Organisation\'s Name : ${user.organizationName}',
+                          label: 'Organisation\'s Name : ',
                           value: user.organizationName ?? 'N/A',
                           icon: Icons.business_outlined,
                         ),
@@ -248,7 +199,7 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
               Icon(icon, color: const Color(0xFF64748B)),
               const SizedBox(width: 12),
               Expanded(child: Text(value)),
-              const Icon(Icons.edit_outlined, color: Color(0xFF64748B)),
+              // const Icon(Icons.edit_outlined, color: Color(0xFF64748B)),
             ],
           ),
         ),
@@ -262,7 +213,7 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Referral Code : ${user!.referralCode}',
+          'Referral Code : ',
           style: FlutterFlowTheme.of(context)
               .labelMedium
               .override(fontWeight: FontWeight.w600),
@@ -281,7 +232,7 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
                   color: Color(0xFF4F46E5)),
               const SizedBox(width: 12),
               Text(
-                user.referralCode ?? '',
+                user!.referralCode ?? '',
                 style: const TextStyle(
                     fontWeight: FontWeight.w600, color: Color(0xFF4F46E5)),
               ),
