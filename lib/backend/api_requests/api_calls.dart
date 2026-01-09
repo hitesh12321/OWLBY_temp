@@ -129,6 +129,31 @@ class GetUserDetails {
   }
 }
 
+// check number of session left
+
+class GetSessionLeft {
+  static Future<ApiCallResponse> call({
+    required String userId,
+  }) {
+    return ApiManager.instance.makeApiCall(
+      callName: 'getSessionLeft',
+      apiUrl: 'https://owl-app-backend.vercel.app/api/auth/sessions',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      body: '''
+      {
+        "user_id": "$userId"
+      } 
+      ''',
+      bodyType: BodyType.JSON,
+    );
+  }
+
+  static int sessionsLeft(ApiCallResponse response) {
+    return response.jsonBody?['data']?['sessionsLeft'] ?? 0;
+  }
+}
+
 // check user api // DONE 👍👍👍
 class CheckUserApi {
   static Future<ApiCallResponse> call({

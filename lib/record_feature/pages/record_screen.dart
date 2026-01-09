@@ -5,6 +5,7 @@ import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/flutter_flow_util.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/uploaded_file.dart';
+import 'package:owlby_serene_m_i_n_d_s/home_screen/home_screen_widget.dart';
 import 'package:owlby_serene_m_i_n_d_s/local_database/db/project_database.dart';
 
 import 'package:owlby_serene_m_i_n_d_s/session_details_screen/session_details_screen_widget.dart';
@@ -191,16 +192,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
               content: Text(
                   "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}")),
         );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => SessionDetailsScreenWidget(
-              recording: prov.recordings.firstWhere(
-                (r) => r.recordingId == SessionSaved.recordingId,
-              ),
-            ),
-          ),
-        );
+        context.goNamed(HomeScreenWidget.routeName);
 
         // ScaffoldMessenger.of(context).showSnackBar(
         //   SnackBar(
@@ -234,7 +226,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 30,
-              color: Colors.black,
+              color: Color.fromARGB(255, 31, 33, 35),
             ),
           ),
           centerTitle: true,
@@ -250,55 +242,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
               child: Column(
                 children: [
                   // Large status and meter
-                  Card(
-                    elevation: 6,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          Text(
-                            prov.isRecording
-                                ? (prov.isPaused ? 'Paused' : 'Recording...')
-                                : (prov.isPlaying ? 'Playing' : 'Ready'),
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(height: 12),
-                          // Simple amplitude meter
-                          LinearProgressIndicator(
-                            minHeight: 12,
-                            value: (prov.currentRms.clamp(0.0, 1.0)),
-                            backgroundColor: Colors.grey.shade300,
-                          ),
-                          const SizedBox(height: 12),
-                          // Pitch display
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.music_note),
-                              const SizedBox(width: 8),
-                              Text(
-                                prov.currentPitch > 0.0
-                                    ? '${prov.currentPitch.toString()} Hz'
-                                    : '— Hz',
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                prov.currentPitch > 0.0
-                                    ? _pitchToNote(prov.currentPitch)
-                                    : '',
-                                style: const TextStyle(
-                                    fontSize: 16, color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+
                   SizedBox(height: 140),
                   Center(
                     child: Column(
@@ -306,14 +250,16 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
                         Text(
                           formatDuration(prov.recordingDuration),
                           style: TextStyle(
-                            fontSize: 60,
+                            fontSize: 80,
                             fontWeight: FontWeight.bold,
                             color: prov.isRecording ? Colors.red : Colors.black,
                           ),
                         ),
                         Text("Recording Duration",
                             style: TextStyle(
-                                fontSize: 18, color: Colors.grey.shade600)),
+                                fontSize: 25,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
@@ -328,7 +274,10 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
                       // Start / Stop & Save
                       FFButtonWidget(
                         onPressed: prov.isRecording
-                            ? () => _showSaveDialog(context, prov)
+                            ? () async {
+                                await prov.pause();
+                                _showSaveDialog(context, prov);
+                              }
                             : () async {
                                 try {
                                   await prov.start();
@@ -384,36 +333,6 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
                       ),
 
                       // Play / Stop playback
-                      FFButtonWidget(
-                        onPressed: prov.filePath != null
-                            ? () async {
-                                try {
-                                  if (prov.isPlaying) {
-                                    await prov.stopPlay();
-                                  } else {
-                                    await prov.play(prov.filePath!);
-                                  }
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text('Play error: $e')));
-                                }
-                              }
-                            : null,
-                        text: prov.isPlaying ? 'Stop' : 'Play',
-                        options: FFButtonOptions(
-                          width: 120,
-                          height: 48,
-                          color: prov.filePath != null
-                              ? Colors.green
-                              : Colors.grey,
-                          textStyle:
-                              FlutterFlowTheme.of(context).titleMedium.override(
-                                    color: Colors.white,
-                                  ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
                     ],
                   ),
 

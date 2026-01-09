@@ -66,7 +66,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
         width: 50,
         height: 70,
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF3478F6) : theme.secondaryBackground,
+          color: selected ? const Color(0xFF2596BE) : theme.secondaryBackground,
           borderRadius: BorderRadius.circular(12),
           boxShadow: const [
             BoxShadow(
@@ -133,6 +133,16 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              RecordingItem.status == 'processing'
+                  ? 'Processing...'
+                  : 'Completed',
+              style: theme.labelSmall.copyWith(
+                color: RecordingItem.status == 'processing'
+                    ? Colors.orange
+                    : Colors.green,
+              ),
+            ),
             Text(
               RecordingItem.title,
               style: theme.titleLarge.override(
@@ -430,18 +440,40 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: GestureDetector(
+                                  // onTap: () {
+                                  //   // context.pushNamed(
+                                  //   //     SessionDetailsScreenWidget.routeName);
+                                  //   Navigator.push(
+                                  //       context,
+                                  //       MaterialPageRoute(
+                                  //           builder: (context) =>
+                                  //               SessionDetailsScreenWidget(
+                                  //                   recording: HRProv
+                                  //                       .recordings[index])));
+                                  //   print(
+                                  //       'Podcast tile tapped:::::::::::::::::::::::::::::::::::::::::: ${HRProv.recordings[index].title}');
+                                  // },
                                   onTap: () {
-                                    // context.pushNamed(
-                                    //     SessionDetailsScreenWidget.routeName);
+                                    final RecordingItem =
+                                        HRProv.recordings[index];
+                                    if (RecordingItem.status != 'completed') {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Session is still processing')),
+                                      );
+                                      return;
+                                    }
+
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                SessionDetailsScreenWidget(
-                                                    recording: HRProv
-                                                        .recordings[index])));
-                                    print(
-                                        'Podcast tile tapped:::::::::::::::::::::::::::::::::::::::::: ${HRProv.recordings[index].title}');
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            SessionDetailsScreenWidget(
+                                                recording: RecordingItem),
+                                      ),
+                                    );
                                   },
                                   child:
                                       _podcastTile(HRProv.recordings[index])),
@@ -460,8 +492,9 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                   bottom: MediaQuery.of(context).padding.bottom + 12,
                 ),
                 child: FFButtonWidget(
-                  onPressed: () =>
-                      context.pushNamed(RecordScreenWidget.routeName),
+                  onPressed: () async {
+                    context.pushNamed(RecordScreenWidget.routeName);
+                  },
                   text: 'Create a new session',
                   icon: const Icon(Icons.create_new_folder_outlined, size: 30),
                   options: FFButtonOptions(

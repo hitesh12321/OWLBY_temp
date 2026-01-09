@@ -148,15 +148,9 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: const [
         Locale('en'),
       ],
-      theme: ThemeData(
-        brightness: Brightness.light,
-        useMaterial3: false,
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        useMaterial3: false,
-      ),
-      themeMode: _themeMode,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.light(),
+      themeMode: ThemeMode.light,
       routerConfig: _router,
     );
   }
@@ -182,7 +176,6 @@ class NavBarPage extends StatefulWidget {
 class _NavBarPageState extends State<NavBarPage> {
   String _currentPageName = 'homeScreen';
   late Widget? _currentPage;
-
 
   @override
   void initState() {

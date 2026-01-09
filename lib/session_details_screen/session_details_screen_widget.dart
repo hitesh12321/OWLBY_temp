@@ -237,13 +237,20 @@ class _SessionDetailsScreenWidgetState
                   child: FlutterFlowAudioPlayer(
                     ///////////////////////
                     autoPlay: false,
-                    audio: Audio.network(
-                      widget.recording.audioUrl.toString(),
-                      metas: Metas(
-                        id: 'sample3.mp3-3d4f8785',
-                        title: widget.recording.title,
-                      ),
-                    ),
+                    audio: widget.recording.filePath != null &&
+                            widget.recording.filePath.isNotEmpty
+                        ? Audio.file(
+                            widget.recording.filePath,
+                            metas: Metas(
+                              title: widget.recording.title,
+                            ),
+                          )
+                        : Audio.network(
+                            widget.recording.audioUrl!,
+                            metas: Metas(
+                              title: widget.recording.title,
+                            ),
+                          ),
                     titleTextStyle: FlutterFlowTheme.of(context)
                         .titleLarge
                         .override(
@@ -285,6 +292,7 @@ class _SessionDetailsScreenWidgetState
                     playInBackground:
                         PlayInBackground.disabledRestoreOnForeground,
                   ),
+                  //////
                 ),
                 Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),

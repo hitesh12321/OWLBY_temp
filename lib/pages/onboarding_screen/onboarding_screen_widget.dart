@@ -1,4 +1,5 @@
 import 'package:owlby_serene_m_i_n_d_s/main.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
 
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -227,7 +228,7 @@ class _OnboardingScreenWidgetState extends State<OnboardingScreenWidget> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => NavBarPage()));
+                              builder: (context) => LoginSample()));
                     },
                     text: 'Continue >',
                     options: FFButtonOptions(

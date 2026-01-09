@@ -44,7 +44,21 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
     super.dispose();
   }
+// Future<void> fetchSessionLeft() async {
 
+//   try{
+//     final user = context.read<AppUserProvider>().user;
+//     if (user != null) {
+//       final response = await ;
+//       setState(() {
+//         sessionLeft = response['sessionsLeft'] ?? 0;
+//       });
+//     }
+
+//   }
+//   catch{}
+
+// }
 //  API CALL
 
   //  Subscription redirect
