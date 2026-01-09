@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
@@ -8,7 +8,6 @@ import 'package:owlby_serene_m_i_n_d_s/flutter_flow/uploaded_file.dart';
 import 'package:owlby_serene_m_i_n_d_s/home_screen/home_screen_widget.dart';
 import 'package:owlby_serene_m_i_n_d_s/local_database/db/project_database.dart';
 
-import 'package:owlby_serene_m_i_n_d_s/session_details_screen/session_details_screen_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -49,7 +48,6 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // Provider.of<RecordingProvider>(context, listen: false).loadRecordings();
   }
@@ -132,7 +130,6 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
 
         print("meeting id status : ${updatedRecording.status}");
 
-     
         final meeting_id = CreateMeetingCallApi_body["data"]["id"];
 
         final fileBytes = await File(SessionSaved.filePath).readAsBytes();
@@ -141,6 +138,8 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
           bytes: fileBytes, // IMPORTANT
           originalFilename: "recording.wav",
         );
+
+        print("meeting id :::${meeting_id} ,,,, file path::: ${ffFile}  ");
         // uploading meeting to backend
 
         final Session_id_by_upload_meeting = await UploadrecordingCall.call(
@@ -148,7 +147,8 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
             userId: user.id,
             professionalName: user.fullName,
             file: ffFile);
-        print(Session_id_by_upload_meeting.jsonBody);
+        print(
+            "✌️✌️✌️✌️✌️session id ✌️✌️✌️${Session_id_by_upload_meeting.jsonBody}");
 
         await prov.changeRecordingStatus(
           SessionSaved.recordingId,
@@ -173,6 +173,8 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
         final String summary = analysis['summary'];
         final String notes = analysis['soap']; // or tips
         final String audio = body['audioUrl'];
+        final String tips = body['tips'];
+        print("❤️❤️${tips} ,,,,, ${notes}❤️❤️");
 
         await prov.updateProcessedRecordingInMemory(
           SessionSaved.recordingId,
@@ -188,7 +190,6 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
                   "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}")),
         );
         context.goNamed(HomeScreenWidget.routeName);
-
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Save failed😩😩😩😩😩😩😩: $e')),
@@ -346,25 +347,25 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
 }
 
 /// Helper to convert pitch to approximate note (very rough)
-String _pitchToNote(double freq) {
-  if (freq <= 0) return '';
-  const a4 = 440.0;
-  final midi = (69 + 12 * (log(freq / a4) / log(2))).round();
-  final notes = [
-    'C',
-    'C#',
-    'D',
-    'D#',
-    'E',
-    'F',
-    'F#',
-    'G',
-    'G#',
-    'A',
-    'A#',
-    'B'
-  ];
-  final note = notes[(midi - 12) % 12];
-  final octave = (midi ~/ 12) - 1;
-  return '$note$octave';
-}
+// String _pitchToNote(double freq) {
+//   if (freq <= 0) return '';
+//   const a4 = 440.0;
+//   final midi = (69 + 12 * (log(freq / a4) / log(2))).round();
+//   final notes = [
+//     'C',
+//     'C#',
+//     'D',
+//     'D#',
+//     'E',
+//     'F',
+//     'F#',
+//     'G',
+//     'G#',
+//     'A',
+//     'A#',
+//     'B'
+//   ];
+//   final note = notes[(midi - 12) % 12];
+//   final octave = (midi ~/ 12) - 1;
+//   return '$note$octave';
+// }

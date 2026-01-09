@@ -3,8 +3,7 @@ export '/pages/onboarding_screen/onboarding_screen_widget.dart'
     show OnboardingScreenWidget;
 export '/pages/create_account_screen/create_account_screen_widget.dart'
     show CreateAccountScreenWidget;
-export '/pages/login_screen/login_screen_widget.dart' show LoginScreenWidget;
-export '/pages/otp_screen/otp_screen_widget.dart' show OtpScreenWidget;
+
 export '/session_details_screen/session_details_screen_widget.dart'
     show SessionDetailsScreenWidget;
 export '/subscription_screen/subscription_screen_widget.dart'
