@@ -1,4 +1,5 @@
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
+import 'package:owlby_serene_m_i_n_d_s/session_details_screen/PdfDownloadCode.dart';
 
 import '/flutter_flow/flutter_flow_audio_player.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -85,7 +86,7 @@ class _SessionDetailsScreenWidgetState
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
-                      boxShadow:const [
+                      boxShadow: const [
                         BoxShadow(
                           blurRadius: 8.0,
                           color: Color(0x1A000000),
@@ -300,7 +301,7 @@ class _SessionDetailsScreenWidgetState
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
-                      boxShadow: const[
+                      boxShadow: const [
                         BoxShadow(
                           blurRadius: 8.0,
                           color: Color(0x1A000000),
@@ -397,12 +398,13 @@ class _SessionDetailsScreenWidgetState
                   ),
                 ),
                 Padding(
-                  padding:const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                      16.0, 0.0, 16.0, 0.0),
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
-                      boxShadow:const [
+                      boxShadow: const [
                         BoxShadow(
                           blurRadius: 8.0,
                           color: Color(0x1A000000),
@@ -415,8 +417,8 @@ class _SessionDetailsScreenWidgetState
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Padding(
-                      padding:
-                         const  EdgeInsetsDirectional.fromSTEB(8.0, 20.0, 8.0, 20.0),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                          8.0, 20.0, 8.0, 20.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,7 +427,7 @@ class _SessionDetailsScreenWidgetState
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               Padding(
-                                padding:const EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     10.0, 0.0, 0.0, 0.0),
                                 child: Text(
                                   'SOAP Notes',
@@ -498,12 +500,13 @@ class _SessionDetailsScreenWidgetState
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                      16.0, 0.0, 16.0, 0.0),
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
-                      boxShadow: const[
+                      boxShadow: const [
                         BoxShadow(
                           blurRadius: 8.0,
                           color: Color(0x1A000000),
@@ -516,8 +519,8 @@ class _SessionDetailsScreenWidgetState
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Padding(
-                      padding:
-                        const  EdgeInsetsDirectional.fromSTEB(8.0, 20.0, 8.0, 20.0),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                          8.0, 20.0, 8.0, 20.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -567,7 +570,7 @@ class _SessionDetailsScreenWidgetState
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 14.0, 0.0, 14.0, 5.0),
                             child: Text(
-                              "We will soon add this feature",
+                              widget.recording.tips.toString(),
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .override(
@@ -599,26 +602,41 @@ class _SessionDetailsScreenWidgetState
                   ),
                 ),
                 Align(
-                  alignment:const AlignmentDirectional(0.0, -1.0),
+                  alignment: const AlignmentDirectional(0.0, -1.0),
                   child: Padding(
                     padding:
                         EdgeInsetsDirectional.fromSTEB(30.0, 0.0, 30.0, 20.0),
                     child: FFButtonWidget(
-                      onPressed: () {
-                        print('Button pressed ...');
+                      onPressed: () async {
+                        // 1. Show a loading indicator if you want
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Generating PDF...")),
+                        );
+
+                        try {
+                          // 2. Call the PDF service
+                          await PdfService.generateAndDownloadPdf(
+                              widget.recording);
+                        } catch (e) {
+                          // 3. Handle errors
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text("Failed to generate PDF: $e")),
+                          );
+                        }
                       },
                       text: 'Download PDF',
-                      icon:const Icon(
+                      icon: const Icon(
                         Icons.picture_as_pdf_rounded,
                         size: 15.0,
                       ),
                       options: FFButtonOptions(
                         width: double.infinity,
                         height: 56.0,
-                        padding:const EdgeInsets.all(8.0),
-                        iconPadding:
-                          const  EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                        color:const Color(0xFF2596BE),
+                        padding: const EdgeInsets.all(8.0),
+                        iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                            0.0, 0.0, 0.0, 0.0),
+                        color: const Color(0xFF2596BE),
                         textStyle:
                             FlutterFlowTheme.of(context).titleMedium.override(
                                   font: GoogleFonts.poppins(

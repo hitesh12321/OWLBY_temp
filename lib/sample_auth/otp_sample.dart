@@ -22,7 +22,7 @@ class _OtpSampleState extends State<OtpSample> {
   late TextEditingController otpController;
   final FocusNode _otpFocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
-
+  bool isloading = false;
   @override
   void initState() {
     super.initState();
@@ -72,57 +72,76 @@ class _OtpSampleState extends State<OtpSample> {
                   Padding(
                     padding: const EdgeInsets.all(12),
                     child: TextField(
-                      controller: otpController,
-                      focusNode: _otpFocusNode,
-                      keyboardType: TextInputType.number,
-                      maxLength: 6,
-                      decoration: InputDecoration(
-                        labelText: 'Enter OTP',
-                        hintText: '6-digit code',
-                        counterText: '',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: FlutterFlowTheme.of(context)
-                                .secondaryBackground,
+                        controller: otpController,
+                        focusNode: _otpFocusNode,
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
+                        decoration: InputDecoration(
+                          labelText: 'Enter OTP',
+                          hintText: '6-digit code',
+                          counterText: '',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: FlutterFlowTheme.of(context)
+                                  .secondaryBackground,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: FlutterFlowTheme.of(context).primary,
+                              width: 2,
+                            ),
                           ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: FlutterFlowTheme.of(context).primary,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      // Optional: Auto-submit when 6 digits are entered
-                      onChanged: (value) {
-                        if (value.length == 6) {
-                          FocusScope.of(context).unfocus();
-                          AuthSample.submitOtp(context, value);
-                        }
-                      },
-                    ),
+                        // Optional: Auto-submit when 6 digits are entered
+                        onChanged: (value) async {
+                          if (value.length == 6 && !isloading) {
+                            FocusScope.of(context).unfocus();
+                            setState(() => isloading = true);
+
+                            try {
+                              AuthSample.submitOtp(context, value);
+                            } finally {
+                              if (mounted) setState(() => isloading = false);
+                            }
+                          }
+                        }),
                   ),
                   const SizedBox(height: 20),
                   FFButtonWidget(
-                    onPressed: () {
-                      final smsCode = otpController.text.trim();
-                      if (smsCode.isNotEmpty) {
-                        // Original Logic: Submit OTP
-                        AuthSample.submitOtp(context, smsCode);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Please enter the OTP"),
-                          ),
-                        );
-                      }
-                    },
-                    text: 'Continue >',
+                    onPressed: isloading
+                        ? null
+                        : () async {
+                            final smsCode = otpController.text.trim();
+
+                            if (smsCode.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text("Please enter the OTP")),
+                              );
+                              return;
+                            }
+
+                            setState(() {
+                              isloading = true;
+                            });
+
+                            try {
+                              AuthSample.submitOtp(context, smsCode);
+                            } finally {
+                              if (mounted) {
+                                setState(() {
+                                  isloading = false;
+                                });
+                              }
+                            }
+                          },
+                    text: isloading ? 'Processing...' : 'Continue >',
                     options: FFButtonOptions(
                       width: double.infinity,
                       height: 56,

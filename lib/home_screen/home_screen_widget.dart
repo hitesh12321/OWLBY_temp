@@ -1,7 +1,7 @@
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/pages/record_screen.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
-import 'package:owlby_serene_m_i_n_d_s/session_details_screen/sample_page.dart';
+
 import 'package:provider/provider.dart';
 
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -322,15 +322,40 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                                 final picked = await showDatePicker(
                                   context: context,
                                   initialDate:
-                                      _model.datePicked3 ?? DateTime.now(),
+                                      _model.datePicked1 ?? getCurrentTimestamp,
                                   firstDate: DateTime(1900),
                                   lastDate: DateTime(2050),
+                                  builder: (ctx, child) {
+                                    return wrapInMaterialDatePickerTheme(
+                                      ctx,
+                                      child!,
+                                      headerBackgroundColor: theme.primary,
+                                      headerForegroundColor: theme.info,
+                                      pickerBackgroundColor:
+                                          theme.secondaryBackground,
+                                      pickerForegroundColor: theme.primaryText,
+                                      selectedDateTimeBackgroundColor:
+                                          theme.primary,
+                                      selectedDateTimeForegroundColor:
+                                          theme.info,
+                                      headerTextStyle: TextStyle(),
+                                      actionButtonForegroundColor: Colors.red,
+                                      iconSize: 20,
+                                    );
+                                  },
                                 );
 
                                 if (picked != null) {
                                   safeSetState(() {
+                                    _model.datePicked1 = DateTime(
+                                        picked.year, picked.month, picked.day);
+                                    // keep the month base synced to user selection
                                     _model.datePicked3 =
                                         DateTime(picked.year, picked.month, 1);
+                                  });
+                                } else {
+                                  safeSetState(() {
+                                    _model.datePicked1 = getCurrentTimestamp;
                                   });
                                 }
                               },

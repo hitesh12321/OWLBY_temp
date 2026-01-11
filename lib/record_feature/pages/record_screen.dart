@@ -49,13 +49,32 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<RecordingProvider>(context, listen: false).resetTimer();
+    });
     // Provider.of<RecordingProvider>(context, listen: false).loadRecordings();
   }
 
   Future<void> _showSaveDialog(
       BuildContext context, RecordingProvider prov) async {
     _titleController.text = '';
-    final user = context.read<AppUserProvider>().user;
+
+    // Attempt to load user if provider is empty
+    final appUserProvider = context.read<AppUserProvider>();
+    if (appUserProvider.user == null) {
+      await appUserProvider.loadUser();
+    }
+
+    final user = appUserProvider.user;
+
+    // Safety check to prevent null operator error
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("User details not found. Please log in again.")),
+      );
+      return;
+    }
 
     final result = await showDialog<bool>(
       context: context,
@@ -96,14 +115,15 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
       final title = titleText.isEmpty ? 'Recording' : titleText;
 
       try {
+        // RESTORED LOG
         print("🤙🤙🤙🤙🤙🤙Calling stopAndSave💾💾💾💾💾...");
-        // local session saved here
         final SessionSaved = await prov.stopAndSave(title);
 
-        //// 🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌//
+        // RESTORED LOG
+        print("🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌🙌");
 
         final CreateMeetingId = await CreatemeetingCall.call(
-            userId: user!.id,
+            userId: user.id, // Safe access
             meetingDate:
                 DateFormat('yyyy-MM-dd').format(SessionSaved.createdAt),
             meetingTime: DateFormat('HH:mm').format(SessionSaved.createdAt),
@@ -111,14 +131,10 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
             professionalName: user.fullName);
 
         final CreateMeetingCallApi_body = CreateMeetingId.jsonBody;
-        final bool s_tatus = CreateMeetingCallApi_body["status"];
-        final String meetingStatus;
+        final bool s_tatus = CreateMeetingCallApi_body?["status"] ?? false;
+        final String meetingStatus =
+            s_tatus ? "meeting created " : "meeting creation failed ";
 
-        if (s_tatus) {
-          meetingStatus = "meeting created ";
-        } else {
-          meetingStatus = "meeting creation failed ";
-        }
         await prov.changeRecordingStatus(
           SessionSaved.recordingId,
           meetingStatus,
@@ -130,23 +146,25 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
 
         print("meeting id status : ${updatedRecording.status}");
 
-        final meeting_id = CreateMeetingCallApi_body["data"]["id"];
+        final meeting_id = CreateMeetingCallApi_body?["data"]?["id"];
 
         final fileBytes = await File(SessionSaved.filePath).readAsBytes();
         final ffFile = FFUploadedFile(
-          name: "recording.wav", // or mp3, whatever your format
-          bytes: fileBytes, // IMPORTANT
+          name: "recording.wav",
+          bytes: fileBytes,
           originalFilename: "recording.wav",
         );
 
+        // RESTORED LOG
         print("meeting id :::${meeting_id} ,,,, file path::: ${ffFile}  ");
-        // uploading meeting to backend
 
         final Session_id_by_upload_meeting = await UploadrecordingCall.call(
             meetingId: meeting_id,
             userId: user.id,
             professionalName: user.fullName,
             file: ffFile);
+
+        // RESTORED LOG
         print(
             "✌️✌️✌️✌️✌️session id ✌️✌️✌️${Session_id_by_upload_meeting.jsonBody}");
 
@@ -155,7 +173,6 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
           "processing",
         );
 
-        // we are getting data from backend
         final session_text = await ProcessmeetingCall.call(
             meetingId: meeting_id,
             meetingTitle: title,
@@ -165,24 +182,36 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
             startTime: "2025-10-26T12:00:00Z",
             provider: "supabase");
 
-        final body = session_text.jsonBody as Map<String, dynamic>;
-        print("💕💕💕💕${body}");
+        final body = session_text.jsonBody as Map<String, dynamic>?;
 
-        final analysis = body['analysis'] as Map<String, dynamic>;
+        // RESTORED LOG
+        print("💕💕💕💕 Full Body: $body");
 
-        final String summary = analysis['summary'];
-        final String notes = analysis['soap']; // or tips
-        final String audio = body['audioUrl'];
-        final String tips = body['tips'];
-        print("❤️❤️${tips} ,,,,, ${notes}❤️❤️");
+        final analysis = body?['analysis'] as Map<String, dynamic>?;
 
-        await prov.updateProcessedRecordingInMemory(
-          SessionSaved.recordingId,
-          summary: summary,
-          notes: notes,
-          status: "completed",
-          audioUrl: audio,
-        );
+        if (analysis != null) {
+          final String tips =
+              analysis['tips']?.toString() ?? "No tips generated.";
+          final String summary =
+              analysis['summary']?.toString() ?? "No summary.";
+          final String notes = analysis['soap']?.toString() ?? "No notes.";
+          final String audio = body?['audioUrl']?.toString() ?? "";
+
+          // RESTORED LOG
+          print("❤️❤️ Tips Found: $tips ❤️❤️");
+          print("❤️❤️$tips ,,,,, $notes❤️❤️");
+
+          await prov.updateProcessedRecordingInMemory(
+            SessionSaved.recordingId,
+            summary: summary,
+            notes: notes,
+            status: "completed",
+            audioUrl: audio,
+            tips: tips,
+          );
+        } else {
+          print("❌ Analysis field was null in the response");
+        }
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -191,6 +220,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
         );
         context.goNamed(HomeScreenWidget.routeName);
       } catch (e) {
+        // RESTORED LOG EMOJI
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Save failed😩😩😩😩😩😩😩: $e')),
         );
