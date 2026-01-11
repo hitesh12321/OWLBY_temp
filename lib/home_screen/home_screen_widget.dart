@@ -322,15 +322,40 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                                 final picked = await showDatePicker(
                                   context: context,
                                   initialDate:
-                                      _model.datePicked3 ?? DateTime.now(),
+                                      _model.datePicked1 ?? getCurrentTimestamp,
                                   firstDate: DateTime(1900),
                                   lastDate: DateTime(2050),
+                                  builder: (ctx, child) {
+                                    return wrapInMaterialDatePickerTheme(
+                                      ctx,
+                                      child!,
+                                      headerBackgroundColor: theme.primary,
+                                      headerForegroundColor: theme.info,
+                                      pickerBackgroundColor:
+                                          theme.secondaryBackground,
+                                      pickerForegroundColor: theme.primaryText,
+                                      selectedDateTimeBackgroundColor:
+                                          theme.primary,
+                                      selectedDateTimeForegroundColor:
+                                          theme.info,
+                                      headerTextStyle: TextStyle(),
+                                      actionButtonForegroundColor: Colors.red,
+                                      iconSize: 20,
+                                    );
+                                  },
                                 );
 
                                 if (picked != null) {
                                   safeSetState(() {
+                                    _model.datePicked1 = DateTime(
+                                        picked.year, picked.month, picked.day);
+                                    // keep the month base synced to user selection
                                     _model.datePicked3 =
                                         DateTime(picked.year, picked.month, 1);
+                                  });
+                                } else {
+                                  safeSetState(() {
+                                    _model.datePicked1 = getCurrentTimestamp;
                                   });
                                 }
                               },
