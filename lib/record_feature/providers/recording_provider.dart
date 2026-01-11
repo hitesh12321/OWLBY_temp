@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/uploaded_file.dart';
+import 'package:owlby_serene_m_i_n_d_s/flutter_flow/flutter_flow_util.dart';
 import 'package:owlby_serene_m_i_n_d_s/local_database/db/project_database.dart';
 
 import '../models/recording_model.dart';
@@ -114,7 +115,8 @@ class RecordingProvider extends ChangeNotifier {
     }
 
     final dir = await getApplicationDocumentsDirectory();
-    final fileName = 'recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
+    final fileName =
+        'recording_${getCurrentTimestamp().millisecondsSinceEpoch}.m4a';
     final path = '${dir.path}/$fileName';
 
     _filePath = path;
@@ -263,7 +265,7 @@ class RecordingProvider extends ChangeNotifier {
       recordingId: const Uuid().v4(),
       title: title,
       filePath: savedPath,
-      createdAt: DateTime.now(),
+      createdAt: getCurrentTimestamp(),
       status: "local",
     );
 
@@ -333,13 +335,13 @@ class RecordingProvider extends ChangeNotifier {
   }
 
   void resetTimer() {
-  _stopwatch.stop();
-  _stopwatch.reset();
-  _currentDb = 0.0;
-  _currentRms = 0.0;
-  _stopTicker();
-  notifyListeners();
-}
+    _stopwatch.stop();
+    _stopwatch.reset();
+    _currentDb = 0.0;
+    _currentRms = 0.0;
+    _stopTicker();
+    notifyListeners();
+  }
 
   // UPLOAD SESSION
   Future<void> uploadRecordingToBackend({
@@ -371,7 +373,7 @@ class RecordingProvider extends ChangeNotifier {
         backendsessionId: backendsessionId, status: "processing");
 
     print("1..........Updated session:.....");
-    print("2..........backendsessionId: ${backendsessionId}");
+    print("2..........backendsessionId: $backendsessionId");
     print("3...............status: ${session.status}");
   }
 

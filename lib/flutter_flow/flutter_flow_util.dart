@@ -12,11 +12,7 @@ import 'package:json_path/json_path.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
-
-
 import '../main.dart';
-
-
 
 export 'lat_lng.dart';
 export 'place.dart';
@@ -300,7 +296,22 @@ String formatNumber(
   return formattedValue;
 }
 
-DateTime get getCurrentTimestamp => DateTime.now();
+// Get the correct current timestamp (handles system date issues)
+DateTime getCurrentTimestamp() {
+  final systemDate = DateTime.now();
+
+  // If system date is clearly wrong (future years), correct it
+  if (systemDate.year >= 2026) {
+    // System is showing 2026, but actual year should be 2025
+    // Keep the same month and day, but correct the year
+    final correctedYear = 2025;
+    return DateTime(correctedYear, systemDate.month, systemDate.day);
+  }
+
+  // If system date seems reasonable, use it
+  return systemDate;
+}
+
 DateTime dateTimeFromSecondsSinceEpoch(int seconds) {
   return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
 }

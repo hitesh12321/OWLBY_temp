@@ -1,5 +1,4 @@
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
-import 'package:owlby_serene_m_i_n_d_s/record_feature/pages/record_screen.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
 
 import 'package:provider/provider.dart';
@@ -8,7 +7,6 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
 import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -60,6 +58,8 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
         // make tapping a date set the selected day in the model
         safeSetState(() {
           _model.datePicked1 = DateTime(date.year, date.month, date.day);
+          // Also update the month base to keep everything synchronized
+          _model.datePicked3 = DateTime(date.year, date.month, 1);
         });
       },
       child: Container(
@@ -197,7 +197,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
     }
 
     // Determine the week to show: use selected day if present, otherwise today
-    final selectedDay = _model.datePicked1 ?? getCurrentTimestamp;
+    final selectedDay = _model.datePicked1 ?? getCurrentTimestamp();
     final weekStart = startOfWeek(selectedDay);
 
     // Compute the list of 7 days to render
@@ -210,13 +210,28 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
     final monthLabel = dateTimeFormat('MMMM, yyyy', monthBase);
     /////////////////////////////////////////////////////////////// PROVIDER
     final HRProv = Provider.of<RecordingProvider>(context);
-    final selectedDate = _model.datePicked1 ?? getCurrentTimestamp;
+    final selectedDate = _model.datePicked1 ?? getCurrentTimestamp();
+
+    // Debug: Print what we're looking for
+    print("🔍 Selected date for filtering: $selectedDate");
+    print("📊 Total recordings: ${HRProv.recordings.length}");
+    if (HRProv.recordings.isNotEmpty) {
+      print("📅 Recording dates:");
+      for (var rec in HRProv.recordings.take(3)) {
+        print("   - ${rec.title}: ${rec.createdAt}");
+      }
+    }
+
     List<RecordingModel> filteredRecordings = HRProv.recordings.where((rec) {
       if (rec.createdAt == null) return false;
-      return rec.createdAt!.year == selectedDate.year &&
+      final matches = rec.createdAt!.year == selectedDate.year &&
           rec.createdAt!.month == selectedDate.month &&
           rec.createdAt!.day == selectedDate.day;
+      return matches;
     }).toList();
+
+    print("✅ Filtered recordings: ${filteredRecordings.length}");
+
     filteredRecordings.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
 
     return GestureDetector(
@@ -234,7 +249,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                 onTap: () async {
                   final picked = await showDatePicker(
                     context: context,
-                    initialDate: _model.datePicked1 ?? getCurrentTimestamp,
+                    initialDate: _model.datePicked1 ?? getCurrentTimestamp(),
                     firstDate: DateTime(1900),
                     lastDate: DateTime(2050),
                     builder: (ctx, child) {
@@ -264,7 +279,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                     });
                   } else {
                     safeSetState(() {
-                      _model.datePicked1 = getCurrentTimestamp;
+                      _model.datePicked1 = getCurrentTimestamp();
                     });
                   }
                 },
@@ -302,8 +317,8 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                                       monthBase.year, monthBase.month - 1, 1);
                                   _model.datePicked3 = prevMonth;
                                   // keep a selected day in that month
-                                  final sel =
-                                      _model.datePicked1 ?? getCurrentTimestamp;
+                                  final sel = _model.datePicked1 ??
+                                      getCurrentTimestamp();
                                   _model.datePicked1 = DateTime(
                                       prevMonth.year,
                                       prevMonth.month,
@@ -321,16 +336,41 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                               onTap: () async {
                                 final picked = await showDatePicker(
                                   context: context,
-                                  initialDate:
-                                      _model.datePicked3 ?? DateTime.now(),
+                                  initialDate: _model.datePicked1 ??
+                                      getCurrentTimestamp(),
                                   firstDate: DateTime(1900),
                                   lastDate: DateTime(2050),
+                                  builder: (ctx, child) {
+                                    return wrapInMaterialDatePickerTheme(
+                                      ctx,
+                                      child!,
+                                      headerBackgroundColor: theme.primary,
+                                      headerForegroundColor: theme.info,
+                                      pickerBackgroundColor:
+                                          theme.secondaryBackground,
+                                      pickerForegroundColor: theme.primaryText,
+                                      selectedDateTimeBackgroundColor:
+                                          theme.primary,
+                                      selectedDateTimeForegroundColor:
+                                          theme.info,
+                                      headerTextStyle: TextStyle(),
+                                      actionButtonForegroundColor: Colors.red,
+                                      iconSize: 20,
+                                    );
+                                  },
                                 );
 
                                 if (picked != null) {
                                   safeSetState(() {
+                                    _model.datePicked1 = DateTime(
+                                        picked.year, picked.month, picked.day);
+                                    // keep the month base synced to user selection
                                     _model.datePicked3 =
                                         DateTime(picked.year, picked.month, 1);
+                                  });
+                                } else {
+                                  safeSetState(() {
+                                    _model.datePicked1 = getCurrentTimestamp();
                                   });
                                 }
                               },
@@ -348,7 +388,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                                     dateTimeFormat(
                                         'EEE, MMM d, yyyy',
                                         _model.datePicked1 ??
-                                            getCurrentTimestamp),
+                                            getCurrentTimestamp()),
                                     style: theme.labelSmall,
                                   ),
                                 ],
@@ -369,8 +409,8 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                                       monthBase.year, monthBase.month + 1, 1);
                                   _model.datePicked3 = nextMonth;
                                   // keep a selected day in that month
-                                  final sel =
-                                      _model.datePicked1 ?? getCurrentTimestamp;
+                                  final sel = _model.datePicked1 ??
+                                      getCurrentTimestamp();
                                   _model.datePicked1 = DateTime(
                                       nextMonth.year,
                                       nextMonth.month,
@@ -432,30 +472,22 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
                         child: ListView.builder(
-                          itemCount: HRProv.recordings.length,
+                          itemCount: filteredRecordings.length,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          //_podcastTile(HRProv.recordings[0])
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: GestureDetector(
-                                  // onTap: () {
-                                  //   // context.pushNamed(
-                                  //   //     SessionDetailsScreenWidget.routeName);
-                                  //   Navigator.push(
-                                  //       context,
-                                  //       MaterialPageRoute(
-                                  //           builder: (context) =>
-                                  //               SessionDetailsScreenWidget(
-                                  //                   recording: HRProv
-                                  //                       .recordings[index])));
-                                  //   print(
-                                  //       'Podcast tile tapped:::::::::::::::::::::::::::::::::::::::::: ${HRProv.recordings[index].title}');
-                                  // },
+                                  onLongPress: () async {
+                                    await context
+                                        .read<RecordingProvider>()
+                                        .deleteRecording(
+                                            filteredRecordings[index]);
+                                  },
                                   onTap: () {
                                     final RecordingItem =
-                                        HRProv.recordings[index];
+                                        filteredRecordings[index];
                                     if (RecordingItem.status != 'completed') {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
@@ -476,7 +508,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                                     );
                                   },
                                   child:
-                                      _podcastTile(HRProv.recordings[index])),
+                                      _podcastTile(filteredRecordings[index])),
                             );
                           },
                         ),

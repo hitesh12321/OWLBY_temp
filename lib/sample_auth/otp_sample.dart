@@ -22,6 +22,7 @@ class _OtpSampleState extends State<OtpSample> {
   late TextEditingController otpController;
   final FocusNode _otpFocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool isloading = false;
 
   @override
   void initState() {
@@ -109,20 +110,28 @@ class _OtpSampleState extends State<OtpSample> {
                   ),
                   const SizedBox(height: 20),
                   FFButtonWidget(
-                    onPressed: () {
-                      final smsCode = otpController.text.trim();
-                      if (smsCode.isNotEmpty) {
-                        // Original Logic: Submit OTP
-                        AuthSample.submitOtp(context, smsCode);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Please enter the OTP"),
-                          ),
-                        );
-                      }
-                    },
-                    text: 'Continue >',
+                    onPressed: isloading
+                        ? null
+                        : () {
+                            final smsCode = otpController.text.trim();
+                            if (smsCode.isNotEmpty) {
+                              // Original Logic: Submit OTP
+                              setState(() {
+                                isloading = true;
+                              });
+                              AuthSample.submitOtp(context, smsCode);
+                              setState(() {
+                                isloading = false;
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Please enter the OTP"),
+                                ),
+                              );
+                            }
+                          },
+                    text: isloading ? 'Processing...' : 'Continue >',
                     options: FFButtonOptions(
                       width: double.infinity,
                       height: 56,

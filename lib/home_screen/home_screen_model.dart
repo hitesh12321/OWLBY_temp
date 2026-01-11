@@ -1,11 +1,9 @@
-
 import '/flutter_flow/flutter_flow_util.dart';
 
 import '/index.dart';
 import 'home_screen_widget.dart' show HomeScreenWidget;
 
 import 'package:flutter/material.dart';
-
 
 class HomeScreenModel extends FlutterFlowModel<HomeScreenWidget> {
   ///  State fields for stateful widgets in this page.
@@ -17,8 +15,8 @@ class HomeScreenModel extends FlutterFlowModel<HomeScreenWidget> {
 
   @override
   void initState(BuildContext context) {
-    // Ensure sensible defaults so UI uses properties immediately
-    final now = getCurrentTimestamp;
+    // Use actual current date instead of system date
+    final now = getCurrentTimestamp();
     datePicked1 ??=
         DateTime(now.year, now.month, now.day); // selected day in the week
     datePicked3 ??=
