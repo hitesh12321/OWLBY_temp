@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/nav/nav.dart';
+import 'package:owlby_serene_m_i_n_d_s/pages/create_account_screen/create_account_screen_widget.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/auth_sample.dart';
 
 // Imports required for the UI Styling
@@ -24,6 +25,7 @@ class _LoginSampleState extends State<LoginSample> {
   late TextEditingController phoneController;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = false;
+  String country_code = "+91";
 
   @override
   void initState() {
@@ -35,6 +37,43 @@ class _LoginSampleState extends State<LoginSample> {
   void dispose() {
     phoneController.dispose();
     super.dispose();
+  }
+
+  Future<String?> getCountryCode(BuildContext context) {
+    List<String> countryCodes = [
+      '+1', // USA, Canada
+      '+91', // India
+      '+52', // Mexico
+      '+234', // Nigeria
+      '+20', // Egypt
+    ];
+
+    return showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Select Country Code'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: countryCodes.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(countryCodes[index]),
+                  onTap: () {
+                    Navigator.pop(
+                      context,
+                      countryCodes[index], // ✅ RETURN VALUE
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -112,26 +151,39 @@ class _LoginSampleState extends State<LoginSample> {
                             /// PHONE INPUT ROW
                             Row(
                               children: [
-                                Container(
-                                  width: 60,
-                                  height: 56,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                        color: const Color(0xFFE0E0E0)),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    '+91',
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          font: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.w500,
+                                GestureDetector(
+                                  onTap: () async {
+                                    final selectedCode =
+                                        await getCountryCode(context);
+                                    if (selectedCode != null) {
+                                      setState(() {
+                                        country_code = selectedCode;
+                                      });
+                                      print(
+                                          "Selected Country 🎶🎶🤷‍♂️ Code: $selectedCode");
+                                    }
+                                  },
+                                  child: Container(
+                                    width: 60,
+                                    height: 56,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: const Color(0xFFE0E0E0)),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      country_code,
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            font: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            fontSize: 16,
                                           ),
-                                          fontSize: 16,
-                                        ),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -225,14 +277,19 @@ class _LoginSampleState extends State<LoginSample> {
                                               "❤️ User exists. Proceeding to login.");
                                           // Login Flow
                                           AuthSample.verifyPhoneNumber(
-                                              context, phone);
+                                              context, phone, country_code);
                                         } else {
                                           print(
                                               "❤️ User does not exist. Proceeding to sign up.");
                                           // Sign Up Flow
                                           if (mounted) {
-                                            context.pushReplacementNamed(
-                                                'createAccountScreen');
+                                            // context.pushReplacementNamed(
+                                            //     'createAccountScreen');
+                                            Navigator.pushReplacement(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return const CreateAccountScreenWidget();
+                                            }));
                                           }
                                         }
                                       } catch (e) {

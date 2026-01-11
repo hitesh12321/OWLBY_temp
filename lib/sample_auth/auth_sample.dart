@@ -12,9 +12,10 @@ import 'package:owlby_serene_m_i_n_d_s/main.dart';
 class AuthSample {
   static String verId = "";
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  static void verifyPhoneNumber(BuildContext context, String number) async {
+  static void verifyPhoneNumber(
+      BuildContext context, String number, String countryCode) async {
     await _firebaseAuth.verifyPhoneNumber(
-      phoneNumber: '+91 $number',
+      phoneNumber: '$countryCode $number',
       verificationCompleted: (PhoneAuthCredential credential) {
         signInWithPhoneNumber(
             context, credential.verificationId!, credential.smsCode!);
@@ -95,6 +96,11 @@ class AuthSample {
 
           // 5. Navigate ONLY after success
           if (context.mounted) {
+            // String? idToken = await userCredential.user!.getIdToken();
+            print("User UID🫡🫡🫡: ${FirebaseAuth.instance.currentUser?.uid}");
+            print(
+                "Token: 🙌🙌🙌🙌${await FirebaseAuth.instance.currentUser?.getIdToken(true)}");
+            // print("🆔 Firebase ID Token: $idToken");
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) {
               return const NavBarPage();

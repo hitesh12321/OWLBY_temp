@@ -43,7 +43,6 @@ class _SessionDetailsScreenWidgetState
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
   }
 

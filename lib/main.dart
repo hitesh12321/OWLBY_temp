@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'auth/firebase_auth/firebase_user_provider.dart';
-import 'auth/firebase_auth/auth_util.dart';
+// import 'auth/firebase_auth/auth_util.dart';
 
 import 'backend/firebase/firebase_config.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -114,7 +114,7 @@ class _MyAppState extends State<MyApp> {
         print("RAW EMAIL: ${FirebaseAuth.instance.currentUser?.email}");
         _appStateNotifier.update(user);
       });
-    jwtTokenStream.listen((_) {});
+    // jwtTokenStream.listen((_) {});
     Future.delayed(
       Duration(milliseconds: 1000),
       () => _appStateNotifier.stopShowingSplashImage(),
