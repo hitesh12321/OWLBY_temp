@@ -73,6 +73,7 @@ class _OtpSampleState extends State<OtpSample> {
                     padding: const EdgeInsets.all(12),
                     child: TextField(
                         controller: otpController,
+                        enabled: !isloading,
                         focusNode: _otpFocusNode,
                         keyboardType: TextInputType.number,
                         maxLength: 6,
@@ -145,7 +146,7 @@ class _OtpSampleState extends State<OtpSample> {
                     options: FFButtonOptions(
                       width: double.infinity,
                       height: 56,
-                      color: const Color(0xFF2596BE),
+                      color: isloading ? Colors.grey : const Color(0xFF2596BE),
                       textStyle:
                           FlutterFlowTheme.of(context).titleMedium.override(
                                 font: GoogleFonts.poppins(

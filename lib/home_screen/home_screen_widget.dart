@@ -329,13 +329,12 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                                     return wrapInMaterialDatePickerTheme(
                                       ctx,
                                       child!,
-                                      headerBackgroundColor: theme.primary,
+                                      headerBackgroundColor: theme.secondary,
                                       headerForegroundColor: theme.info,
-                                      pickerBackgroundColor:
-                                          theme.secondaryBackground,
+                                      pickerBackgroundColor: theme.secondary,
                                       pickerForegroundColor: theme.primaryText,
                                       selectedDateTimeBackgroundColor:
-                                          theme.primary,
+                                          theme.secondary,
                                       selectedDateTimeForegroundColor:
                                           theme.info,
                                       headerTextStyle: TextStyle(),
