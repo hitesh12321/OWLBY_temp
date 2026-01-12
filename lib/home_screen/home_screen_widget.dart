@@ -147,6 +147,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
             Text(
               RecordingItem.title,
               style: theme.titleLarge.override(
+                fontSize: 21,
                 font: GoogleFonts.poppins(
                   fontWeight: theme.titleLarge.fontWeight,
                   fontStyle: theme.titleLarge.fontStyle,
@@ -157,7 +158,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
               children: const [
                 Spacer(),
                 Icon(Icons.arrow_forward_ios, size: 20),
-                SizedBox(width: 12),
+                SizedBox(width: 10),
               ],
             ),
             Row(
@@ -429,19 +430,6 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: GestureDetector(
-                                  // onTap: () {
-                                  //   // context.pushNamed(
-                                  //   //     SessionDetailsScreenWidget.routeName);
-                                  //   Navigator.push(
-                                  //       context,
-                                  //       MaterialPageRoute(
-                                  //           builder: (context) =>
-                                  //               SessionDetailsScreenWidget(
-                                  //                   recording: HRProv
-                                  //                       .recordings[index])));
-                                  //   print(
-                                  //       'Podcast tile tapped:::::::::::::::::::::::::::::::::::::::::: ${HRProv.recordings[index].title}');
-                                  // },
                                   onTap: () {
                                     final RecordingItem =
                                         HRProv.recordings[index];

@@ -65,6 +65,29 @@ class VerifyOtpCall {
       ));
 }
 
+class CheckRefferal {
+  static Future<ApiCallResponse> call({
+    String? referralCode = '',
+  }) {
+    return ApiManager.instance.makeApiCall(
+      callName: 'checkRefferal',
+      apiUrl: 'https://owl-app-backend.vercel.app/api/auth/check-referral',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      body: '''
+      {
+        "referral_code": "$referralCode"
+      } 
+      ''',
+      bodyType: BodyType.JSON,
+    );
+  }
+
+  static bool? isValid(ApiCallResponse response) => castToType<bool>(
+        getJsonField(response.jsonBody, r'$.data.is_valid'),
+      );
+}
+
 // create new account on backend // DONE 👍👍👍
 class UsersignupCall {
   static Future<ApiCallResponse> call({
@@ -80,8 +103,15 @@ class UsersignupCall {
       "organization_name": organizationName,
       "phone_number": phoneNumber,
     };
+    final response = CheckRefferal.call(referralCode: referralCode);
+    print("Referral Code Response: $response");
+    final Isvalid = CheckRefferal.isValid(response as ApiCallResponse);
+    print("Is Referral Code Valid: $Isvalid");
 
-    if (referralCode != null && referralCode.isNotEmpty) {
+    // if (referralCode != null && referralCode.isNotEmpty) {
+    //   bodyMap["referral_code"] = referralCode;
+    // }
+    if (Isvalid == true) {
       bodyMap["referral_code"] = referralCode;
     }
 
@@ -206,11 +236,6 @@ Future<int?> fetchTheSession() async {
 
       print("Fetched Sessions Left �����������������🎶🎶�: $sLeft");
       return sLeft;
-      // if (!mounted) return;
-      // setState(() {
-      //   sessionLeft = sLeft;
-      //   isLoading = false;
-      // });
     }
     return null;
   } catch (e) {

@@ -21,7 +21,7 @@ import 'flutter_flow/internationalization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
-import 'flutter_flow/nav/nav.dart';
+
 import 'index.dart';
 import 'bottom_nav.dart/custom_bottom_navigation_bar.dart';
 

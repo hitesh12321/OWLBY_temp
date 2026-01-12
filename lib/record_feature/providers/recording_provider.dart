@@ -332,14 +332,32 @@ class RecordingProvider extends ChangeNotifier {
     }
   }
 
+// recording_provider.dart mein isse replace karein
+
   void resetTimer() {
-  _stopwatch.stop();
-  _stopwatch.reset();
-  _currentDb = 0.0;
-  _currentRms = 0.0;
-  _stopTicker();
-  notifyListeners();
-}
+    // 1. Agar recorder chal raha hai toh use stop karein taaki resource leak na ho
+    if (_isRecording) {
+      _recorder.stopRecorder();
+    }
+
+    // 2. Stopwatch aur Ticker stop karein
+    _stopwatch.stop();
+    _stopwatch.reset();
+    _stopTicker();
+
+    // 3. Flags ko reset karein (YE SABSE ZAROORI HAI)
+    _isRecording = false;
+    _isPaused = false;
+
+    // 4. UI variables clear karein
+    _currentDb = 0.0;
+    _currentRms = 0.0;
+    _filePath = null;
+    _recSub?.cancel();
+
+    // 5. UI ko update karein
+    notifyListeners();
+  }
 
   // UPLOAD SESSION
   Future<void> uploadRecordingToBackend({

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/flutter_flow_util.dart';
@@ -43,6 +44,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
   @override
   void dispose() {
     _titleController.dispose();
+
     super.dispose();
   }
 
@@ -69,10 +71,12 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
 
     // Safety check to prevent null operator error
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("User details not found. Please log in again.")),
-      );
+      AppSnackbar.showError(
+          context, "User details not found. Please log in again.");
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //       content: Text("User details not found. Please log in again.")),
+      // );
       return;
     }
 
@@ -101,7 +105,10 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(c, true),
+            onPressed: () {
+              Navigator.pop(c, true);
+              Navigator.pop(context); // Close the recording screen
+            },
             child: const Text('Save'),
           ),
         ],
@@ -212,18 +219,23 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
         } else {
           print("❌ Analysis field was null in the response");
         }
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}")),
+        AppSnackbar.showSuccess(
+            context, "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //       content: Text(
+        //           "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}")),
+        // );
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const HomeScreenWidget()),
+          (route) => false,
         );
-        context.goNamed(HomeScreenWidget.routeName);
       } catch (e) {
         // RESTORED LOG EMOJI
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Save failed😩😩😩😩😩😩😩: $e')),
-        );
+        AppSnackbar.showError(context, 'Save failed😩😩😩😩😩😩😩: $e');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('Save failed😩😩😩😩😩😩😩: $e')),
+        // );
       }
     }
   }
@@ -246,8 +258,8 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
             'Recording',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 30,
-              color: Color.fromARGB(255, 31, 33, 35),
+              fontSize: 35,
+              color: Color.fromARGB(255, 0, 0, 0),
             ),
           ),
           centerTitle: true,
@@ -257,7 +269,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
           builder: (context, constraints) {
             final isWide = constraints.maxWidth > 600;
             final padding = EdgeInsets.symmetric(
-                horizontal: isWide ? 80 : 20, vertical: 24);
+                horizontal: isWide ? 80 : 20, vertical: 40);
             return Padding(
               padding: padding,
               child: Column(
@@ -289,7 +301,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
                   // Buttons row
                   Wrap(
                     alignment: WrapAlignment.center,
-                    spacing: 16,
+                    spacing: 40,
                     runSpacing: 12,
                     children: [
                       // Start / Stop & Save
@@ -303,15 +315,17 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
                                 try {
                                   await prov.start();
                                 } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text('Start failed: $e')));
+                                  AppSnackbar.showError(
+                                      context, 'Start failed: $e');
+                                  // ScaffoldMessenger.of(context).showSnackBar(
+                                  //     SnackBar(
+                                  //         content: Text('Start failed: $e')));
                                 }
                               },
                         text: prov.isRecording ? 'Stop & Save' : 'Start',
                         options: FFButtonOptions(
                           width: 140,
-                          height: 48,
+                          height: 60,
                           color:
                               prov.isRecording ? Colors.red : Color(0xFF2596BE),
                           textStyle:
@@ -333,17 +347,19 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
                                     await prov.pause();
                                   }
                                 } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content:
-                                              Text('Pause/Resume err: $e')));
+                                  AppSnackbar.showError(
+                                      context, 'Pause/Resume err: $e');
+                                  // ScaffoldMessenger.of(context).showSnackBar(
+                                  //     SnackBar(
+                                  //         content:
+                                  //             Text('Pause/Resume err: $e')));
                                 }
                               }
                             : null,
                         text: prov.isPaused ? 'Resume' : 'Pause',
                         options: FFButtonOptions(
-                          width: 120,
-                          height: 48,
+                          width: 140,
+                          height: 60,
                           color: prov.isRecording ? Colors.orange : Colors.grey,
                           textStyle:
                               FlutterFlowTheme.of(context).titleMedium.override(

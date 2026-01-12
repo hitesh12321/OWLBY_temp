@@ -208,6 +208,17 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
                         // 🔹 Referral Code
                         _referralTile(),
+                        const SizedBox(height: 20),
+                        // subscription status
+                        _infoTile(
+                          label: 'Subscription Status: ',
+                          value:
+                              (user.subscription == true) ? "Gold" : 'Bronze',
+                          icon: Icons.grade_outlined,
+                          iconColor: (user.subscription == true)
+                              ? const Color(0xFFFFD700)
+                              : const Color.fromARGB(255, 76, 73, 73),
+                        ),
                       ],
                     ),
                   ),
@@ -222,15 +233,17 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
     required String label,
     required String value,
     required IconData icon,
+    Color? iconColor,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: FlutterFlowTheme.of(context)
-              .labelMedium
-              .override(fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              color: FlutterFlowTheme.of(context).primary),
         ),
         const SizedBox(height: 8),
         Container(
@@ -242,9 +255,14 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
           ),
           child: Row(
             children: [
-              Icon(icon, color: const Color(0xFF64748B)),
+              Icon(icon,
+                  color: iconColor ?? const Color.fromARGB(255, 76, 73, 73)),
               const SizedBox(width: 12),
-              Expanded(child: Text(value)),
+              Expanded(
+                  child: Text(
+                value,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+              )),
               // const Icon(Icons.edit_outlined, color: Color(0xFF64748B)),
             ],
           ),
