@@ -1,5 +1,8 @@
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
+import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/session_details_screen/PdfDownloadCode.dart';
+import 'package:owlby_serene_m_i_n_d_s/session_details_screen/editSessionDetailsScreen.dart';
+import 'package:provider/provider.dart';
 
 import '/flutter_flow/flutter_flow_audio_player.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -29,6 +32,7 @@ class SessionDetailsScreenWidget extends StatefulWidget {
 class _SessionDetailsScreenWidgetState
     extends State<SessionDetailsScreenWidget> {
   late SessionDetailsScreenModel _model;
+  late RecordingModel recording;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -36,6 +40,7 @@ class _SessionDetailsScreenWidgetState
   void initState() {
     super.initState();
     _model = createModel(context, () => SessionDetailsScreenModel());
+    recording = widget.recording; // ✅ ADD THIS
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
@@ -62,22 +67,58 @@ class _SessionDetailsScreenWidgetState
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Align(
-                  alignment: AlignmentDirectional(-0.95, 0.0),
-                  child: FlutterFlowIconButton(
-                    borderColor: Colors.transparent,
-                    borderRadius: 30.0,
-                    borderWidth: 1.0,
-                    buttonSize: 40.0,
-                    icon: Icon(
-                      Icons.arrow_back_rounded,
-                      color: FlutterFlowTheme.of(context).primaryText,
-                      size: 35.0,
+                Row(
+                  children: [
+                    Align(
+                      alignment: AlignmentDirectional(-0.95, 0.0),
+                      child: FlutterFlowIconButton(
+                        borderColor: Colors.transparent,
+                        borderRadius: 30.0,
+                        borderWidth: 1.0,
+                        buttonSize: 40.0,
+                        icon: Icon(
+                          Icons.arrow_back_rounded,
+                          color: FlutterFlowTheme.of(context).primaryText,
+                          size: 35.0,
+                        ),
+                        onPressed: () async {
+                          context.pop();
+                        },
+                      ),
                     ),
-                    onPressed: () async {
-                      context.pop();
-                    },
-                  ),
+                    SizedBox(
+                      width: 100,
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsetsDirectional.fromSTEB(228.0, 0.0, 0.0, 0.0),
+                      child: IconButton(
+                        // Icons.edit_note_outlined,
+                        // color: FlutterFlowTheme.of(context).primaryText,
+                        // size: 24.0,
+
+                        icon: Icon(Icons.edit),
+                        onPressed: () async {
+                          final updatedRecording = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditSessiondetailsscreen(
+                                  recording: recording),
+                            ),
+                          );
+                          if (!mounted || updatedRecording == null) return;
+                          if (updatedRecording != null) {
+                            setState(() {
+                              recording = updatedRecording; // ✅ ALLOWED
+                            });
+                            context
+                                .read<RecordingProvider>()
+                                .updateRecording(updatedRecording);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
@@ -114,7 +155,7 @@ class _SessionDetailsScreenWidgetState
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         10.0, 0.0, 0.0, 0.0),
                                     child: Text(
-                                      widget.recording.title,
+                                      recording.title,
                                       style: FlutterFlowTheme.of(context)
                                           .headlineMedium
                                           .override(
@@ -139,16 +180,16 @@ class _SessionDetailsScreenWidgetState
                                   ),
                                 ],
                               ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    45.0, 0.0, 0.0, 0.0),
-                                child: Icon(
-                                  Icons.edit_note_outlined,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  size: 24.0,
-                                ),
-                              ),
+                              // Padding(
+                              //   padding: EdgeInsetsDirectional.fromSTEB(
+                              //       45.0, 0.0, 0.0, 0.0),
+                              //   child: Icon(
+                              //     Icons.edit_note_outlined,
+                              //     color:
+                              //         FlutterFlowTheme.of(context).primaryText,
+                              //     size: 24.0,
+                              //   ),
+                              // ),
                             ],
                           ),
                           Padding(
@@ -168,7 +209,7 @@ class _SessionDetailsScreenWidgetState
                                   children: [
                                     Text(
                                       DateFormat('yyyy-MM-dd')
-                                          .format(widget.recording.createdAt)
+                                          .format(recording.createdAt)
                                           // widget.recording.createdAt
                                           .toString(),
                                       style: FlutterFlowTheme.of(context)
@@ -194,7 +235,7 @@ class _SessionDetailsScreenWidgetState
                                     ),
                                     Text(
                                       DateFormat('HH:mm')
-                                          .format(widget.recording.createdAt),
+                                          .format(recording.createdAt),
                                       style: FlutterFlowTheme.of(context)
                                           .bodySmall
                                           .override(
@@ -237,18 +278,18 @@ class _SessionDetailsScreenWidgetState
                   child: FlutterFlowAudioPlayer(
                     ///////////////////////
                     autoPlay: false,
-                    audio: widget.recording.filePath != null &&
-                            widget.recording.filePath.isNotEmpty
+                    audio: recording.filePath != null &&
+                            recording.filePath.isNotEmpty
                         ? Audio.file(
-                            widget.recording.filePath,
+                            recording.filePath,
                             metas: Metas(
-                              title: widget.recording.title,
+                              title: recording.title,
                             ),
                           )
                         : Audio.network(
-                            widget.recording.audioUrl!,
+                            recording.audioUrl!,
                             metas: Metas(
-                              title: widget.recording.title,
+                              title: recording.title,
                             ),
                           ),
                     titleTextStyle: FlutterFlowTheme.of(context)
@@ -348,23 +389,23 @@ class _SessionDetailsScreenWidgetState
                                       ),
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    240.0, 0.0, 0.0, 0.0),
-                                child: Icon(
-                                  Icons.edit_note_outlined,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  size: 24.0,
-                                ),
-                              ),
+                              // Padding(
+                              //   padding: EdgeInsetsDirectional.fromSTEB(
+                              //       240.0, 0.0, 0.0, 0.0),
+                              //   child: Icon(
+                              //     Icons.edit_note_outlined,
+                              //     color:
+                              //         FlutterFlowTheme.of(context).primaryText,
+                              //     size: 24.0,
+                              //   ),
+                              // ),
                             ],
                           ),
                           Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 14.0, 0.0, 14.0, 5.0),
                             child: Text(
-                              widget.recording.summary.toString(),
+                              recording.summary.toString(),
                               textAlign: TextAlign.start,
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
@@ -451,23 +492,23 @@ class _SessionDetailsScreenWidgetState
                                       ),
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    228.0, 0.0, 0.0, 0.0),
-                                child: Icon(
-                                  Icons.edit_note_outlined,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  size: 24.0,
-                                ),
-                              ),
+                              // Padding(
+                              //   padding: EdgeInsetsDirectional.fromSTEB(
+                              //       228.0, 0.0, 0.0, 0.0),
+                              //   child: Icon(
+                              //     Icons.edit_note_outlined,
+                              //     color:
+                              //         FlutterFlowTheme.of(context).primaryText,
+                              //     size: 24.0,
+                              //   ),
+                              // ),
                             ],
                           ),
                           Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 14.0, 0.0, 14.0, 5.0),
                             child: Text(
-                              widget.recording.notes.toString(),
+                              recording.notes.toString(),
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .override(
@@ -553,23 +594,23 @@ class _SessionDetailsScreenWidgetState
                                       ),
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    95.0, 0.0, 0.0, 0.0),
-                                child: Icon(
-                                  Icons.edit_note_outlined,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  size: 24.0,
-                                ),
-                              ),
+                              // Padding(
+                              //   padding: EdgeInsetsDirectional.fromSTEB(
+                              //       95.0, 0.0, 0.0, 0.0),
+                              //   child: Icon(
+                              //     Icons.edit_note_outlined,
+                              //     color:
+                              //         FlutterFlowTheme.of(context).primaryText,
+                              //     size: 24.0,
+                              //   ),
+                              // ),
                             ],
                           ),
                           Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 14.0, 0.0, 14.0, 5.0),
                             child: Text(
-                              widget.recording.tips.toString(),
+                              recording.tips.toString(),
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .override(
@@ -614,8 +655,7 @@ class _SessionDetailsScreenWidgetState
 
                         try {
                           // 2. Call the PDF service
-                          await PdfService.generateAndDownloadPdf(
-                              widget.recording);
+                          await PdfService.generateAndDownloadPdf(recording);
                         } catch (e) {
                           // 3. Handle errors
                           ScaffoldMessenger.of(context).showSnackBar(

@@ -1,3 +1,7 @@
+import 'package:flutter/gestures.dart';
+import 'package:owlby_serene_m_i_n_d_s/subscription_screen/advantage_tile.dart';
+import 'package:owlby_serene_m_i_n_d_s/subscription_screen/plan_tile.dart';
+
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -21,6 +25,7 @@ class _SubscriptionScreenWidgetState extends State<SubscriptionScreenWidget> {
   late SubscriptionScreenModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  int selectedPlanIndex = 2; // default: 1 Year
 
   @override
   void initState() {
@@ -126,228 +131,67 @@ class _SubscriptionScreenWidgetState extends State<SubscriptionScreenWidget> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Icon(
-                                            Icons.check_circle,
-                                            color: Colors.green,
-                                            size: 20.0,
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              'Unlimited Interactive Practice',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodyMedium
-                                                  .override(
-                                                    font: GoogleFonts.inter(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .fontStyle,
-                                                    ),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                    fontSize: 16.0,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyMedium
-                                                            .fontStyle,
-                                                  ),
-                                            ),
-                                          ),
-                                        ].divide(SizedBox(width: 12.0)),
-                                      ),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Icon(
-                                            Icons.check_circle,
-                                            color: Colors.green,
-                                            size: 20.0,
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              'Unlock All Plans and Courses',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodyMedium
-                                                  .override(
-                                                    font: GoogleFonts.inter(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .fontStyle,
-                                                    ),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                    fontSize: 16.0,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyMedium
-                                                            .fontStyle,
-                                                  ),
-                                            ),
-                                          ),
-                                        ].divide(SizedBox(width: 12.0)),
-                                      ),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Icon(
-                                            Icons.check_circle,
-                                            color: Colors.green,
-                                            size: 20.0,
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              'Get real-time AI feedback',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodyMedium
-                                                  .override(
-                                                    font: GoogleFonts.inter(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .fontStyle,
-                                                    ),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                    fontSize: 16.0,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyMedium
-                                                            .fontStyle,
-                                                  ),
-                                            ),
-                                          ),
-                                        ].divide(SizedBox(width: 12.0)),
-                                      ),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Icon(
-                                            Icons.check_circle,
-                                            color: Colors.green,
-                                            size: 20.0,
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              'Unlock 3D tutors and all languages',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodyMedium
-                                                  .override(
-                                                    font: GoogleFonts.inter(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .fontStyle,
-                                                    ),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                    fontSize: 16.0,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .bodyMedium
-                                                            .fontStyle,
-                                                  ),
-                                            ),
-                                          ),
-                                        ].divide(SizedBox(width: 12.0)),
-                                      ),
+                                      FeatureItem(
+                                          text: "AI SOAP notes generation"),
+                                      FeatureItem(
+                                          text: "HIPAA & GDPR compliant"),
+                                      FeatureItem(
+                                          text: "24/7 customer support"),
+                                      FeatureItem(text: " Al-powered Summary")
                                     ].divide(SizedBox(height: 16.0)),
                                   ),
-                                  Divider(
-                                    height: 1.0,
-                                    thickness: 1.0,
-                                    color: Color(0xFFE0E0E0),
-                                  ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          'I want to try Owl for free',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                font: GoogleFonts.inter(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyMedium
-                                                          .fontStyle,
-                                                ),
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primaryText,
-                                                fontSize: 16.0,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w500,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .fontStyle,
-                                              ),
-                                        ),
-                                      ),
-                                      Switch(
-                                        value: _model.switchValue!,
-                                        onChanged: (newValue) async {
-                                          safeSetState(() =>
-                                              _model.switchValue = newValue!);
-                                        },
-                                        activeColor: Colors.blue,
-                                        activeTrackColor: Color(0xFF90CAF9),
-                                        inactiveTrackColor: Color(0xFFBDBDBD),
-                                        inactiveThumbColor: Colors.white,
-                                      ),
-                                    ],
-                                  ),
+                                  // Divider(
+                                  //   height: 1.0,
+                                  //   thickness: 1.0,
+                                  //   color: Color(0xFFE0E0E0),
+                                  // ),
+                                  // Row(
+                                  //   mainAxisSize: MainAxisSize.max,
+                                  //   mainAxisAlignment:
+                                  //       MainAxisAlignment.spaceBetween,
+                                  //   crossAxisAlignment:
+                                  //       CrossAxisAlignment.center,
+                                  //   children: [
+                                  //     Expanded(
+                                  //       child: Text(
+                                  //         'I want to try Owl for free',
+                                  //         style: FlutterFlowTheme.of(context)
+                                  //             .bodyMedium
+                                  //             .override(
+                                  //               font: GoogleFonts.inter(
+                                  //                 fontWeight: FontWeight.w500,
+                                  //                 fontStyle:
+                                  //                     FlutterFlowTheme.of(
+                                  //                             context)
+                                  //                         .bodyMedium
+                                  //                         .fontStyle,
+                                  //               ),
+                                  //               color:
+                                  //                   FlutterFlowTheme.of(context)
+                                  //                       .primaryText,
+                                  //               fontSize: 16.0,
+                                  //               letterSpacing: 0.0,
+                                  //               fontWeight: FontWeight.w500,
+                                  //               fontStyle:
+                                  //                   FlutterFlowTheme.of(context)
+                                  //                       .bodyMedium
+                                  //                       .fontStyle,
+                                  //             ),
+                                  //       ),
+                                  //     ),
+                                  //     Switch(
+                                  //       value: _model.switchValue!,
+                                  //       onChanged: (newValue) async {
+                                  //         safeSetState(() =>
+                                  //             _model.switchValue = newValue!);
+                                  //       },
+                                  //       activeColor: Colors.blue,
+                                  //       activeTrackColor: Color(0xFF90CAF9),
+                                  //       inactiveTrackColor: Color(0xFFBDBDBD),
+                                  //       inactiveThumbColor: Colors.white,
+                                  //     ),
+                                  //   ],
+                                  // ),
                                 ].divide(SizedBox(height: 20.0)),
                               ),
                             ),
@@ -356,336 +200,390 @@ class _SubscriptionScreenWidgetState extends State<SubscriptionScreenWidget> {
                       ].divide(SizedBox(height: 32.0)),
                     ),
                     Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16.0),
-                              border: Border.all(
-                                color: Color(0xFFE0E0E0),
-                                width: 2.0,
+                        Text(
+                          'Choose your Plan',
+                          style: FlutterFlowTheme.of(context)
+                              .bodyMedium
+                              .override(
+                                font: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w500,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .fontStyle,
+                                ),
+                                color: FlutterFlowTheme.of(context).primaryText,
+                                fontSize: 20.0,
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.w500,
+                                fontStyle: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .fontStyle,
                               ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Monthly',
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleMedium
-                                            .override(
-                                              font: GoogleFonts.poppins(
-                                                fontWeight: FontWeight.w600,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .titleMedium
-                                                        .fontStyle,
-                                              ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
-                                              fontSize: 18.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w600,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleMedium
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                      Text(
-                                        'INR 700/month',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodySmall
-                                            .override(
-                                              font: GoogleFonts.inter(
-                                                fontWeight: FontWeight.normal,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodySmall
-                                                        .fontStyle,
-                                              ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryText,
-                                              fontSize: 14.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.normal,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodySmall
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  Container(
-                                    width: 20.0,
-                                    height: 20.0,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Color(0xFFBDBDBD),
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16.0),
-                              border: Border.all(
-                                color: Color(0xFFE0E0E0),
-                                width: 2.0,
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '6 Month',
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleMedium
-                                            .override(
-                                              font: GoogleFonts.poppins(
-                                                fontWeight: FontWeight.w600,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .titleMedium
-                                                        .fontStyle,
-                                              ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
-                                              fontSize: 18.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.w600,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleMedium
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                      Text(
-                                        'INR 500/month',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodySmall
-                                            .override(
-                                              font: GoogleFonts.inter(
-                                                fontWeight: FontWeight.normal,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodySmall
-                                                        .fontStyle,
-                                              ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryText,
-                                              fontSize: 14.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.normal,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodySmall
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  Container(
-                                    width: 20.0,
-                                    height: 20.0,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Color(0xFFBDBDBD),
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        SizedBox(height: 20.0),
+                        PlanTile(
+                          title: 'Starter',
+                          price: '\$16.99 FOR 20 SESSIONS',
+                          isSelected: selectedPlanIndex == 0,
+                          onTap: () {
+                            setState(() => selectedPlanIndex = 0);
+                          },
                         ),
-                        Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xFFF3F8FF),
-                              borderRadius: BorderRadius.circular(16.0),
-                              border: Border.all(
-                                color: Colors.blue,
-                                width: 3.0,
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Text(
-                                            '1 Year',
-                                            style: FlutterFlowTheme.of(context)
-                                                .titleMedium
-                                                .override(
-                                                  font: GoogleFonts.poppins(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .titleMedium
-                                                            .fontStyle,
-                                                  ),
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .primaryText,
-                                                  fontSize: 18.0,
-                                                  letterSpacing: 0.0,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .titleMedium
-                                                          .fontStyle,
-                                                ),
-                                          ),
-                                          Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    8.0, 4.0, 8.0, 4.0),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.orange,
-                                                borderRadius:
-                                                    BorderRadius.circular(12.0),
-                                              ),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text(
-                                                  'BEST VALUE',
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .bodySmall
-                                                      .override(
-                                                        font: GoogleFonts.inter(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontStyle:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodySmall
-                                                                  .fontStyle,
-                                                        ),
-                                                        color: Colors.white,
-                                                        fontSize: 10.0,
-                                                        letterSpacing: 0.0,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontStyle:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodySmall
-                                                                .fontStyle,
-                                                      ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ].divide(SizedBox(width: 8.0)),
-                                      ),
-                                      Text(
-                                        'INR 7000/year',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodySmall
-                                            .override(
-                                              font: GoogleFonts.inter(
-                                                fontWeight: FontWeight.normal,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodySmall
-                                                        .fontStyle,
-                                              ),
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryText,
-                                              fontSize: 14.0,
-                                              letterSpacing: 0.0,
-                                              fontWeight: FontWeight.normal,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodySmall
-                                                      .fontStyle,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  Container(
-                                    width: 20.0,
-                                    height: 20.0,
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      Icons.check,
-                                      color: Colors.white,
-                                      size: 12.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        const SizedBox(height: 15),
+                        PlanTile(
+                          title: 'Growth',
+                          price: '\$59.99 FOR 45 SESSIONS',
+                          isSelected: selectedPlanIndex == 1,
+                          onTap: () {
+                            setState(() => selectedPlanIndex = 1);
+                          },
+                        ),
+                        const SizedBox(height: 15),
+                        PlanTile(
+                          title: 'Pro',
+                          price: '\$114.99 FOR 100 SESSIONS',
+                          showBestValue: true,
+                          isSelected: selectedPlanIndex == 2,
+                          onTap: () {
+                            setState(() => selectedPlanIndex = 2);
+                          },
                         ),
                       ],
                     ),
+
+                    // Column(
+                    //   mainAxisSize: MainAxisSize.max,
+                    //   mainAxisAlignment: MainAxisAlignment.start,
+                    //   crossAxisAlignment: CrossAxisAlignment.center,
+                    //   children: [
+                    //     Padding(
+                    //       padding: EdgeInsets.all(10.0),
+                    //       child: Container(
+                    //         width: double.infinity,
+                    //         decoration: BoxDecoration(
+                    //           color: Colors.white,
+                    //           borderRadius: BorderRadius.circular(16.0),
+                    //           border: Border.all(
+                    //             color: Color(0xFFE0E0E0),
+                    //             width: 2.0,
+                    //           ),
+                    //         ),
+                    //         child: Padding(
+                    //           padding: EdgeInsets.all(12.0),
+                    //           child: Row(
+                    //             mainAxisSize: MainAxisSize.max,
+                    //             mainAxisAlignment:
+                    //                 MainAxisAlignment.spaceBetween,
+                    //             crossAxisAlignment: CrossAxisAlignment.center,
+                    //             children: [
+                    //               Column(
+                    //                 mainAxisSize: MainAxisSize.max,
+                    //                 crossAxisAlignment:
+                    //                     CrossAxisAlignment.start,
+                    //                 children: [
+                    //                   Text(
+                    //                     'Monthly',
+                    //                     style: FlutterFlowTheme.of(context)
+                    //                         .titleMedium
+                    //                         .override(
+                    //                           font: GoogleFonts.poppins(
+                    //                             fontWeight: FontWeight.w600,
+                    //                             fontStyle:
+                    //                                 FlutterFlowTheme.of(context)
+                    //                                     .titleMedium
+                    //                                     .fontStyle,
+                    //                           ),
+                    //                           color:
+                    //                               FlutterFlowTheme.of(context)
+                    //                                   .primaryText,
+                    //                           fontSize: 18.0,
+                    //                           letterSpacing: 0.0,
+                    //                           fontWeight: FontWeight.w600,
+                    //                           fontStyle:
+                    //                               FlutterFlowTheme.of(context)
+                    //                                   .titleMedium
+                    //                                   .fontStyle,
+                    //                         ),
+                    //                   ),
+                    //                   Text(
+                    //                     'INR 700/month',
+                    //                     style: FlutterFlowTheme.of(context)
+                    //                         .bodySmall
+                    //                         .override(
+                    //                           font: GoogleFonts.inter(
+                    //                             fontWeight: FontWeight.normal,
+                    //                             fontStyle:
+                    //                                 FlutterFlowTheme.of(context)
+                    //                                     .bodySmall
+                    //                                     .fontStyle,
+                    //                           ),
+                    //                           color:
+                    //                               FlutterFlowTheme.of(context)
+                    //                                   .secondaryText,
+                    //                           fontSize: 14.0,
+                    //                           letterSpacing: 0.0,
+                    //                           fontWeight: FontWeight.normal,
+                    //                           fontStyle:
+                    //                               FlutterFlowTheme.of(context)
+                    //                                   .bodySmall
+                    //                                   .fontStyle,
+                    //                         ),
+                    //                   ),
+                    //                 ],
+                    //               ),
+                    //               Container(
+                    //                 width: 20.0,
+                    //                 height: 20.0,
+                    //                 decoration: BoxDecoration(
+                    //                   shape: BoxShape.circle,
+                    //                   border: Border.all(
+                    //                     color: Color(0xFFBDBDBD),
+                    //                     width: 2.0,
+                    //                   ),
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     Padding(
+                    //       padding: EdgeInsets.all(10.0),
+                    //       child: Container(
+                    //         width: double.infinity,
+                    //         decoration: BoxDecoration(
+                    //           color: Colors.white,
+                    //           borderRadius: BorderRadius.circular(16.0),
+                    //           border: Border.all(
+                    //             color: Color(0xFFE0E0E0),
+                    //             width: 2.0,
+                    //           ),
+                    //         ),
+                    //         child: Padding(
+                    //           padding: EdgeInsets.all(12.0),
+                    //           child: Row(
+                    //             mainAxisSize: MainAxisSize.max,
+                    //             mainAxisAlignment:
+                    //                 MainAxisAlignment.spaceBetween,
+                    //             crossAxisAlignment: CrossAxisAlignment.center,
+                    //             children: [
+                    //               Column(
+                    //                 mainAxisSize: MainAxisSize.max,
+                    //                 crossAxisAlignment:
+                    //                     CrossAxisAlignment.start,
+                    //                 children: [
+                    //                   Text(
+                    //                     '6 Month',
+                    //                     style: FlutterFlowTheme.of(context)
+                    //                         .titleMedium
+                    //                         .override(
+                    //                           font: GoogleFonts.poppins(
+                    //                             fontWeight: FontWeight.w600,
+                    //                             fontStyle:
+                    //                                 FlutterFlowTheme.of(context)
+                    //                                     .titleMedium
+                    //                                     .fontStyle,
+                    //                           ),
+                    //                           color:
+                    //                               FlutterFlowTheme.of(context)
+                    //                                   .primaryText,
+                    //                           fontSize: 18.0,
+                    //                           letterSpacing: 0.0,
+                    //                           fontWeight: FontWeight.w600,
+                    //                           fontStyle:
+                    //                               FlutterFlowTheme.of(context)
+                    //                                   .titleMedium
+                    //                                   .fontStyle,
+                    //                         ),
+                    //                   ),
+                    //                   Text(
+                    //                     'INR 500/month',
+                    //                     style: FlutterFlowTheme.of(context)
+                    //                         .bodySmall
+                    //                         .override(
+                    //                           font: GoogleFonts.inter(
+                    //                             fontWeight: FontWeight.normal,
+                    //                             fontStyle:
+                    //                                 FlutterFlowTheme.of(context)
+                    //                                     .bodySmall
+                    //                                     .fontStyle,
+                    //                           ),
+                    //                           color:
+                    //                               FlutterFlowTheme.of(context)
+                    //                                   .secondaryText,
+                    //                           fontSize: 14.0,
+                    //                           letterSpacing: 0.0,
+                    //                           fontWeight: FontWeight.normal,
+                    //                           fontStyle:
+                    //                               FlutterFlowTheme.of(context)
+                    //                                   .bodySmall
+                    //                                   .fontStyle,
+                    //                         ),
+                    //                   ),
+                    //                 ],
+                    //               ),
+                    //               Container(
+                    //                 width: 20.0,
+                    //                 height: 20.0,
+                    //                 decoration: BoxDecoration(
+                    //                   shape: BoxShape.circle,
+                    //                   border: Border.all(
+                    //                     color: Color(0xFFBDBDBD),
+                    //                     width: 2.0,
+                    //                   ),
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     Padding(
+                    //       padding: EdgeInsets.all(10.0),
+                    //       child: Container(
+                    //         width: double.infinity,
+                    //         decoration: BoxDecoration(
+                    //           color: Color(0xFFF3F8FF),
+                    //           borderRadius: BorderRadius.circular(16.0),
+                    //           border: Border.all(
+                    //             color: Colors.blue,
+                    //             width: 3.0,
+                    //           ),
+                    //         ),
+                    //         child: Padding(
+                    //           padding: EdgeInsets.all(12.0),
+                    //           child: Row(
+                    //             mainAxisSize: MainAxisSize.max,
+                    //             mainAxisAlignment:
+                    //                 MainAxisAlignment.spaceBetween,
+                    //             crossAxisAlignment: CrossAxisAlignment.center,
+                    //             children: [
+                    //               Column(
+                    //                 mainAxisSize: MainAxisSize.max,
+                    //                 crossAxisAlignment:
+                    //                     CrossAxisAlignment.start,
+                    //                 children: [
+                    //                   Row(
+                    //                     mainAxisSize: MainAxisSize.max,
+                    //                     children: [
+                    //                       Text(
+                    //                         '1 Year',
+                    //                         style: FlutterFlowTheme.of(context)
+                    //                             .titleMedium
+                    //                             .override(
+                    //                               font: GoogleFonts.poppins(
+                    //                                 fontWeight: FontWeight.w600,
+                    //                                 fontStyle:
+                    //                                     FlutterFlowTheme.of(
+                    //                                             context)
+                    //                                         .titleMedium
+                    //                                         .fontStyle,
+                    //                               ),
+                    //                               color: FlutterFlowTheme.of(
+                    //                                       context)
+                    //                                   .primaryText,
+                    //                               fontSize: 18.0,
+                    //                               letterSpacing: 0.0,
+                    //                               fontWeight: FontWeight.w600,
+                    //                               fontStyle:
+                    //                                   FlutterFlowTheme.of(
+                    //                                           context)
+                    //                                       .titleMedium
+                    //                                       .fontStyle,
+                    //                             ),
+                    //                       ),
+                    //                       Padding(
+                    //                         padding:
+                    //                             EdgeInsetsDirectional.fromSTEB(
+                    //                                 8.0, 4.0, 8.0, 4.0),
+                    //                         child: Container(
+                    //                           decoration: BoxDecoration(
+                    //                             color: Colors.orange,
+                    //                             borderRadius:
+                    //                                 BorderRadius.circular(12.0),
+                    //                           ),
+                    //                           child: Padding(
+                    //                             padding: EdgeInsets.all(8.0),
+                    //                             child: Text(
+                    //                               'BEST VALUE',
+                    //                               style: FlutterFlowTheme.of(
+                    //                                       context)
+                    //                                   .bodySmall
+                    //                                   .override(
+                    //                                     font: GoogleFonts.inter(
+                    //                                       fontWeight:
+                    //                                           FontWeight.bold,
+                    //                                       fontStyle:
+                    //                                           FlutterFlowTheme.of(
+                    //                                                   context)
+                    //                                               .bodySmall
+                    //                                               .fontStyle,
+                    //                                     ),
+                    //                                     color: Colors.white,
+                    //                                     fontSize: 10.0,
+                    //                                     letterSpacing: 0.0,
+                    //                                     fontWeight:
+                    //                                         FontWeight.bold,
+                    //                                     fontStyle:
+                    //                                         FlutterFlowTheme.of(
+                    //                                                 context)
+                    //                                             .bodySmall
+                    //                                             .fontStyle,
+                    //                                   ),
+                    //                             ),
+                    //                           ),
+                    //                         ),
+                    //                       ),
+                    //                     ].divide(SizedBox(width: 8.0)),
+                    //                   ),
+                    //                   Text(
+                    //                     'INR 7000/year',
+                    //                     style: FlutterFlowTheme.of(context)
+                    //                         .bodySmall
+                    //                         .override(
+                    //                           font: GoogleFonts.inter(
+                    //                             fontWeight: FontWeight.normal,
+                    //                             fontStyle:
+                    //                                 FlutterFlowTheme.of(context)
+                    //                                     .bodySmall
+                    //                                     .fontStyle,
+                    //                           ),
+                    //                           color:
+                    //                               FlutterFlowTheme.of(context)
+                    //                                   .secondaryText,
+                    //                           fontSize: 14.0,
+                    //                           letterSpacing: 0.0,
+                    //                           fontWeight: FontWeight.normal,
+                    //                           fontStyle:
+                    //                               FlutterFlowTheme.of(context)
+                    //                                   .bodySmall
+                    //                                   .fontStyle,
+                    //                         ),
+                    //                   ),
+                    //                 ],
+                    //               ),
+                    //               Container(
+                    //                 width: 20.0,
+                    //                 height: 20.0,
+                    //                 decoration: BoxDecoration(
+                    //                   color: Colors.blue,
+                    //                   shape: BoxShape.circle,
+                    //                 ),
+                    //                 child: Icon(
+                    //                   Icons.check,
+                    //                   color: Colors.white,
+                    //                   size: 12.0,
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    SizedBox(height: 5.0),
                     Column(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -729,52 +627,23 @@ class _SubscriptionScreenWidgetState extends State<SubscriptionScreenWidget> {
                             ),
                           ),
                         ),
+                        SizedBox(height: 12.0),
                         RichText(
-                          textScaler: MediaQuery.of(context).textScaler,
+                          textAlign: TextAlign.center,
                           text: TextSpan(
+                            style: FlutterFlowTheme.of(context).labelMedium,
                             children: [
+                              const TextSpan(text: ''),
                               TextSpan(
                                 text: 'Terms & Conditions',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      font: GoogleFonts.inter(
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontStyle,
-                                      ),
-                                      letterSpacing: 0.0,
-                                      fontWeight: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .fontWeight,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .fontStyle,
-                                    ),
-                              )
+                                style: TextStyle(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    decoration: TextDecoration.underline),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () => launchURL(
+                                      'https://owlnotes.ai/terms-and-conditions'),
+                              ),
                             ],
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  font: GoogleFonts.inter(
-                                    fontWeight: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontWeight,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .fontStyle,
-                                  ),
-                                  letterSpacing: 0.0,
-                                  fontWeight: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontWeight,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontStyle,
-                                ),
                           ),
                         ),
                       ].divide(SizedBox(height: 16.0)),
