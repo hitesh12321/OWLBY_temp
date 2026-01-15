@@ -1,6 +1,8 @@
 import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
+import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 
 import 'package:owlby_serene_m_i_n_d_s/subscription_screen/subscription_screen_widget.dart';
+import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -26,7 +28,7 @@ class ProfileScreenWidget extends StatefulWidget {
 
 class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
   late ProfileScreenModel _model;
-  int sessionLeft = 0;
+  int sessionLeft = -1;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -36,6 +38,10 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => ProfileScreenModel());
+    fetchSession();
+    // WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+
+    // fetchSession();
   }
 
   @override
@@ -44,21 +50,38 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
     super.dispose();
   }
-// Future<void> fetchSessionLeft() async {
 
-//   try{
-//     final user = context.read<AppUserProvider>().user;
-//     if (user != null) {
-//       final response = await ;
-//       setState(() {
-//         sessionLeft = response['sessionsLeft'] ?? 0;
-//       });
-//     }
+// profile_screen_widget.dart
 
-//   }
-//   catch{}
+// profile_screen_widget.dart ke fetchSession function mein:
 
-// }
+  Future<void> fetchSession() async {
+    try {
+      final response = await GetToken.call();
+      print("Token GetTokenAPI Response ❤️❤️❤️❤️❤️🤐🤐: ${response.jsonBody}");
+      final token = GetToken.totalSessions(response);
+      print("Fetched Token 😂😂😂😂😂: $token");
+
+      final sessionResponse = await GetSessionLeft.call(Token: token);
+
+      if (sessionResponse.succeeded) {
+        // Yahan sessionResponse pass karein
+        final sLeft = GetSessionLeft.sessionsLeft(sessionResponse);
+
+        print("Fetched Sessions Left �����������������🎶🎶�: $sLeft");
+
+        if (!mounted) return;
+        setState(() {
+          sessionLeft = sLeft;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Fetch Session Error: $e");
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
 //  API CALL
 
   //  Subscription redirect
@@ -112,22 +135,31 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
                             // 🔹 Sessions Left
                             Row(
                               children: [
-                                RichText(
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.black87),
-                                    children: [
-                                      const TextSpan(text: "Sessions Left: "),
-                                      TextSpan(
-                                        text: sessionLeft.toString(),
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF4CAF50),
+                                isLoading
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2),
+                                      )
+                                    : RichText(
+                                        text: TextSpan(
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black87),
+                                          children: [
+                                            const TextSpan(
+                                                text: "Sessions Left: "),
+                                            TextSpan(
+                                              text: sessionLeft.toString(),
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Color(0xFF4CAF50),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
                                 const SizedBox(width: 12),
                                 GestureDetector(
                                   onTap: _goToSubscription,
@@ -176,6 +208,17 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
 
                         // 🔹 Referral Code
                         _referralTile(),
+                        const SizedBox(height: 20),
+                        // subscription status
+                        _infoTile(
+                          label: 'Subscription Status: ',
+                          value:
+                              (user.subscription == true) ? "Gold" : 'Bronze',
+                          icon: Icons.grade_outlined,
+                          iconColor: (user.subscription == true)
+                              ? const Color(0xFFFFD700)
+                              : const Color.fromARGB(255, 76, 73, 73),
+                        ),
                       ],
                     ),
                   ),
@@ -190,15 +233,17 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
     required String label,
     required String value,
     required IconData icon,
+    Color? iconColor,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: FlutterFlowTheme.of(context)
-              .labelMedium
-              .override(fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              color: FlutterFlowTheme.of(context).primary),
         ),
         const SizedBox(height: 8),
         Container(
@@ -210,9 +255,14 @@ class _ProfileScreenWidgetState extends State<ProfileScreenWidget> {
           ),
           child: Row(
             children: [
-              Icon(icon, color: const Color(0xFF64748B)),
+              Icon(icon,
+                  color: iconColor ?? const Color.fromARGB(255, 76, 73, 73)),
               const SizedBox(width: 12),
-              Expanded(child: Text(value)),
+              Expanded(
+                  child: Text(
+                value,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+              )),
               // const Icon(Icons.edit_outlined, color: Color(0xFF64748B)),
             ],
           ),

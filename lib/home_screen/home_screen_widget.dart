@@ -1,3 +1,4 @@
+import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/pages/record_screen.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
@@ -146,6 +147,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
             Text(
               RecordingItem.title,
               style: theme.titleLarge.override(
+                fontSize: 21,
                 font: GoogleFonts.poppins(
                   fontWeight: theme.titleLarge.fontWeight,
                   fontStyle: theme.titleLarge.fontStyle,
@@ -156,7 +158,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
               children: const [
                 Spacer(),
                 Icon(Icons.arrow_forward_ios, size: 20),
-                SizedBox(width: 12),
+                SizedBox(width: 10),
               ],
             ),
             Row(
@@ -218,6 +220,41 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
           rec.createdAt!.day == selectedDate.day;
     }).toList();
     filteredRecordings.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+    Future<void> setTheDate() async {
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: _model.datePicked1 ?? getCurrentTimestamp,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2050),
+        builder: (ctx, child) {
+          return wrapInMaterialDatePickerTheme(
+            ctx,
+            child!,
+            headerBackgroundColor: theme.secondary,
+            headerForegroundColor: theme.info,
+            pickerBackgroundColor: theme.secondary,
+            pickerForegroundColor: theme.primaryText,
+            selectedDateTimeBackgroundColor: theme.secondary,
+            selectedDateTimeForegroundColor: theme.info,
+            headerTextStyle: TextStyle(),
+            actionButtonForegroundColor: Colors.red,
+            iconSize: 20,
+          );
+        },
+      );
+
+      if (picked != null) {
+        safeSetState(() {
+          _model.datePicked1 = DateTime(picked.year, picked.month, picked.day);
+          // keep the month base synced to user selection
+          _model.datePicked3 = DateTime(picked.year, picked.month, 1);
+        });
+      } else {
+        safeSetState(() {
+          _model.datePicked1 = getCurrentTimestamp;
+        });
+      }
+    }
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -232,41 +269,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
               // HEADER WITH DATE PICKERS
               InkWell(
                 onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: _model.datePicked1 ?? getCurrentTimestamp,
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2050),
-                    builder: (ctx, child) {
-                      return wrapInMaterialDatePickerTheme(
-                        ctx,
-                        child!,
-                        headerBackgroundColor: theme.primary,
-                        headerForegroundColor: theme.info,
-                        pickerBackgroundColor: theme.secondaryBackground,
-                        pickerForegroundColor: theme.primaryText,
-                        selectedDateTimeBackgroundColor: theme.primary,
-                        selectedDateTimeForegroundColor: theme.info,
-                        headerTextStyle: TextStyle(),
-                        actionButtonForegroundColor: Colors.red,
-                        iconSize: 20,
-                      );
-                    },
-                  );
-
-                  if (picked != null) {
-                    safeSetState(() {
-                      _model.datePicked1 =
-                          DateTime(picked.year, picked.month, picked.day);
-                      // keep the month base synced to user selection
-                      _model.datePicked3 =
-                          DateTime(picked.year, picked.month, 1);
-                    });
-                  } else {
-                    safeSetState(() {
-                      _model.datePicked1 = getCurrentTimestamp;
-                    });
-                  }
+                  await setTheDate();
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -319,45 +322,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                             // Month Label
                             InkWell(
                               onTap: () async {
-                                final picked = await showDatePicker(
-                                  context: context,
-                                  initialDate:
-                                      _model.datePicked1 ?? getCurrentTimestamp,
-                                  firstDate: DateTime(1900),
-                                  lastDate: DateTime(2050),
-                                  builder: (ctx, child) {
-                                    return wrapInMaterialDatePickerTheme(
-                                      ctx,
-                                      child!,
-                                      headerBackgroundColor: theme.primary,
-                                      headerForegroundColor: theme.info,
-                                      pickerBackgroundColor:
-                                          theme.secondaryBackground,
-                                      pickerForegroundColor: theme.primaryText,
-                                      selectedDateTimeBackgroundColor:
-                                          theme.primary,
-                                      selectedDateTimeForegroundColor:
-                                          theme.info,
-                                      headerTextStyle: TextStyle(),
-                                      actionButtonForegroundColor: Colors.red,
-                                      iconSize: 20,
-                                    );
-                                  },
-                                );
-
-                                if (picked != null) {
-                                  safeSetState(() {
-                                    _model.datePicked1 = DateTime(
-                                        picked.year, picked.month, picked.day);
-                                    // keep the month base synced to user selection
-                                    _model.datePicked3 =
-                                        DateTime(picked.year, picked.month, 1);
-                                  });
-                                } else {
-                                  safeSetState(() {
-                                    _model.datePicked1 = getCurrentTimestamp;
-                                  });
-                                }
+                                await setTheDate();
                               },
                               child: Column(
                                 children: [
@@ -465,19 +430,6 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: GestureDetector(
-                                  // onTap: () {
-                                  //   // context.pushNamed(
-                                  //   //     SessionDetailsScreenWidget.routeName);
-                                  //   Navigator.push(
-                                  //       context,
-                                  //       MaterialPageRoute(
-                                  //           builder: (context) =>
-                                  //               SessionDetailsScreenWidget(
-                                  //                   recording: HRProv
-                                  //                       .recordings[index])));
-                                  //   print(
-                                  //       'Podcast tile tapped:::::::::::::::::::::::::::::::::::::::::: ${HRProv.recordings[index].title}');
-                                  // },
                                   onTap: () {
                                     final RecordingItem =
                                         HRProv.recordings[index];
@@ -518,7 +470,23 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                 ),
                 child: FFButtonWidget(
                   onPressed: () async {
-                    context.pushNamed(RecordScreenWidget.routeName);
+                    int? sessionLeft = await fetchTheSession();
+
+                    if (sessionLeft != null && sessionLeft <= 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                                'You have no sessions left. Please upgrade your plan.')),
+                      );
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  SubscriptionScreenWidget()));
+                      return;
+                    } else {
+                      context.pushNamed(RecordScreenWidget.routeName);
+                    }
                   },
                   text: 'Create a new session',
                   icon: const Icon(Icons.create_new_folder_outlined, size: 30),

@@ -105,14 +105,14 @@ class _FFButtonWidgetState extends State<FFButtonWidget> {
               ),
             ),
           )
-        : AutoSizeText(
-            text ?? '',
+        : AutoSizeText(text ?? '',
             style:
                 text == null ? null : widget.options.textStyle?.withoutColor(),
             textAlign: widget.options.textAlign,
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
-          );
+            minFontSize: 25,
+            maxFontSize: 30);
 
     final onPressed = widget.onPressed != null
         ? (widget.showLoadingIndicator

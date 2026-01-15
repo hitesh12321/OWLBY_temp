@@ -1,10 +1,9 @@
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:provider/provider.dart';
 import 'to_do_list_screen1_model.dart';
 export 'to_do_list_screen1_model.dart';
@@ -112,7 +111,7 @@ class _ToDoListScreen1WidgetState extends State<ToDoListScreen1Widget> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      boxShadow: [
+                      boxShadow: const[
                         BoxShadow(
                           blurRadius: 12.0,
                           color: Color(0x1A000000),

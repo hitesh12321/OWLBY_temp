@@ -4,17 +4,17 @@ class RecordingModel {
   final String title;
   final DateTime createdAt;
   final String? userId; // user id of the person who uploaded the recording
-  String? backendSessionId;
+  final String? backendSessionId;
   final String status; // pending_processing / processing / completed /local
   final String? meetingId;
 
-  String? summary;
-  String? sentiment;
-  String? keywords;
-  int? duration;
-  String? notes;
-  String? audioUrl;
-  String? tips;
+  final String? summary;
+  final String? sentiment;
+  final String? keywords;
+  final int? duration;
+  final String? notes;
+  final String? audioUrl;
+  final String? tips;
 
   RecordingModel({
     required this.recordingId,

@@ -1,12 +1,12 @@
 ﻿import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'dart:ui';
+
 import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../local_database/providers/notes_provider.dart';
-import '../new_note_screen/new_note_screen_widget.dart';
+
 import 'notes_screen_model.dart';
 export 'notes_screen_model.dart';
 
@@ -98,12 +98,12 @@ class _NotesScreenWidgetState extends State<NotesScreenWidget> {
                   child: GestureDetector(
                     onTap: () async {
                       context.pushNamed(ToDoListScreen1Widget.routeName);
-                    },  
+                    },
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             blurRadius: 8.0,
                             color: Color(0x1A000000),
@@ -222,8 +222,8 @@ class _NotesScreenWidgetState extends State<NotesScreenWidget> {
                               decoration: BoxDecoration(
                                 color: FlutterFlowTheme.of(context)
                                     .secondaryBackground,
-                                boxShadow: [
-                                  const BoxShadow(
+                                boxShadow: const [
+                                  BoxShadow(
                                     blurRadius: 4.0,
                                     color: Color(0x230E151B),
                                     offset: Offset(0.0, 2.0),

@@ -119,7 +119,7 @@ class _NewNoteScreenWidgetState extends State<NewNoteScreenWidget> {
                   if (widget.note == null) {
                     await provider.addNote(title, content);
                   } else {
-                    final updated = NoteModel(
+                    final updated = NoteModel( 
                       id: widget.note!.id,
                       title: title,
                       content: content,

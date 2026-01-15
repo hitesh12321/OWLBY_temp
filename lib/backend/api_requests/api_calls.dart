@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '/flutter_flow/flutter_flow_util.dart';
@@ -64,6 +65,29 @@ class VerifyOtpCall {
       ));
 }
 
+class CheckRefferal {
+  static Future<ApiCallResponse> call({
+    String? referralCode = '',
+  }) {
+    return ApiManager.instance.makeApiCall(
+      callName: 'checkRefferal',
+      apiUrl: 'https://owl-app-backend.vercel.app/api/auth/check-referral',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      body: '''
+      {
+        "referral_code": "$referralCode"
+      } 
+      ''',
+      bodyType: BodyType.JSON,
+    );
+  }
+
+  static bool? isValid(ApiCallResponse response) => castToType<bool>(
+        getJsonField(response.jsonBody, r'$.data.is_valid'),
+      );
+}
+
 // create new account on backend // DONE 👍👍👍
 class UsersignupCall {
   static Future<ApiCallResponse> call({
@@ -79,8 +103,15 @@ class UsersignupCall {
       "organization_name": organizationName,
       "phone_number": phoneNumber,
     };
+    final response = CheckRefferal.call(referralCode: referralCode);
+    print("Referral Code Response: $response");
+    final Isvalid = CheckRefferal.isValid(response as ApiCallResponse);
+    print("Is Referral Code Valid: $Isvalid");
 
-    if (referralCode != null && referralCode.isNotEmpty) {
+    // if (referralCode != null && referralCode.isNotEmpty) {
+    //   bodyMap["referral_code"] = referralCode;
+    // }
+    if (Isvalid == true) {
       bodyMap["referral_code"] = referralCode;
     }
 
@@ -133,24 +164,36 @@ class GetUserDetails {
 
 class GetSessionLeft {
   static Future<ApiCallResponse> call({
-    required String userId,
+    required String Token,
   }) {
     return ApiManager.instance.makeApiCall(
       callName: 'getSessionLeft',
       apiUrl: 'https://owl-app-backend.vercel.app/api/auth/sessions',
-      callType: ApiCallType.POST,
-      headers: {'Content-Type': 'application/json'},
+      callType: ApiCallType.GET,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $Token',
+      },
       body: '''
       {
-        "user_id": "$userId"
+       
       } 
       ''',
       bodyType: BodyType.JSON,
     );
   }
 
-  static int sessionsLeft(ApiCallResponse response) {
-    return response.jsonBody?['data']?['sessionsLeft'] ?? 0;
+  static int sessionsLeft(dynamic response) {
+    // Agar response ApiCallResponse type ka hai to jsonBody lein, warna direct use karein
+    final body = response is ApiCallResponse ? response.jsonBody : response;
+
+    try {
+      // Backend image ke hisaab se path: data -> user -> sessions
+      return body['data']['sessions'] ?? 0;
+    } catch (e) {
+      print("Parsing Error in sessionsLeft: $e");
+      return 0;
+    }
   }
 }
 
@@ -178,6 +221,30 @@ class CheckUserApi {
   }
 }
 
+Future<int?> fetchTheSession() async {
+  try {
+    final response = await GetToken.call();
+    print("Token GetTokenAPI Response ❤️❤️❤️❤️❤️🤐🤐: ${response.jsonBody}");
+    final token = GetToken.totalSessions(response);
+    print("Fetched Token 😂😂😂😂😂: $token");
+
+    final sessionResponse = await GetSessionLeft.call(Token: token);
+
+    if (sessionResponse.succeeded) {
+      // Yahan sessionResponse pass karein
+      final sLeft = GetSessionLeft.sessionsLeft(sessionResponse);
+
+      print("Fetched Sessions Left �����������������🎶🎶�: $sLeft");
+      return sLeft;
+    }
+    return null;
+  } catch (e) {
+    print("Fetch Session Error: $e");
+    return null;
+    // if (mounted) setState(() => isLoading = false);
+  }
+}
+
 // to create meeting ///❤️❤️❤️❤️ // DONE 👍👍👍👍
 class CreatemeetingCall {
   static Future<ApiCallResponse> call({
@@ -186,6 +253,7 @@ class CreatemeetingCall {
     String? meetingTime = '',
     int? duration,
     String? professionalName = '',
+    String? Token = '',
   }) async {
     final ffApiRequestBody = '''
 {
@@ -195,12 +263,14 @@ class CreatemeetingCall {
   "duration": ${duration},
   "professional_name":"${escapeStringForJson(professionalName)}"
 }''';
+
     return ApiManager.instance.makeApiCall(
       callName: 'createmeeting',
       apiUrl: 'https://owl-app-backend.vercel.app/api/meeting/create',
       callType: ApiCallType.POST,
       headers: {
         'Content-type': 'application/json',
+        'Authorization': 'Bearer $Token',
       },
       params: {},
       body: ffApiRequestBody,
@@ -215,8 +285,47 @@ class CreatemeetingCall {
   }
 }
 
+// get token to be send in other methods or api calls // DONE 👍👍👍
+class GetToken {
+  static Future<ApiCallResponse> call() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception("User not logged in");
+    }
+
+    final idToken = await user.getIdToken();
+    return ApiManager.instance.makeApiCall(
+      callName: 'getFirebaseLoginToken',
+      apiUrl: 'https://owl-app-backend.vercel.app/api/auth/firebase-login',
+      callType: ApiCallType.POST,
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: '''
+      {
+     "idToken" : "$idToken"
+      } 
+      ''',
+      bodyType: BodyType.JSON,
+    );
+  }
+
+  static String totalSessions(ApiCallResponse response) {
+    return response.jsonBody?['data']?['token'] ?? '';
+  }
+
+  static int usedSessions(ApiCallResponse response) {
+    return response.jsonBody?['data']?['used_sessions'] ?? 0;
+  }
+}
+
+// et session left // DONE 👍👍👍
+
 // process meeting call // ❤️❤️❤️
 class ProcessmeetingCall {
+  // String Token;
+  // ProcessmeetingCall({required this.Token});
+
   static Future<ApiCallResponse> call({
     String? meetingId = '',
     String? meetingTitle = '',
@@ -225,6 +334,7 @@ class ProcessmeetingCall {
     String? participants = '',
     String? startTime = '',
     String? provider = '',
+    String? Token = '',
   }) async {
     final ffApiRequestBody = '''
 {
@@ -245,12 +355,14 @@ class ProcessmeetingCall {
   },
   "provider": "${escapeStringForJson(provider)}"
 }''';
+
     return ApiManager.instance.makeApiCall(
       callName: 'processmeeting',
       apiUrl: 'https://owl-app-backend.vercel.app/api/meeting/process-meeting',
       callType: ApiCallType.POST,
       headers: {
         'Content-type': 'application/json',
+        'Authorization': 'Bearer $Token',
       },
       params: {},
       body: ffApiRequestBody,
@@ -277,12 +389,16 @@ class UploadrecordingCall {
     String? userId = '',
     String? professionalName = '',
     FFUploadedFile? file,
+    String? Token = '',
   }) async {
     return ApiManager.instance.makeApiCall(
       callName: 'uploadrecording',
       apiUrl: 'https://owl-app-backend.vercel.app/api/meeting/upload',
       callType: ApiCallType.POST,
-      headers: {},
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer $Token',
+      },
       params: {
         'meeting_id': meetingId,
         'user_id': userId,
