@@ -2,6 +2,7 @@ import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/pages/record_screen.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
+import 'package:owlby_serene_m_i_n_d_s/session_details_screen/editSessionDetailsScreen.dart';
 
 import 'package:provider/provider.dart';
 
@@ -259,6 +260,14 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        // floatingActionButton: FloatingActionButton(
+        //     onPressed: () {
+        //       Navigator.push(
+        //           context,
+        //           MaterialPageRoute(
+        //               builder: (context) => EditSessiondetailsscreen()));
+        //     },
+        //     child: Icon(Icons.mic)),
         key: scaffoldKey,
         backgroundColor: theme.secondary,
         // Bottom navigation is owned by the app's main page so
@@ -422,38 +431,41 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
                         child: ListView.builder(
-                          itemCount: HRProv.recordings.length,
+                          // FIX 1: Use the filtered list length
+                          itemCount: filteredRecordings.length,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          //_podcastTile(HRProv.recordings[0])
                           itemBuilder: (context, index) {
+                            // FIX 2: Get the item from the filtered list
+                            final recordingItem = filteredRecordings[index];
+
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: GestureDetector(
-                                  onTap: () {
-                                    final RecordingItem =
-                                        HRProv.recordings[index];
-                                    if (RecordingItem.status != 'completed') {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Session is still processing')),
-                                      );
-                                      return;
-                                    }
-
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            SessionDetailsScreenWidget(
-                                                recording: RecordingItem),
-                                      ),
+                                onTap: () {
+                                  if (recordingItem.status != 'completed') {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Session is still processing')),
                                     );
-                                  },
-                                  child:
-                                      _podcastTile(HRProv.recordings[index])),
+                                    return;
+                                  }
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          SessionDetailsScreenWidget(
+                                        recording:
+                                            recordingItem, // Using filtered item
+                                      ),
+                                    ),
+                                  );
+                                },
+                                // FIX 3: Pass the filtered item to the tile
+                                child: _podcastTile(recordingItem),
+                              ),
                             );
                           },
                         ),

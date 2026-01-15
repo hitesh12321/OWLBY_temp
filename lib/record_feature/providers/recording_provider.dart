@@ -408,6 +408,18 @@ class RecordingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateRecording(RecordingModel updatedRecording) {
+  final index = recordings.indexWhere(
+    (r) => r.userId == updatedRecording.userId,
+  );
+
+  if (index != -1) {
+    recordings[index] = updatedRecording;
+    notifyListeners(); // 🔥 VERY IMPORTANT
+  }
+}
+
+
   @override
   void dispose() {
     _timer?.cancel();

@@ -84,7 +84,8 @@ class CheckRefferal {
   }
 
   static bool? isValid(ApiCallResponse response) => castToType<bool>(
-        getJsonField(response.jsonBody, r'$.data.is_valid'),
+        getJsonField(response.jsonBody,
+            r'$.data.exists'), // Changed 'is_valid' to 'exists'
       );
 }
 
@@ -96,6 +97,7 @@ class UsersignupCall {
     String? organizationName = '',
     String? referralCode = '',
     String? phoneNumber = '',
+    bool? referralValid = false,
   }) {
     final Map<String, dynamic> bodyMap = {
       "full_name": fullName,
@@ -103,15 +105,15 @@ class UsersignupCall {
       "organization_name": organizationName,
       "phone_number": phoneNumber,
     };
-    final response = CheckRefferal.call(referralCode: referralCode);
-    print("Referral Code Response: $response");
-    final Isvalid = CheckRefferal.isValid(response as ApiCallResponse);
-    print("Is Referral Code Valid: $Isvalid");
+    // final response = CheckRefferal.call(referralCode: referralCode);
+    // print("Referral Code Response: $response");
+    // final Isvalid = CheckRefferal.isValid(response as ApiCallResponse);
+    // print("Is Referral Code Valid: $Isvalid");
 
     // if (referralCode != null && referralCode.isNotEmpty) {
     //   bodyMap["referral_code"] = referralCode;
     // }
-    if (Isvalid == true) {
+    if (referralValid == true) {
       bodyMap["referral_code"] = referralCode;
     }
 

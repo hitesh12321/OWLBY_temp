@@ -32,6 +32,8 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
   late CreateAccountScreenModel _model;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final animationsMap = <String, AnimationInfo>{};
+  Color? col = Colors.black;
+  bool isvalid = false;
 
   static const String referralCheckUrl =
       'https://api.example.com/checkReferral';
@@ -127,6 +129,8 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
         email: _model.emailController?.text.trim(),
         organizationName: _model.orgController?.text.trim(),
         phoneNumber: _model.phoneController?.text.trim(),
+        referralCode: _model.referralController?.text.trim(),
+        referralValid: isvalid,
       );
       print('🤛🤛🤛🤛FULL RESPONSE: $response');
 
@@ -280,11 +284,66 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
                             _buildField(_model.orgController,
                                 _model.orgFocusNode, 'Organization', null),
                             const SizedBox(height: 16),
-                            _buildField(
-                                _model.referralController,
-                                _model.referralFocusNode,
-                                'Referral Code (Optional)',
-                                null),
+                            Row(
+                              children: [
+                                // Wrap the field in Expanded
+                                Expanded(
+                                  child: _buildField(
+                                    _model.referralController,
+                                    _model.referralFocusNode,
+                                    'Referral Code (Optional)',
+                                    null,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                TextButton.icon(
+                                    icon: Icon(
+                                      Icons.check_circle_outline,
+                                      color: col,
+                                    ),
+                                    onPressed: () async {
+                                      // 1. Added async
+                                      final code = _model
+                                          .referralController?.text
+                                          .trim();
+                                      if (code == null || code.isEmpty) return;
+
+                                      // 2. Added await here
+                                      final response = await CheckRefferal.call(
+                                          referralCode: code);
+
+                                      // 3. Removed the manual "as ApiCallResponse" cast because await handles it
+                                      bool? valid =
+                                          CheckRefferal.isValid(response);
+
+                                      setState(() {
+                                        if (valid == true) {
+                                          col = Colors.green;
+                                          isvalid = true;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                                content: Text(
+                                                    'Referral code applied!')),
+                                          );
+                                        } else {
+                                          col = Colors.red;
+                                          isvalid = false;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                                content: Text(
+                                                    'Invalid referral code.')),
+                                          );
+                                        }
+                                      });
+                                    },
+                                    label: Text(
+                                      "Check",
+                                      style: TextStyle(color: col),
+                                    ))
+                              ],
+                            ),
 
                             const SizedBox(height: 24),
 
