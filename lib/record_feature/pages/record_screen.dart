@@ -220,7 +220,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
           print("❌ Analysis field was null in the response");
         }
         AppSnackbar.showSuccess(
-            context, "StopAndSave completed👍👍👍👍👍: ${SessionSaved.title}");
+            context, "StopAndSave completed: ${SessionSaved.title}");
         // ScaffoldMessenger.of(context).showSnackBar(
         //   SnackBar(
         //       content: Text(
@@ -232,7 +232,7 @@ class _RecordScreenBodyState extends State<_RecordScreenBody> {
         );
       } catch (e) {
         // RESTORED LOG EMOJI
-        AppSnackbar.showError(context, 'Save failed😩😩😩😩😩😩😩: $e');
+        AppSnackbar.showError(context, 'Save failed: $e');
         // ScaffoldMessenger.of(context).showSnackBar(
         //   SnackBar(content: Text('Save failed😩😩😩😩😩😩😩: $e')),
         // );

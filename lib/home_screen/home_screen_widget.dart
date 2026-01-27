@@ -1,3 +1,4 @@
+import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/pages/record_screen.dart';
@@ -444,11 +445,13 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                               child: GestureDetector(
                                 onTap: () {
                                   if (recordingItem.status != 'completed') {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Session is still processing')),
-                                    );
+                                    AppSnackbar.showInfo(
+                                        context, 'Session is still processing');
+                                    // ScaffoldMessenger.of(context).showSnackBar(
+                                    //   const SnackBar(
+                                    //       content: Text(
+                                    //           'Session is still processing')),
+                                    // );
                                     return;
                                   }
 
@@ -485,11 +488,13 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                     int? sessionLeft = await fetchTheSession();
 
                     if (sessionLeft != null && sessionLeft <= 0) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text(
-                                'You have no sessions left. Please upgrade your plan.')),
-                      );
+                          AppSnackbar.showInfo(
+                                        context, 'You have no sessions left. Please upgrade your plan.');
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   const SnackBar(
+                      //       content: Text(
+                      //           'You have no sessions left. Please upgrade your plan.')),
+                      // );
                       Navigator.push(
                           context,
                           MaterialPageRoute(

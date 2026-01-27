@@ -1,9 +1,8 @@
 import 'dart:async';
 
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 
 import '../auth_manager.dart';
 import '../base_auth_user_provider.dart';
@@ -43,40 +42,45 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
       await currentUser?.delete();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sign in again before deleting your account.')),
-        );
+        AppSnackbar.showError(
+            context, "Sign in again before deleting your account.");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('Sign in again before deleting your account.')),
+        // );
       }
     }
   }
+
   // update Email Method
   @override
-  Future updateEmail({required String email, required BuildContext context}) async {
+  Future updateEmail(
+      {required String email, required BuildContext context}) async {
     try {
       if (!loggedIn) return;
       await currentUser?.updateEmail(email);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message ?? 'Unknown error')),
-        );
+        AppSnackbar.showError(context, e.message ?? 'Unknown error');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text(e.message ?? 'Unknown error')),
+        // );
       }
     }
   }
   // update Password Method
 
   @override
-  Future updatePassword({required String newPassword, required BuildContext context}) async {
+  Future updatePassword(
+      {required String newPassword, required BuildContext context}) async {
     try {
       if (!loggedIn) return;
       await currentUser?.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Unknown error')),
-      );
+      AppSnackbar.showError(context, e.message ?? 'Unknown error');
     }
   }
-// Phone Auth State Changes Handler ??????????????????????? IMportant 
+
+// Phone Auth State Changes Handler ??????????????????????? IMportant
   void handlePhoneAuthStateChanges(BuildContext context) {
     phoneAuthManager.addListener(() {
       if (!context.mounted) return;
@@ -88,8 +92,7 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
         });
       } else if (phoneAuthManager.phoneAuthError != null) {
         final e = phoneAuthManager.phoneAuthError!;
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.message ?? 'Error')));
+        AppSnackbar.showError(context, e.message ?? 'Unknown error');
         phoneAuthManager.update(() {
           phoneAuthManager.phoneAuthError = null;
         });
@@ -133,8 +136,6 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
     required String smsCode,
     required String verificationId,
   }) async {
-  
-
     final credential = PhoneAuthProvider.credential(
       verificationId: verificationId,
       smsCode: smsCode,
@@ -156,17 +157,22 @@ class FirebaseAuthManager extends AuthManager with PhoneSignInManager {
 
       return OwlbySereneMINDSFirebaseUser.fromUserCredential(userCredential);
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Authentication error')),
-      );
+      AppSnackbar.showError(context, e.message ?? 'Authentication error');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text(e.message ?? 'Authentication error')),
+      // );
       return null;
     }
   }
 
   @override
-  Future resetPassword({required String email, required BuildContext context}) async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Password reset is not supported in phone login')),
-    );
+  Future resetPassword(
+      {required String email, required BuildContext context}) async {
+    AppSnackbar.showInfo(
+        context, 'Password reset is not supported in phone login');
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   const SnackBar(
+    //       content: Text('Password reset is not supported in phone login')),
+    // );
   }
 }

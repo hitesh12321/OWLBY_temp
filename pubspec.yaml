@@ -81,16 +81,24 @@ dependencies:
   audioplayers: ^6.5.1
   firebase_crashlytics: ^5.0.5
   printing: ^5.14.2
+  app_links: ^7.0.0
+  
 
 dev_dependencies:
   flutter_lints: ^4.0.0
   lints: ^4.0.0
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
+
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/favicon.png"
 
 flutter:
   uses-material-design: true
-
   assets:
     - assets/fonts/
     - assets/images/
