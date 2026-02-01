@@ -1,4 +1,10 @@
+import 'dart:convert';
+import 'package:app_links/app_links.dart';
 import 'package:flutter/gestures.dart';
+import 'package:http/http.dart' as http;
+import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:owlby_serene_m_i_n_d_s/subscription_screen/advantage_tile.dart';
 import 'package:owlby_serene_m_i_n_d_s/subscription_screen/plan_tile.dart';
 
@@ -23,25 +29,89 @@ class SubscriptionScreenWidget extends StatefulWidget {
 
 class _SubscriptionScreenWidgetState extends State<SubscriptionScreenWidget> {
   late SubscriptionScreenModel _model;
+  late final AppLinks _appLinks;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  int selectedPlanIndex = 2; // default: 1 Year
+  int selectedPlanIndex = 2; // default Pro
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => SubscriptionScreenModel());
-
     _model.switchValue = true;
+
+    initDeepLinkListener();
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
   }
+
+  // ------------------- PADDLE LOGIC -------------------
+
+  String getPriceId() {
+    if (selectedPlanIndex == 0) {
+      return "pro_01kb1rvqnth0xk89vqz2w8z746";
+    }
+    if (selectedPlanIndex == 1) {
+      return "pro_01kb1rx8spjkj39g2cm9b7fcz9";
+    }
+    return "pro_01kb1rxv2a0sej6bpc1x5pgqyb";
+  }
+
+  Future<void> startPayment() async {
+    final priceId = getPriceId();
+
+    final response = await http.post(
+      Uri.parse("https://YOUR_BACKEND_URL/create-checkout"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"priceId": priceId}),
+    );
+
+    final data = jsonDecode(response.body);
+    final checkoutUrl = data["checkoutUrl"];
+
+    await launchUrl(
+      Uri.parse(checkoutUrl),
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
+  void initDeepLinkListener() async {
+    _appLinks = AppLinks();
+
+    final Uri? initialUri = await _appLinks.getInitialLink();
+    if (initialUri != null) {
+      _handleDeepLink(initialUri);
+    }
+
+    _appLinks.uriLinkStream.listen((uri) {
+      _handleDeepLink(uri);
+    });
+  }
+
+  void _handleDeepLink(Uri uri) {
+    if (!mounted) return;
+
+    if (uri.host == "payment-success") {
+      AppSnackbar.showSuccess(context, "Payment Successful ✅");
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text("Payment Successful ✅")),
+      // );
+    }
+
+    if (uri.host == "payment-failed") {
+      AppSnackbar.showError(context, "Payment Failed ❌");
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text("Payment Failed ❌")),
+      // );
+    }
+  }
+
+  // ----------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -54,607 +124,151 @@ class _SubscriptionScreenWidgetState extends State<SubscriptionScreenWidget> {
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondary,
         body: SafeArea(
-          top: true,
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  FlutterFlowTheme.of(context).secondary,
-                  FlutterFlowTheme.of(context).secondary
-                ],
-                stops: [0.0, 1.0],
-                begin: AlignmentDirectional(0.0, 1.0),
-                end: AlignmentDirectional(0, -1.0),
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 0.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Stay Mentally Healthy',
-                          textAlign: TextAlign.center,
-                          style: FlutterFlowTheme.of(context)
-                              .displaySmall
-                              .override(
-                                font: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w800,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .displaySmall
-                                      .fontStyle,
-                                ),
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                fontSize: 28.0,
-                                letterSpacing: 0.0,
-                                fontWeight: FontWeight.w800,
-                                fontStyle: FlutterFlowTheme.of(context)
-                                    .displaySmall
-                                    .fontStyle,
-                                lineHeight: 1.2,
-                              ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: Container(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      /// ---------------- TOP ----------------
+                      Column(
+                        children: [
+                          const SizedBox(height: 20),
+
+                          Text(
+                            'Stay Mentally Healthy',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          /// FEATURE CARD
+                          Container(
                             width: double.infinity,
+                            constraints: const BoxConstraints(maxWidth: 420),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              boxShadow: [
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: const [
                                 BoxShadow(
-                                  blurRadius: 8.0,
+                                  blurRadius: 8,
                                   color: Color(0x1A000000),
-                                  offset: Offset(
-                                    0.0,
-                                    4.0,
-                                  ),
+                                  offset: Offset(0, 4),
                                 )
                               ],
-                              borderRadius: BorderRadius.circular(20.0),
                             ),
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      FeatureItem(
-                                          text: "AI SOAP notes generation"),
-                                      FeatureItem(
-                                          text: "HIPAA & GDPR compliant"),
-                                      FeatureItem(
-                                          text: "24/7 customer support"),
-                                      FeatureItem(text: " Al-powered Summary")
-                                    ].divide(SizedBox(height: 16.0)),
-                                  ),
-                                  // Divider(
-                                  //   height: 1.0,
-                                  //   thickness: 1.0,
-                                  //   color: Color(0xFFE0E0E0),
-                                  // ),
-                                  // Row(
-                                  //   mainAxisSize: MainAxisSize.max,
-                                  //   mainAxisAlignment:
-                                  //       MainAxisAlignment.spaceBetween,
-                                  //   crossAxisAlignment:
-                                  //       CrossAxisAlignment.center,
-                                  //   children: [
-                                  //     Expanded(
-                                  //       child: Text(
-                                  //         'I want to try Owl for free',
-                                  //         style: FlutterFlowTheme.of(context)
-                                  //             .bodyMedium
-                                  //             .override(
-                                  //               font: GoogleFonts.inter(
-                                  //                 fontWeight: FontWeight.w500,
-                                  //                 fontStyle:
-                                  //                     FlutterFlowTheme.of(
-                                  //                             context)
-                                  //                         .bodyMedium
-                                  //                         .fontStyle,
-                                  //               ),
-                                  //               color:
-                                  //                   FlutterFlowTheme.of(context)
-                                  //                       .primaryText,
-                                  //               fontSize: 16.0,
-                                  //               letterSpacing: 0.0,
-                                  //               fontWeight: FontWeight.w500,
-                                  //               fontStyle:
-                                  //                   FlutterFlowTheme.of(context)
-                                  //                       .bodyMedium
-                                  //                       .fontStyle,
-                                  //             ),
-                                  //       ),
-                                  //     ),
-                                  //     Switch(
-                                  //       value: _model.switchValue!,
-                                  //       onChanged: (newValue) async {
-                                  //         safeSetState(() =>
-                                  //             _model.switchValue = newValue!);
-                                  //       },
-                                  //       activeColor: Colors.blue,
-                                  //       activeTrackColor: Color(0xFF90CAF9),
-                                  //       inactiveTrackColor: Color(0xFFBDBDBD),
-                                  //       inactiveThumbColor: Colors.white,
-                                  //     ),
-                                  //   ],
-                                  // ),
-                                ].divide(SizedBox(height: 20.0)),
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                FeatureItem(text: "AI SOAP notes generation"),
+                                SizedBox(height: 12),
+                                FeatureItem(text: "HIPAA & GDPR compliant"),
+                                SizedBox(height: 12),
+                                FeatureItem(text: "24/7 customer support"),
+                                SizedBox(height: 12),
+                                FeatureItem(text: "AI-powered Summary"),
+                              ],
                             ),
                           ),
-                        ),
-                      ].divide(SizedBox(height: 32.0)),
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          'Choose your Plan',
-                          style: FlutterFlowTheme.of(context)
-                              .bodyMedium
-                              .override(
-                                font: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w500,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .fontStyle,
-                                ),
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                fontSize: 20.0,
-                                letterSpacing: 0.0,
-                                fontWeight: FontWeight.w500,
-                                fontStyle: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .fontStyle,
-                              ),
-                        ),
-                        SizedBox(height: 20.0),
-                        PlanTile(
-                          title: 'Starter',
-                          price: '\$16.99 FOR 20 SESSIONS',
-                          isSelected: selectedPlanIndex == 0,
-                          onTap: () {
-                            setState(() => selectedPlanIndex = 0);
-                          },
-                        ),
-                        const SizedBox(height: 15),
-                        PlanTile(
-                          title: 'Growth',
-                          price: '\$59.99 FOR 45 SESSIONS',
-                          isSelected: selectedPlanIndex == 1,
-                          onTap: () {
-                            setState(() => selectedPlanIndex = 1);
-                          },
-                        ),
-                        const SizedBox(height: 15),
-                        PlanTile(
-                          title: 'Pro',
-                          price: '\$114.99 FOR 100 SESSIONS',
-                          showBestValue: true,
-                          isSelected: selectedPlanIndex == 2,
-                          onTap: () {
-                            setState(() => selectedPlanIndex = 2);
-                          },
-                        ),
-                      ],
-                    ),
 
-                    // Column(
-                    //   mainAxisSize: MainAxisSize.max,
-                    //   mainAxisAlignment: MainAxisAlignment.start,
-                    //   crossAxisAlignment: CrossAxisAlignment.center,
-                    //   children: [
-                    //     Padding(
-                    //       padding: EdgeInsets.all(10.0),
-                    //       child: Container(
-                    //         width: double.infinity,
-                    //         decoration: BoxDecoration(
-                    //           color: Colors.white,
-                    //           borderRadius: BorderRadius.circular(16.0),
-                    //           border: Border.all(
-                    //             color: Color(0xFFE0E0E0),
-                    //             width: 2.0,
-                    //           ),
-                    //         ),
-                    //         child: Padding(
-                    //           padding: EdgeInsets.all(12.0),
-                    //           child: Row(
-                    //             mainAxisSize: MainAxisSize.max,
-                    //             mainAxisAlignment:
-                    //                 MainAxisAlignment.spaceBetween,
-                    //             crossAxisAlignment: CrossAxisAlignment.center,
-                    //             children: [
-                    //               Column(
-                    //                 mainAxisSize: MainAxisSize.max,
-                    //                 crossAxisAlignment:
-                    //                     CrossAxisAlignment.start,
-                    //                 children: [
-                    //                   Text(
-                    //                     'Monthly',
-                    //                     style: FlutterFlowTheme.of(context)
-                    //                         .titleMedium
-                    //                         .override(
-                    //                           font: GoogleFonts.poppins(
-                    //                             fontWeight: FontWeight.w600,
-                    //                             fontStyle:
-                    //                                 FlutterFlowTheme.of(context)
-                    //                                     .titleMedium
-                    //                                     .fontStyle,
-                    //                           ),
-                    //                           color:
-                    //                               FlutterFlowTheme.of(context)
-                    //                                   .primaryText,
-                    //                           fontSize: 18.0,
-                    //                           letterSpacing: 0.0,
-                    //                           fontWeight: FontWeight.w600,
-                    //                           fontStyle:
-                    //                               FlutterFlowTheme.of(context)
-                    //                                   .titleMedium
-                    //                                   .fontStyle,
-                    //                         ),
-                    //                   ),
-                    //                   Text(
-                    //                     'INR 700/month',
-                    //                     style: FlutterFlowTheme.of(context)
-                    //                         .bodySmall
-                    //                         .override(
-                    //                           font: GoogleFonts.inter(
-                    //                             fontWeight: FontWeight.normal,
-                    //                             fontStyle:
-                    //                                 FlutterFlowTheme.of(context)
-                    //                                     .bodySmall
-                    //                                     .fontStyle,
-                    //                           ),
-                    //                           color:
-                    //                               FlutterFlowTheme.of(context)
-                    //                                   .secondaryText,
-                    //                           fontSize: 14.0,
-                    //                           letterSpacing: 0.0,
-                    //                           fontWeight: FontWeight.normal,
-                    //                           fontStyle:
-                    //                               FlutterFlowTheme.of(context)
-                    //                                   .bodySmall
-                    //                                   .fontStyle,
-                    //                         ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //               Container(
-                    //                 width: 20.0,
-                    //                 height: 20.0,
-                    //                 decoration: BoxDecoration(
-                    //                   shape: BoxShape.circle,
-                    //                   border: Border.all(
-                    //                     color: Color(0xFFBDBDBD),
-                    //                     width: 2.0,
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //     Padding(
-                    //       padding: EdgeInsets.all(10.0),
-                    //       child: Container(
-                    //         width: double.infinity,
-                    //         decoration: BoxDecoration(
-                    //           color: Colors.white,
-                    //           borderRadius: BorderRadius.circular(16.0),
-                    //           border: Border.all(
-                    //             color: Color(0xFFE0E0E0),
-                    //             width: 2.0,
-                    //           ),
-                    //         ),
-                    //         child: Padding(
-                    //           padding: EdgeInsets.all(12.0),
-                    //           child: Row(
-                    //             mainAxisSize: MainAxisSize.max,
-                    //             mainAxisAlignment:
-                    //                 MainAxisAlignment.spaceBetween,
-                    //             crossAxisAlignment: CrossAxisAlignment.center,
-                    //             children: [
-                    //               Column(
-                    //                 mainAxisSize: MainAxisSize.max,
-                    //                 crossAxisAlignment:
-                    //                     CrossAxisAlignment.start,
-                    //                 children: [
-                    //                   Text(
-                    //                     '6 Month',
-                    //                     style: FlutterFlowTheme.of(context)
-                    //                         .titleMedium
-                    //                         .override(
-                    //                           font: GoogleFonts.poppins(
-                    //                             fontWeight: FontWeight.w600,
-                    //                             fontStyle:
-                    //                                 FlutterFlowTheme.of(context)
-                    //                                     .titleMedium
-                    //                                     .fontStyle,
-                    //                           ),
-                    //                           color:
-                    //                               FlutterFlowTheme.of(context)
-                    //                                   .primaryText,
-                    //                           fontSize: 18.0,
-                    //                           letterSpacing: 0.0,
-                    //                           fontWeight: FontWeight.w600,
-                    //                           fontStyle:
-                    //                               FlutterFlowTheme.of(context)
-                    //                                   .titleMedium
-                    //                                   .fontStyle,
-                    //                         ),
-                    //                   ),
-                    //                   Text(
-                    //                     'INR 500/month',
-                    //                     style: FlutterFlowTheme.of(context)
-                    //                         .bodySmall
-                    //                         .override(
-                    //                           font: GoogleFonts.inter(
-                    //                             fontWeight: FontWeight.normal,
-                    //                             fontStyle:
-                    //                                 FlutterFlowTheme.of(context)
-                    //                                     .bodySmall
-                    //                                     .fontStyle,
-                    //                           ),
-                    //                           color:
-                    //                               FlutterFlowTheme.of(context)
-                    //                                   .secondaryText,
-                    //                           fontSize: 14.0,
-                    //                           letterSpacing: 0.0,
-                    //                           fontWeight: FontWeight.normal,
-                    //                           fontStyle:
-                    //                               FlutterFlowTheme.of(context)
-                    //                                   .bodySmall
-                    //                                   .fontStyle,
-                    //                         ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //               Container(
-                    //                 width: 20.0,
-                    //                 height: 20.0,
-                    //                 decoration: BoxDecoration(
-                    //                   shape: BoxShape.circle,
-                    //                   border: Border.all(
-                    //                     color: Color(0xFFBDBDBD),
-                    //                     width: 2.0,
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //     Padding(
-                    //       padding: EdgeInsets.all(10.0),
-                    //       child: Container(
-                    //         width: double.infinity,
-                    //         decoration: BoxDecoration(
-                    //           color: Color(0xFFF3F8FF),
-                    //           borderRadius: BorderRadius.circular(16.0),
-                    //           border: Border.all(
-                    //             color: Colors.blue,
-                    //             width: 3.0,
-                    //           ),
-                    //         ),
-                    //         child: Padding(
-                    //           padding: EdgeInsets.all(12.0),
-                    //           child: Row(
-                    //             mainAxisSize: MainAxisSize.max,
-                    //             mainAxisAlignment:
-                    //                 MainAxisAlignment.spaceBetween,
-                    //             crossAxisAlignment: CrossAxisAlignment.center,
-                    //             children: [
-                    //               Column(
-                    //                 mainAxisSize: MainAxisSize.max,
-                    //                 crossAxisAlignment:
-                    //                     CrossAxisAlignment.start,
-                    //                 children: [
-                    //                   Row(
-                    //                     mainAxisSize: MainAxisSize.max,
-                    //                     children: [
-                    //                       Text(
-                    //                         '1 Year',
-                    //                         style: FlutterFlowTheme.of(context)
-                    //                             .titleMedium
-                    //                             .override(
-                    //                               font: GoogleFonts.poppins(
-                    //                                 fontWeight: FontWeight.w600,
-                    //                                 fontStyle:
-                    //                                     FlutterFlowTheme.of(
-                    //                                             context)
-                    //                                         .titleMedium
-                    //                                         .fontStyle,
-                    //                               ),
-                    //                               color: FlutterFlowTheme.of(
-                    //                                       context)
-                    //                                   .primaryText,
-                    //                               fontSize: 18.0,
-                    //                               letterSpacing: 0.0,
-                    //                               fontWeight: FontWeight.w600,
-                    //                               fontStyle:
-                    //                                   FlutterFlowTheme.of(
-                    //                                           context)
-                    //                                       .titleMedium
-                    //                                       .fontStyle,
-                    //                             ),
-                    //                       ),
-                    //                       Padding(
-                    //                         padding:
-                    //                             EdgeInsetsDirectional.fromSTEB(
-                    //                                 8.0, 4.0, 8.0, 4.0),
-                    //                         child: Container(
-                    //                           decoration: BoxDecoration(
-                    //                             color: Colors.orange,
-                    //                             borderRadius:
-                    //                                 BorderRadius.circular(12.0),
-                    //                           ),
-                    //                           child: Padding(
-                    //                             padding: EdgeInsets.all(8.0),
-                    //                             child: Text(
-                    //                               'BEST VALUE',
-                    //                               style: FlutterFlowTheme.of(
-                    //                                       context)
-                    //                                   .bodySmall
-                    //                                   .override(
-                    //                                     font: GoogleFonts.inter(
-                    //                                       fontWeight:
-                    //                                           FontWeight.bold,
-                    //                                       fontStyle:
-                    //                                           FlutterFlowTheme.of(
-                    //                                                   context)
-                    //                                               .bodySmall
-                    //                                               .fontStyle,
-                    //                                     ),
-                    //                                     color: Colors.white,
-                    //                                     fontSize: 10.0,
-                    //                                     letterSpacing: 0.0,
-                    //                                     fontWeight:
-                    //                                         FontWeight.bold,
-                    //                                     fontStyle:
-                    //                                         FlutterFlowTheme.of(
-                    //                                                 context)
-                    //                                             .bodySmall
-                    //                                             .fontStyle,
-                    //                                   ),
-                    //                             ),
-                    //                           ),
-                    //                         ),
-                    //                       ),
-                    //                     ].divide(SizedBox(width: 8.0)),
-                    //                   ),
-                    //                   Text(
-                    //                     'INR 7000/year',
-                    //                     style: FlutterFlowTheme.of(context)
-                    //                         .bodySmall
-                    //                         .override(
-                    //                           font: GoogleFonts.inter(
-                    //                             fontWeight: FontWeight.normal,
-                    //                             fontStyle:
-                    //                                 FlutterFlowTheme.of(context)
-                    //                                     .bodySmall
-                    //                                     .fontStyle,
-                    //                           ),
-                    //                           color:
-                    //                               FlutterFlowTheme.of(context)
-                    //                                   .secondaryText,
-                    //                           fontSize: 14.0,
-                    //                           letterSpacing: 0.0,
-                    //                           fontWeight: FontWeight.normal,
-                    //                           fontStyle:
-                    //                               FlutterFlowTheme.of(context)
-                    //                                   .bodySmall
-                    //                                   .fontStyle,
-                    //                         ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //               Container(
-                    //                 width: 20.0,
-                    //                 height: 20.0,
-                    //                 decoration: BoxDecoration(
-                    //                   color: Colors.blue,
-                    //                   shape: BoxShape.circle,
-                    //                 ),
-                    //                 child: Icon(
-                    //                   Icons.check,
-                    //                   color: Colors.white,
-                    //                   size: 12.0,
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    SizedBox(height: 5.0),
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: FFButtonWidget(
-                            onPressed: () {
-                              print('Button pressed ...');
-                            },
-                            text: 'Continue with the Plan',
-                            options: FFButtonOptions(
-                              width: double.infinity,
-                              height: 56.0,
-                              padding: EdgeInsets.all(8.0),
-                              iconPadding: EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 0.0, 0.0, 0.0),
-                              color: Colors.blue,
-                              textStyle: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .override(
-                                    font: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FlutterFlowTheme.of(context)
-                                          .titleMedium
-                                          .fontStyle,
-                                    ),
-                                    color: Colors.white,
-                                    fontSize: 18.0,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.bold,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .titleMedium
-                                        .fontStyle,
-                                  ),
-                              elevation: 0.0,
-                              borderSide: BorderSide(
-                                color: Colors.transparent,
-                              ),
-                              borderRadius: BorderRadius.circular(16.0),
+                          const SizedBox(height: 30),
+
+                          Text(
+                            'Choose your Plan',
+                            style: GoogleFonts.inter(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-                        SizedBox(height: 12.0),
-                        RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(
-                            style: FlutterFlowTheme.of(context).labelMedium,
+
+                          const SizedBox(height: 16),
+
+                          /// PLANS
+                          Column(
                             children: [
-                              const TextSpan(text: ''),
-                              TextSpan(
-                                text: 'Terms & Conditions',
-                                style: TextStyle(
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    decoration: TextDecoration.underline),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () => launchURL(
-                                      'https://owlnotes.ai/terms-and-conditions'),
+                              PlanTile(
+                                title: 'Starter',
+                                price: '\$16.99 FOR 20 SESSIONS',
+                                isSelected: selectedPlanIndex == 0,
+                                onTap: () =>
+                                    setState(() => selectedPlanIndex = 0),
+                              ),
+                              const SizedBox(height: 12),
+                              PlanTile(
+                                title: 'Growth',
+                                price: '\$59.99 FOR 45 SESSIONS',
+                                isSelected: selectedPlanIndex == 1,
+                                onTap: () =>
+                                    setState(() => selectedPlanIndex = 1),
+                              ),
+                              const SizedBox(height: 12),
+                              PlanTile(
+                                title: 'Pro',
+                                price: '\$114.99 FOR 100 SESSIONS',
+                                showBestValue: true,
+                                isSelected: selectedPlanIndex == 2,
+                                onTap: () =>
+                                    setState(() => selectedPlanIndex = 2),
                               ),
                             ],
                           ),
-                        ),
-                      ].divide(SizedBox(height: 16.0)),
-                    ),
-                  ]
-                      .divide(SizedBox(height: 15.0))
-                      .addToStart(SizedBox(height: 20.0))
-                      .addToEnd(SizedBox(height: 25.0)),
+                        ],
+                      ),
+
+                      /// ---------------- BOTTOM ----------------
+                      Column(
+                        children: [
+                          const SizedBox(height: 30),
+                          FFButtonWidget(
+                            onPressed: startPayment,
+                            text: 'Continue with the Plan',
+                            options: FFButtonOptions(
+                              width: double.infinity,
+                              height: 56,
+                              color: Colors.blue,
+                              textStyle: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              text: 'Terms & Conditions',
+                              style: const TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () => launchUrl(
+                                      Uri.parse(
+                                        'https://owlnotes.ai/terms-and-conditions',
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),

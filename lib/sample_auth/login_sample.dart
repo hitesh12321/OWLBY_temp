@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/flutter_flow/nav/nav.dart';
 import 'package:owlby_serene_m_i_n_d_s/pages/create_account_screen/create_account_screen_widget.dart';
@@ -244,13 +245,15 @@ class _LoginSampleState extends State<LoginSample> {
                                       // 1. Validate Format
                                       if (!RegExp(r'^[0-9]{10}$')
                                           .hasMatch(phone)) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                                "Please enter a valid 10-digit number"),
-                                          ),
-                                        );
+                                        AppSnackbar.showError(context,
+                                            "Please enter a valid 10-digit number");
+                                        // ScaffoldMessenger.of(context)
+                                        //     .showSnackBar(
+                                        //   const SnackBar(
+                                        //     content: Text(
+                                        //         "Please enter a valid 10-digit number"),
+                                        //   ),
+                                        // );
                                         return;
                                       }
 
@@ -294,12 +297,14 @@ class _LoginSampleState extends State<LoginSample> {
                                         }
                                       } catch (e) {
                                         print("Error during check: $e");
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  "Something went wrong: $e")),
-                                        );
+                                        AppSnackbar.showError(context,
+                                            "Something went wrong: $e");
+                                        // ScaffoldMessenger.of(context)
+                                        //     .showSnackBar(
+                                        //   SnackBar(
+                                        //       content: Text(
+                                        //           "Something went wrong: $e")),
+                                        // );
                                       } finally {
                                         // 4. Stop Loading
                                         if (mounted) {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
 
@@ -111,9 +112,11 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
     final phoneErr = _model.phoneValidator?.call(_model.phoneController?.text);
 
     if (nameErr != null || emailErr != null || phoneErr != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(nameErr ?? emailErr ?? phoneErr ?? 'Error')),
-      );
+      AppSnackbar.showError(
+          context, nameErr ?? emailErr ?? phoneErr ?? 'Error');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text(nameErr ?? emailErr ?? phoneErr ?? 'Error')),
+      // );
       return;
     }
 
@@ -139,24 +142,28 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
       Navigator.pop(context); // ALWAYS close loader
       if (!mounted) return;
       if (status == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account created successfully!')),
-        );
+        AppSnackbar.showSuccess(context, 'Account created successfully!');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('Account created successfully!')),
+        // );
         context.pushNamed(LoginSample.routeName);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              UsersignupCall.message(response) ?? 'Signup failed',
-            ),
-          ),
-        );
+        AppSnackbar.showError(
+            context, UsersignupCall.message(response) ?? 'Signup failed');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text(
+        //       UsersignupCall.message(response) ?? 'Signup failed',
+        //     ),
+        //   ),
+        // );
       }
     } catch (e) {
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong')),
-      );
+      AppSnackbar.showError(context, 'Something went wrong');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Something went wrong')),
+      // );
     }
 
     // bool referralValid = false;

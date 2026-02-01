@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/auth_sample.dart';
 
 // Imports required for UI Styling
@@ -121,10 +122,12 @@ class _OtpSampleState extends State<OtpSample> {
                             final smsCode = otpController.text.trim();
 
                             if (smsCode.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Please enter the OTP")),
-                              );
+                              AppSnackbar.showError(
+                                  context, "Please enter the OTP");
+                              // ScaffoldMessenger.of(context).showSnackBar(
+                              //   const SnackBar(
+                              //       content: Text("Please enter the OTP")),
+                              // );
                               return;
                             }
 

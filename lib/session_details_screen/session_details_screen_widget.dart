@@ -1,3 +1,4 @@
+import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/models/recording_model.dart';
 import 'package:owlby_serene_m_i_n_d_s/record_feature/providers/recording_provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/session_details_screen/PdfDownloadCode.dart';
@@ -649,19 +650,22 @@ class _SessionDetailsScreenWidgetState
                     child: FFButtonWidget(
                       onPressed: () async {
                         // 1. Show a loading indicator if you want
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Generating PDF...")),
-                        );
+                        AppSnackbar.showInfo(context, "Generating PDF...");
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //   const SnackBar(content: Text("Generating PDF...")),
+                        // );
 
                         try {
                           // 2. Call the PDF service
                           await PdfService.generateAndDownloadPdf(recording);
                         } catch (e) {
                           // 3. Handle errors
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text("Failed to generate PDF: $e")),
-                          );
+                          AppSnackbar.showError(
+                              context, "Failed to generate PDF: $e");
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(
+                          //       content: Text("Failed to generate PDF: $e")),
+                          // );
                         }
                       },
                       text: 'Download PDF',

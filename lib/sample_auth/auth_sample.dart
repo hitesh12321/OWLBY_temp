@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/otp_sample.dart';
 import 'package:provider/provider.dart';
@@ -108,27 +109,31 @@ class AuthSample {
           }
         } catch (e) {
           print("🔴 Error parsing or saving user data: $e");
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Data Error: $e")),
-          );
+          AppSnackbar.showError(context, "Data Error: $e");
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text("Data Error: $e")),
+          // );
         }
       } else {
         print('❌ User does not exist in Backend');
         // Handle case: User passed OTP but isn't in your SQL Database
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text("Login Failed: User not found in database.")),
-          );
+          AppSnackbar.showError(
+              context, "Login Failed: User not found in database.");
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //       content: Text("Login Failed: User not found in database.")),
+          // );
           // Optionally redirect to SignUp
         }
       }
     } catch (e) {
       print('Error signing in with phone number: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Auth Error: $e")),
-        );
+        AppSnackbar.showError(context, "Auth Error: $e");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text("Auth Error: $e")),
+        // );
       }
     }
   }
