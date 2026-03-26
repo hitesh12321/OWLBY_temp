@@ -1,8 +1,4 @@
-import 'dart:convert';
-import 'package:app_links/app_links.dart';
 import 'package:flutter/gestures.dart';
-import 'package:http/http.dart' as http;
-import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:owlby_serene_m_i_n_d_s/subscription_screen/advantage_tile.dart';
@@ -29,7 +25,6 @@ class SubscriptionScreenWidget extends StatefulWidget {
 
 class _SubscriptionScreenWidgetState extends State<SubscriptionScreenWidget> {
   late SubscriptionScreenModel _model;
-  late final AppLinks _appLinks;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedPlanIndex = 2; // default Pro
@@ -40,7 +35,6 @@ class _SubscriptionScreenWidgetState extends State<SubscriptionScreenWidget> {
     _model = createModel(context, () => SubscriptionScreenModel());
     _model.switchValue = true;
 
-    initDeepLinkListener();
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -50,68 +44,20 @@ class _SubscriptionScreenWidgetState extends State<SubscriptionScreenWidget> {
     super.dispose();
   }
 
-  // ------------------- PADDLE LOGIC -------------------
-
-  String getPriceId() {
+  String getPaymentUrl() {
     if (selectedPlanIndex == 0) {
-      return "pro_01kb1rvqnth0xk89vqz2w8z746";
+      return 'https://owl-payment-frontend.vercel.app'; // Starter plan URL
     }
     if (selectedPlanIndex == 1) {
-      return "pro_01kb1rx8spjkj39g2cm9b7fcz9";
+      return 'https://owl-payment-frontend.vercel.app'; // Growth plan URL
     }
-    return "pro_01kb1rxv2a0sej6bpc1x5pgqyb";
+    return 'https://owl-payment-frontend.vercel.app'; // Pro plan URL
   }
 
   Future<void> startPayment() async {
-    final priceId = getPriceId();
-
-    final response = await http.post(
-      Uri.parse("https://YOUR_BACKEND_URL/create-checkout"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"priceId": priceId}),
-    );
-
-    final data = jsonDecode(response.body);
-    final checkoutUrl = data["checkoutUrl"];
-
-    await launchUrl(
-      Uri.parse(checkoutUrl),
-      mode: LaunchMode.externalApplication,
-    );
+    final url = Uri.parse(getPaymentUrl());
+    await launchUrl(url, mode: LaunchMode.externalApplication);
   }
-
-  void initDeepLinkListener() async {
-    _appLinks = AppLinks();
-
-    final Uri? initialUri = await _appLinks.getInitialLink();
-    if (initialUri != null) {
-      _handleDeepLink(initialUri);
-    }
-
-    _appLinks.uriLinkStream.listen((uri) {
-      _handleDeepLink(uri);
-    });
-  }
-
-  void _handleDeepLink(Uri uri) {
-    if (!mounted) return;
-
-    if (uri.host == "payment-success") {
-      AppSnackbar.showSuccess(context, "Payment Successful ✅");
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text("Payment Successful ✅")),
-      // );
-    }
-
-    if (uri.host == "payment-failed") {
-      AppSnackbar.showError(context, "Payment Failed ❌");
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text("Payment Failed ❌")),
-      // );
-    }
-  }
-
-  // ----------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
