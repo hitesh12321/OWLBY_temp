@@ -61,7 +61,7 @@ dependencies:
   page_transition:
   pin_code_fields:
   open_file:
-  url_launcher:
+  url_launcher: ^6.3.2
   font_awesome_flutter:
   simple_gradient_text:
   from_css_color:

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
-import 'package:owlby_serene_m_i_n_d_s/flutter_flow/nav/nav.dart';
+
 import 'package:owlby_serene_m_i_n_d_s/pages/create_account_screen/create_account_screen_widget.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/auth_sample.dart';
 
 // Imports required for the UI Styling
 import '/flutter_flow/flutter_flow_theme.dart';
-import '/flutter_flow/flutter_flow_util.dart';
+
 import '/flutter_flow/flutter_flow_widgets.dart';
 
 class LoginSample extends StatefulWidget {
@@ -160,8 +160,8 @@ class _LoginSampleState extends State<LoginSample> {
                                       setState(() {
                                         country_code = selectedCode;
                                       });
-                                      print(
-                                          "Selected Country 🎶🎶🤷‍♂️ Code: $selectedCode");
+                                      // print(
+                                      //     "Selected Country 🎶🎶🤷‍♂️ Code: $selectedCode");
                                     }
                                   },
                                   child: Container(
@@ -272,18 +272,18 @@ class _LoginSampleState extends State<LoginSample> {
                                             CheckUserApi.userExists(
                                                 checkuserResponse);
 
-                                        print(
-                                            "❤️ check user exists: $userExists");
+                                        // print(
+                                        //     "❤️ check user exists: $userExists");
 
                                         if (userExists) {
-                                          print(
-                                              "❤️ User exists. Proceeding to login.");
+                                          // print(
+                                          //     "❤️ User exists. Proceeding to login.");
                                           // Login Flow
                                           AuthSample.verifyPhoneNumber(
                                               context, phone, country_code);
                                         } else {
-                                          print(
-                                              "❤️ User does not exist. Proceeding to sign up.");
+                                          // print(
+                                          //     "❤️ User does not exist. Proceeding to sign up.");
                                           // Sign Up Flow
                                           if (mounted) {
                                             // context.pushReplacementNamed(
@@ -296,7 +296,7 @@ class _LoginSampleState extends State<LoginSample> {
                                           }
                                         }
                                       } catch (e) {
-                                        print("Error during check: $e");
+                                        // print("Error during check: $e");
                                         AppSnackbar.showError(context,
                                             "Something went wrong: $e");
                                         // ScaffoldMessenger.of(context)

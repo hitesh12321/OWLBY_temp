@@ -8,15 +8,15 @@ class AppUserProvider extends ChangeNotifier {
 
   AppUserModel? get user => _user;
   bool get isLoggedIn => _user != null;
-  bool get isLoading => _isLoading;
+  bool get isLoading => _isLoading; // whenever i call isLoading it gets the most recent value of _isLoading
 
   /// Load user on app start
   Future<void> loadUser() async {
     try {
       _user = await OwlbyDatabase.instance.getUser();
-      print('🟢 loadUser() fetched: $_user');
+      // print('🟢 loadUser() fetched: $_user');
     } catch (e) {
-      print('🔴 loadUser() error: $e');
+      // print('🔴 loadUser() error: $e');
       _user = null;
     } finally {
       // ✅ FIX: You must turn off loading here!
@@ -27,7 +27,7 @@ class AppUserProvider extends ChangeNotifier {
 
   /// Save user after login
   Future<void> login(AppUserModel user) async {
-    print('🟡 Saving user to DB: ${user.id}');
+    // print('🟡 Saving user to DB: ${user.id}');
     await OwlbyDatabase.instance.saveUser(user);
     _user = user;
     notifyListeners();

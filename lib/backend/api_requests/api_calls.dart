@@ -9,7 +9,7 @@ import 'api_manager.dart';
 
 export 'api_manager.dart' show ApiCallResponse;
 
-const _kPrivateApiFunctionName = 'ffPrivateApiCall';
+// const _kPrivateApiFunctionName = 'ffPrivateApiCall';
 
 class VerifyOtpCall {
   static Future<ApiCallResponse> call({
@@ -105,14 +105,7 @@ class UsersignupCall {
       "organization_name": organizationName,
       "phone_number": phoneNumber,
     };
-    // final response = CheckRefferal.call(referralCode: referralCode);
-    // print("Referral Code Response: $response");
-    // final Isvalid = CheckRefferal.isValid(response as ApiCallResponse);
-    // print("Is Referral Code Valid: $Isvalid");
 
-    // if (referralCode != null && referralCode.isNotEmpty) {
-    //   bodyMap["referral_code"] = referralCode;
-    // }
     if (referralValid == true) {
       bodyMap["referral_code"] = referralCode;
     }
@@ -226,9 +219,9 @@ class CheckUserApi {
 Future<int?> fetchTheSession() async {
   try {
     final response = await GetToken.call();
-    print("Token GetTokenAPI Response ❤️❤️❤️❤️❤️🤐🤐: ${response.jsonBody}");
+    // print("Token GetTokenAPI Response ❤️❤️❤️❤️❤️🤐🤐: ${response.jsonBody}");
     final token = GetToken.totalSessions(response);
-    print("Fetched Token 😂😂😂😂😂: $token");
+    // print("Fetched Token 😂😂😂😂😂: $token");
 
     final sessionResponse = await GetSessionLeft.call(Token: token);
 
@@ -236,12 +229,12 @@ Future<int?> fetchTheSession() async {
       // Yahan sessionResponse pass karein
       final sLeft = GetSessionLeft.sessionsLeft(sessionResponse);
 
-      print("Fetched Sessions Left �����������������🎶🎶�: $sLeft");
+      // print("Fetched Sessions Left🎶🎶: $sLeft");
       return sLeft;
     }
     return null;
   } catch (e) {
-    print("Fetch Session Error: $e");
+    // print("Fetch Session Error: $e");
     return null;
     // if (mounted) setState(() => isLoading = false);
   }
@@ -321,7 +314,7 @@ class GetToken {
   }
 }
 
-// et session left // DONE 👍👍👍
+// et session left // DONE
 
 // process meeting call // ❤️❤️❤️
 class ProcessmeetingCall {

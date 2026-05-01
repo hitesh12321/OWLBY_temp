@@ -84,7 +84,7 @@ class _ToDoListScreen1WidgetState extends State<ToDoListScreen1Widget> {
                   fontStyle: FlutterFlowTheme.of(context).titleLarge.fontStyle,
                 ),
           ),
-          actions: [],
+          // actions: [],
           elevation: 0.0,
         ),
         body: SafeArea(

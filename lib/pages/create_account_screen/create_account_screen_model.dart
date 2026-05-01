@@ -1,8 +1,6 @@
 import '/flutter_flow/flutter_flow_util.dart';
-
 import '/index.dart';
 import 'create_account_screen_widget.dart' show CreateAccountScreenWidget;
-
 import 'package:flutter/material.dart';
 
 class CreateAccountScreenModel

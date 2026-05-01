@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
-
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -135,7 +134,7 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
         referralCode: _model.referralController?.text.trim(),
         referralValid: isvalid,
       );
-      print('🤛🤛🤛🤛FULL RESPONSE: $response');
+      // print('🤛🤛🤛🤛FULL RESPONSE: $response');
 
       final status = UsersignupCall.success(response);
 

@@ -23,16 +23,16 @@ class AuthSample {
       },
       verificationFailed: (FirebaseAuthException e) {
         if (e.code == 'invalid-phone-number') {
-          print('The provided phone number is not valid.');
+          // print('The provided phone number is not valid.');
         }
       },
       codeSent: (String verificationId, int? resendToken) {
         verId = verificationId;
-        print("verficationId $verId");
+        // print("verficationId $verId");
         Navigator.push(context, MaterialPageRoute(builder: (ctx) {
           return const OtpSample();
         }));
-        print("code sent");
+        // print("code sent");
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
     );
@@ -75,7 +75,7 @@ class AuthSample {
       // Remove space just in case
       rawPhoneNumber = rawPhoneNumber.replaceAll(' ', '');
 
-      print("📞 Fetching details for: $rawPhoneNumber");
+      // print("📞 Fetching details for: $rawPhoneNumber");
 
       // 3. Fetch user details
       final response = await GetUserDetails.call(phoneNumber: rawPhoneNumber);
@@ -93,14 +93,14 @@ class AuthSample {
 
           // Debug check
           final dbUser = await OwlbyDatabase.instance.getUser();
-          print('🟢 USER SAVED IN DB: ${dbUser?.fullName}');
+          // print('🟢 USER SAVED IN DB: ${dbUser?.fullName}');
 
           // 5. Navigate ONLY after success
           if (context.mounted) {
             // String? idToken = await userCredential.user!.getIdToken();
-            print("User UID🫡🫡🫡: ${FirebaseAuth.instance.currentUser?.uid}");
-            print(
-                "Token: 🙌🙌🙌🙌${await FirebaseAuth.instance.currentUser?.getIdToken(true)}");
+            // print("User UID: ${FirebaseAuth.instance.currentUser?.uid}");
+            // print(
+            //     "Token:${await FirebaseAuth.instance.currentUser?.getIdToken(true)}");
             // print("🆔 Firebase ID Token: $idToken");
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) {
@@ -108,14 +108,14 @@ class AuthSample {
             }));
           }
         } catch (e) {
-          print("🔴 Error parsing or saving user data: $e");
+          // print("🔴 Error parsing or saving user data: $e");
           AppSnackbar.showError(context, "Data Error: $e");
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(content: Text("Data Error: $e")),
           // );
         }
       } else {
-        print('❌ User does not exist in Backend');
+        // print('❌ User does not exist in Backend');
         // Handle case: User passed OTP but isn't in your SQL Database
         if (context.mounted) {
           AppSnackbar.showError(
@@ -128,7 +128,7 @@ class AuthSample {
         }
       }
     } catch (e) {
-      print('Error signing in with phone number: $e');
+      // print('Error signing in with phone number: $e');
       if (context.mounted) {
         AppSnackbar.showError(context, "Auth Error: $e");
         // ScaffoldMessenger.of(context).showSnackBar(

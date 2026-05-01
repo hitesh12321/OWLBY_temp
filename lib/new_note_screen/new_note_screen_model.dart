@@ -1,7 +1,4 @@
-
 import '/flutter_flow/flutter_flow_util.dart';
-
-
 import 'new_note_screen_widget.dart' show NewNoteScreenWidget;
 import 'package:flutter/material.dart';
 

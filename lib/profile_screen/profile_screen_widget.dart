@@ -1,17 +1,12 @@
 import 'package:owlby_serene_m_i_n_d_s/appUser/app_user_provider.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
-
 import 'package:owlby_serene_m_i_n_d_s/subscription_screen/subscription_screen_widget.dart';
-import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
-
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'profile_screen_model.dart';
 export 'profile_screen_model.dart';
