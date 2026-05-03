@@ -4,7 +4,7 @@ import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
 
 import 'package:owlby_serene_m_i_n_d_s/pages/create_account_screen/create_account_screen_widget.dart';
-import 'package:owlby_serene_m_i_n_d_s/sample_auth/auth_sample.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/auth_page.dart';
 
 // Imports required for the UI Styling
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -82,6 +82,20 @@ class _LoginSampleState extends State<LoginSample> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: FlutterFlowTheme.of(context).primary,
+          automaticallyImplyLeading: false,
+          title: Text(
+            'Welcome Back!!',
+            style: FlutterFlowTheme.of(context).titleMedium.override(
+                  fontFamily: 'Poppins',
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+          ),
+          centerTitle: true,
+          elevation: 2,
+        ),
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         resizeToAvoidBottomInset: true,

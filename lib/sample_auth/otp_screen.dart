@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
-import 'package:owlby_serene_m_i_n_d_s/sample_auth/auth_sample.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/auth_page.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_screen.dart';
 
 // Imports required for UI Styling
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -42,6 +43,22 @@ class _OtpSampleState extends State<OtpSample> {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+      appBar: AppBar(
+        actions: [
+          TextButton(
+              onPressed: () {},
+              child: TextButton.icon(
+                onPressed: () {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) {
+                    return const LoginSample();
+                  }));
+                },
+                icon: Icon(Icons.arrow_back),
+                label: Text("Login Pages"),
+              ))
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

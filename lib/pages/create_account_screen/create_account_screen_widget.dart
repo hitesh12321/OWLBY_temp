@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:owlby_serene_m_i_n_d_s/Global/global_snackbar.dart';
 import 'package:owlby_serene_m_i_n_d_s/backend/api_requests/api_calls.dart';
-import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_screen.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -165,39 +165,7 @@ class _CreateAccountScreenWidgetState extends State<CreateAccountScreenWidget>
       // );
     }
 
-    // bool referralValid = false;
-    // int extraSessions = 0;
-    // final referralCode = _model.referralController?.text.trim() ?? '';
 
-    // if (referralCode.isNotEmpty) {
-    //   final result = await _checkReferral(referralCode);
-    //   referralValid = result['valid'] == true;
-    //   if (referralValid) {
-    //     extraSessions = result['extraSessions'] ?? 0;
-    //   }
-    // }
-
-    // final profile = {
-    //   'name': _model.nameController?.text.trim(),
-    //   'email': _model.emailController?.text.trim(),
-    //   'phone': _model.phoneController?.text.trim(),
-    //   'organization': _model.orgController?.text.trim(),
-    //   // 'referralCode': referralCode,
-    //   // 'referralValid': referralValid,
-    //   // 'extraSessions': extraSessions,
-    //   'createdAt': DateTime.now().toIso8601String(),
-    // };
-
-    // await _saveProfileLocally(profile);
-    // if (Navigator.canPop(context)) Navigator.pop(context);
-
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //       content: Text(
-    //           referralValid ? 'Referral applied!' : 'Account saved locally.')),
-    // );
-
-    // context.pushNamed(LoginScreenWidget.routeName);
   }
 
   // --- UI BUILDER ---

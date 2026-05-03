@@ -1,6 +1,6 @@
 import 'package:owlby_serene_m_i_n_d_s/main.dart';
 import 'package:owlby_serene_m_i_n_d_s/pages/onboarding_screen/appLaunchService.dart';
-import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_screen.dart';
 
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';

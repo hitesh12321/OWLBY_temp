@@ -52,11 +52,11 @@ class FFAppState extends ChangeNotifier {
   }
 }
 
-void _safeInit(Function() initializeField) {
-  try {
-    initializeField();
-  } catch (_) {}
-}
+// void _safeInit(Function() initializeField) {
+//   try {
+//     initializeField();
+//   } catch (_) {}
+// }
 
 Future _safeInitAsync(Function() initializeField) async {
   try {

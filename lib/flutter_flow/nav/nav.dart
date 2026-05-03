@@ -1,27 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:owlby_serene_m_i_n_d_s/pages/onboarding_screen/appLaunchService.dart';
-
-import 'package:owlby_serene_m_i_n_d_s/record_feature/pages/record_screen.dart';
-import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_sample.dart';
-import 'package:owlby_serene_m_i_n_d_s/sample_auth/otp_sample.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/login_screen.dart';
+import 'package:owlby_serene_m_i_n_d_s/sample_auth/otp_screen.dart';
 import 'package:provider/provider.dart';
-import '/backend/backend.dart';
-
 import '/auth/base_auth_user_provider.dart';
-
 import '/main.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
-import '/flutter_flow/lat_lng.dart';
-import '/flutter_flow/place.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'serialization_util.dart';
-
 import '/index.dart';
-
 export 'package:go_router/go_router.dart';
 export 'serialization_util.dart';
 
@@ -94,13 +81,19 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
 
         // 1️⃣ First launch → onboarding
         if (!seenOnboarding && location != OnboardingScreenWidget.routePath) {
-          return OnboardingScreenWidget.routePath;
+           if (location != OnboardingScreenWidget.routePath) {
+      return OnboardingScreenWidget.routePath;
+    }
+    return null; 
         }
 
         // 2️⃣ Onboarding done but not logged in → login
-        if (seenOnboarding && !loggedIn && location != LoginSample.routePath) {
-          return LoginSample.routePath;
-        }
+        if (!loggedIn) {
+    if (location != LoginSample.routePath) {
+      return LoginSample.routePath;
+    }
+    return null;
+  }
 
         // 3️⃣ Logged in → home
         if (loggedIn && location == '/') {
